@@ -1,9 +1,13 @@
  #include <ArduinoBLE.h>
-//test
+
 //should these be global?????
 static int state = -1;
 static char strUnits[16];
-
+ int choice ;
+      char* s1="      WELCOME       ";
+      char* s2="   NSTA 2020 BOSTON ";
+      char* s3="                    ";
+      char* s4="    DAVE VERNIER    ";
 /*from lib:
 #define D2PIO_MAX_ORDERCODE_LENGTH 16
 #define D2PIO_MAX_SERIALNUMBER_LENGTH 16
@@ -18,6 +22,7 @@ char serialNumber[9];// 16 bytes used in lib
 char deviceNam[16];// 32 bytes
 char channelUnits[16];// 32 bytes
 char channelName[30];// 60 bytes
+byte channelNumberXXX=0;
 unsigned long availableChannels;
 byte scanRSSI;
 char strBuffer[64];
@@ -25,9 +30,9 @@ char strFW1[16];
 char strFW2[16];
 byte batteryPercent;
 byte batteryLevel;
-float sensorReading;
-//char sensorName[]="GDX-     "; // we will use this to display later 
-char sensorName[]="     ";
+float channelReading;
+char sensorName[]="GDX-ACC 0H010767"; // we will use this to display later 
+//char sensorName[]="     ";
 //leave the name blank to have the program search for nearest GDX sensor
 // and connect.
 
@@ -58,7 +63,7 @@ void setup()
       {
       Serial.println(sensorName);
       CharDisplayPrintLine(2, "specified");
-      GoDirectBLE_Begin("GDX-ACC 0H101767", 1, 1000);
+      GoDirectBLE_Begin("GDX-ACC 0H101767",11, 1000);
       }
   delay(2000);
 
@@ -85,6 +90,8 @@ void setup()
   Serial.println (channelUnits);
   Serial.print("channelName:: ");
   Serial.println (channelName);
+  Serial.print("channelNumberXXX:: ");
+  Serial.println (channelNumberXXX);
   Serial.print("batteryPercent:: ");
   Serial.println (batteryPercent);
   Serial.print("batteryLevel:: ");
@@ -139,8 +146,8 @@ GoDirectBLE_Measure() ;
       Serial.print (" ");
       Serial.print(strBuffer[0]);
       Serial.print (" ");
-      sensorReading = atof(strBuffer);
-      Serial.println(sensorReading);
+      channelReading = atof(strBuffer);
+      Serial.println(channelReading);
            
       if (GoDirectBLE_DisplayChannelAsInteger())
       {
@@ -182,7 +189,10 @@ GoDirectBLE_Measure() ;
       Serial.println(strBuffer);
       CharDisplayPrintLine(2, strBuffer);
 Serial.println("Data Table:");
-Serial.println("#          reading");
+Serial.print("#          reading");
+Serial.print(channelName);
+Serial.print("   ");
+Serial.print(channelReading);
 }
 
 void loop()
@@ -197,71 +207,90 @@ void loop()
         sprintf(strBuffer, "%.2f %s", GoDirectBLE_GetMeasurement(), strUnits);
        
       }
-      Serial.print("printing buffer rounded to 2 digits; ");
+      //Serial.print("printing buffer rounded to 2 digits; ");
       Serial.println(strBuffer);
-      CharDisplayPrintLine(2, strBuffer);
-      Serial.print (" ");
-      Serial.print(strBuffer[0]);
-      Serial.print (" ");
-      sensorReading = atof(strBuffer);
-      Serial.print("printing sensor reading as a float; ");
-      Serial.println(sensorReading);
+      CharDisplayPrintLine(1, strBuffer);
+      //Serial.print (" ");
+      //Serial.print(strBuffer[0]);
+      //Serial.print (" ");
+      //channelReading = atof(strBuffer);
+      //Serial.print("printing channel reading as a float; ");
+      Serial.print("channelNumberXXX:: ");
+      Serial.print(channelNumberXXX);
+      Serial.print("    ");
+      Serial.println(channelReading);
+         // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
+   if (channelReading> 80 )
+        int choice =1;
+   else if (channelReading> 50 )
+        choice =2;
+   else if (channelReading> 20 )
+        choice =3;
+   else if (channelReading>0 )
+        choice =4;
+   else 
+        choice =9;
+      Serial.print("              choice ");
+      Serial.println (choice);
       delay(500);
-       /* I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
-      case = map(sensorReading,-90, 90, 50, 0,7);
-      Serial.print("case ");
-      Serial.print (case);
-      switch (case) {
-    case 1:
-      //      "12345678901234567890";
-      char s1="      WELCOME       ";
-      char s2="   NSTA 2020 BOSTON ";
-      char s3="                    "
-      char s4=""   DAVE VERNIER    ";
+switch (choice) {
+  case 1:
+      {
+       //      "12345678901234567890";
+      s1="      WELCOME       ";
+      s2="   NSTA 2020 BOSTON ";
+      s3="                    ";
+      s4="    DAVE VERNIER    ";
+      }
       break;
     case 2:
-      //      "12345678901234567890";
-      char s1="THIS PROGRAMMABLE  ";
-      char s2="NAMETAG IS A FUN     //      "12345678901234567890";
-      char s1="CODING PROJECT      ";
-      char s2="OUR GDX SENSORS ";
-      char s3="                    "
-      char s4=""   DAVE VERNIER    ";
-      break; ";
-      char s3="                    "
-      char s4=""   DAVE VERNIER    ";
+      {
+  //      "12345678901234567890";  
+      s1="THIS PROGRAMMABLE   ";
+      s2="  NAMETAG IS A FUN  ";      
+      s3="  STUDENT PROJECT   ";
+      s4="OUR GDX SENSORS     ";
+      }
       break;
     case 3:
-           //      "12345678901234567890";
-      char s1="     IT IS CONTROLLED     ";
-      char s2="BY AN ARDUINO NANO 33";
-      char s3="                    "
-      char s4=""   DAVE VERNIER    ";
+      {
+    //   "12345678901234567890";
+      s1="   IT IS CONTROLLED ";
+      s2="BY AN ARDUINO       ";
+      s3="NANO 33 BLE         ";
+      s4="                    ";
+    }
       break;
+     /*
     case 4:
-      //do something when var equals 2
+      //do something when var equals 4
       break;
     case 5:
-      //do something when var equals 1
+      //do something when var equals 5
       break;
     case 6:
-      //do something when var equals 2
+      //do something when var equals 6
       break;
     case 7:
-      //      "12345678901234567890";
-      char s1="HELLO, I'M DAVE       ";
-      char s2="I'M DEAF; ";
-      char s3="DO YOU SIGN?                    "
-      char s4=""   DAVE VERNIER    ";
+      {// "12345678901234567890";
+      s1="   HELLO, I'M DAVID ";
+      s2="   I'M DEAF;        ";
+      s3="        DO YOU SIGN?";
+      s4="                    ";
+      }
       break;
-    case 8:
-      //do something when var equals 2
-      break;
-    default: 
-      // if nothing else matches, do the default
-      // default is optional
-    break;
-  }
+     */ 
+  } //end of switch
+  
+        Serial.println(s1);
+        Serial.println(s2);
+        Serial.println(s3);
+        Serial.println(s4);   
+        CharDisplayPrintLine(1, s1);
+        CharDisplayPrintLine(2, s2);
+        CharDisplayPrintLine(3, s3);
+        CharDisplayPrintLine(4, s4);
+ 
 } 
   ////////////////////
 
