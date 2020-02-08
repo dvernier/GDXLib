@@ -213,13 +213,30 @@ void loop()
       Serial.print (case);
       switch (case) {
     case 1:
-      //do something when var equals 1
+      //      "12345678901234567890";
+      char s1="      WELCOME       ";
+      char s2="   NSTA 2020 BOSTON ";
+      char s3="                    "
+      char s4=""   DAVE VERNIER    ";
       break;
     case 2:
-      //do something when var equals 2
+      //      "12345678901234567890";
+      char s1="THIS PROGRAMMABLE  ";
+      char s2="NAMETAG IS A FUN     //      "12345678901234567890";
+      char s1="CODING PROJECT      ";
+      char s2="OUR GDX SENSORS ";
+      char s3="                    "
+      char s4=""   DAVE VERNIER    ";
+      break; ";
+      char s3="                    "
+      char s4=""   DAVE VERNIER    ";
       break;
     case 3:
-      //do something when var equals 1
+           //      "12345678901234567890";
+      char s1="     IT IS CONTROLLED     ";
+      char s2="BY AN ARDUINO NANO 33";
+      char s3="                    "
+      char s4=""   DAVE VERNIER    ";
       break;
     case 4:
       //do something when var equals 2
@@ -231,7 +248,11 @@ void loop()
       //do something when var equals 2
       break;
     case 7:
-      //do something when var equals 1
+      //      "12345678901234567890";
+      char s1="HELLO, I'M DAVE       ";
+      char s2="I'M DEAF; ";
+      char s3="DO YOU SIGN?                    "
+      char s4=""   DAVE VERNIER    ";
       break;
     case 8:
       //do something when var equals 2
