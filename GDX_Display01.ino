@@ -207,6 +207,40 @@ void loop()
       Serial.print("printing sensor reading as a float; ");
       Serial.println(sensorReading);
       delay(500);
+       /* I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
+      case = map(sensorReading,-90, 90, 50, 0,7);
+      Serial.print("case ");
+      Serial.print (case);
+      switch (case) {
+    case 1:
+      //do something when var equals 1
+      break;
+    case 2:
+      //do something when var equals 2
+      break;
+    case 3:
+      //do something when var equals 1
+      break;
+    case 4:
+      //do something when var equals 2
+      break;
+    case 5:
+      //do something when var equals 1
+      break;
+    case 6:
+      //do something when var equals 2
+      break;
+    case 7:
+      //do something when var equals 1
+      break;
+    case 8:
+      //do something when var equals 2
+      break;
+    default: 
+      // if nothing else matches, do the default
+      // default is optional
+    break;
+  }
 } 
   ////////////////////
 
