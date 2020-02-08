@@ -3,11 +3,11 @@
 //should these be global?????
 static int state = -1;
 static char strUnits[16];
- int choice ;
-      char* s1="      WELCOME       ";
-      char* s2="   NSTA 2020 BOSTON ";
-      char* s3="                    ";
-      char* s4="    DAVE VERNIER    ";
+int choice ;
+char* s1="      WELCOME       ";
+char* s2="   NSTA 2020 BOSTON ";
+char* s3="                    ";
+char* s4="    DAVE VERNIER    ";
 /*from lib:
 #define D2PIO_MAX_ORDERCODE_LENGTH 16
 #define D2PIO_MAX_SERIALNUMBER_LENGTH 16
@@ -237,7 +237,7 @@ switch (choice) {
   case 1:
       {
        //      "12345678901234567890";
-      s1="      WELCOME       ";
+      s1="         WELCOME    ";
       s2="   NSTA 2020 BOSTON ";
       s3="                    ";
       s4="    DAVE VERNIER    ";
@@ -246,7 +246,7 @@ switch (choice) {
     case 2:
       {
   //      "12345678901234567890";  
-      s1="THIS PROGRAMMABLE   ";
+      s1="     PROGRAMMABLE   ";
       s2="  NAMETAG IS A FUN  ";      
       s3="  STUDENT PROJECT   ";
       s4="OUR GDX SENSORS     ";
@@ -255,7 +255,7 @@ switch (choice) {
     case 3:
       {
     //   "12345678901234567890";
-      s1="   IT IS CONTROLLED ";
+      s1="    IT IS CONTROLLED";
       s2="BY AN ARDUINO       ";
       s3="NANO 33 BLE         ";
       s4="                    ";

@@ -1,5 +1,5 @@
 #include <ArduinoBLE.h>
-//@@@@@@
+//@@@@@
 #define D2PIO_CMD_ID_GET_STATUS                          0x10
 #define D2PIO_CMD_ID_START_MEASUREMENTS                  0x18
 #define D2PIO_CMD_ID_STOP_MEASUREMENTS                   0x19
@@ -763,7 +763,6 @@ bool D2PIO_GetDeviceInfo()
   Serial.println(pResponse->NVMemSize);
   return true;
 }
-
 //=============================================================================
 // D2PIO_GetChannelInfo() Function
 //=============================================================================
@@ -826,7 +825,6 @@ bool D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
 
   return true;
 }
-
 //=============================================================================
 // D2PIO_GetChannelInfoAll() Function
 //=============================================================================
@@ -864,7 +862,6 @@ bool D2PIO_Autoset()
   unsigned long defaultMask = 0;
   unsigned long testMask = 1;
   byte i;
-
   if (!D2PIO_GetAvailableChannels(availableMask)) return false;
   if (!D2PIO_GetDefaultChannels(defaultMask)) return false;
 
@@ -927,8 +924,6 @@ bool D2PIO_StartMeasurements(byte channelNumber)
   if (!D2PIO_ReadBlocking(g_ReadBuffer, 5000)) return false;
   return true;
 }
-
-
 
 //=============================================================================
 // GoDirectBLE_Begin() Function
