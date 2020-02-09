@@ -3,11 +3,11 @@
 //should these be global?????
 static int state = -1;
 static char strUnits[16];
-int choice ;
-char* s1="      WELCOME       ";
-char* s2="   NSTA 2020 BOSTON ";
+char* s1="                    ";
+char* s2="                    ";
 char* s3="                    ";
-char* s4="    DAVE VERNIER    ";
+char* s4="                    ";
+int choice;
 /*from lib:
 #define D2PIO_MAX_ORDERCODE_LENGTH 16
 #define D2PIO_MAX_SERIALNUMBER_LENGTH 16
@@ -66,7 +66,6 @@ void setup()
       GoDirectBLE_Begin("GDX-ACC 0H101767",11, 1000);
       }
   delay(2000);
-
 
   //this is from kevin's loop:
   // Cache the unit string and try to remap special UTF8
@@ -188,11 +187,12 @@ GoDirectBLE_Measure() ;
       }
       Serial.println(strBuffer);
       CharDisplayPrintLine(2, strBuffer);
-Serial.println("Data Table:");
-Serial.print("#          reading");
-Serial.print(channelName);
-Serial.print("   ");
-Serial.print(channelReading);
+      Serial.println("Data Table:");
+      Serial.print("#          reading");
+      Serial.print(channelName);
+      Serial.print("   ");
+      Serial.print(channelReading);
+      delay(2000);
 }
 
 void loop()
@@ -219,7 +219,8 @@ void loop()
       Serial.print(channelNumberXXX);
       Serial.print("    ");
       Serial.println(channelReading);
-         // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
+       // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
+   choice=7;
    if (channelReading> 80 )
         int choice =1;
    else if (channelReading> 50 )
@@ -228,17 +229,15 @@ void loop()
         choice =3;
    else if (channelReading>0 )
         choice =4;
-   else 
-        choice =9;
-      Serial.print("              choice ");
+      Serial.print("          choice ");
       Serial.println (choice);
-      delay(500);
+
 switch (choice) {
   case 1:
       {
        //      "12345678901234567890";
       s1="         WELCOME    ";
-      s2="   NSTA 2020 BOSTON ";
+      s2="   NSTA 2020 BOSTON  ";
       s3="                    ";
       s4="    DAVE VERNIER    ";
       }
@@ -261,9 +260,9 @@ switch (choice) {
       s4="                    ";
     }
       break;
-     /*
     case 4:
-      //do something when var equals 4
+      {s2="XXXXXXXXXXXX  ";
+      }
       break;
     case 5:
       //do something when var equals 5
@@ -279,18 +278,18 @@ switch (choice) {
       s4="                    ";
       }
       break;
-     */ 
+     
   } //end of switch
   
-        Serial.println(s1);
+        //Serial.println(s1);
         Serial.println(s2);
-        Serial.println(s3);
-        Serial.println(s4);   
-        CharDisplayPrintLine(1, s1);
+        //Serial.println(s3);
+        //Serial.println(s4);   
+        //CharDisplayPrintLine(1, s1);
         CharDisplayPrintLine(2, s2);
-        CharDisplayPrintLine(3, s3);
-        CharDisplayPrintLine(4, s4);
- 
+        //CharDisplayPrintLine(3, s3);
+        //CharDisplayPrintLine(4, s4);
+       delay(500);
 } 
   ////////////////////
 
