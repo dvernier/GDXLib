@@ -683,8 +683,11 @@ bool D2PIO_GetStatus()
   Serial.print("***.");
   Serial.println(pResponse->buildNumSlaveCPU);
   Serial.print("***  Battery percent: ");
+  batteryPercent=(pResponse->buildNumSlaveCPU);
   Serial.println(pResponse->batteryLevelPercent);
-  //strcpy(batteryPercent, pResponse->batteryLevelPercent));//!!!
+  //Serial.print("***  batteryLevelPercent: ");
+  //Serial.println(batteryLevelPercent);
+  
   Serial.print("***  Charger state: ");
   Serial.println(pResponse->chargerState);
   return true;
@@ -714,25 +717,17 @@ bool D2PIO_GetDeviceInfo()
   Serial.println("Device info:");
   Serial.print("***  Description: ");
   Serial.println(pResponse->DeviceDescription);
-  Serial.print("***  Order code: ");
-  Serial.println(pResponse->OrderCode);
-  strcpy(orderCode, pResponse->OrderCode);//!!!
-  Serial.print("***  Serial number: ");
   Serial.println(pResponse->SerialNumber);
-  strcpy(serialNumber, pResponse->SerialNumber);//!!!
   Serial.print("***  Device name: ");
   Serial.println(pResponse->DeviceName);
   strcpy(deviceNam, pResponse->DeviceName);//!!!
   Serial.print("***  Mfg ID: ");
-  //strcpy(orderCode, pResponse->OrderCode);
   Serial.println(pResponse->manufacturerId);
   Serial.print("***  Mfg Date: ");
-  //strcpy(orderCode, pResponse->OrderCode);
   Serial.print(pResponse->ManufacturedMonth);
   Serial.print("***/");
   Serial.print(pResponse->ManufacturedDay);
   Serial.print("***/");
-  //strcpy(orderCode, pResponse->OrderCode);
   Serial.println(pResponse->manufacturedYear);
   Serial.print("***  Master FW version: ");
   Serial.print(pResponse->majorVersionMasterCPU);
@@ -746,7 +741,6 @@ bool D2PIO_GetDeviceInfo()
   Serial.print(pResponse->minorVersionSlaveCPU);
   Serial.print("***.");
   Serial.println(pResponse->buildNumSlaveCPU);
-  //strcpy(orderCode, pResponse->OrderCode);
   Serial.print("***  BLE address: ");
   Serial.print(pResponse->BLE_Address[5], HEX);
   Serial.print("***:");
