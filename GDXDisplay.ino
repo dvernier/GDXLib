@@ -18,11 +18,11 @@ int choice;
   #define D2PIO_MAX_NUM_BYTES_IN_SENSOR_UNIT 32
 */
 char deviceNam[16];// 32 bytes
+char channelName[30];//60 bytes
 char channelUnits[16];// 32 bytes
-char channelName[30];// 60 bytes
-byte channelNumberXXX = 0;
+
 uint8_t  batteryPercent;
-unsigned long availableChannels;
+
 byte scanRSSI;
 char strBuffer[64];
 char strFW1[16];
@@ -85,14 +85,11 @@ void setup()
   Serial.println (channelUnits);
   Serial.print("channelName:: ");
   Serial.println (channelName);
-  Serial.print("channelNumberXXX:: ");
-  Serial.println (channelNumberXXX);
+
   Serial.print("batteryPercent:: ");
   Serial.println (batteryPercent);
   Serial.print("batteryLevel:: ");
   Serial.println (batteryLevel);
-  Serial.print("availableChannels:: ");
-  Serial.println (availableChannels);
 
   Serial.println("FW1:  FW2:  BAT:");
   CharDisplayPrintLine(1, "FW1:  FW2:  BAT:");
@@ -105,8 +102,9 @@ void setup()
   CharDisplayPrintLine(2, strBuffer);
   delay(1000);
 
-  Serial.print("Channel Name: ");
-  Serial.println(GoDirectBLE_GetChannelName());
+
+  Serial.print("channelName: ");
+  Serial.println(channelName);
   CharDisplayPrintLine(1, GoDirectBLE_GetChannelName());
 
   Serial.print("ChannelUnits:" );
@@ -204,17 +202,20 @@ void loop()
 
   }
   //Serial.print("printing buffer rounded to 2 digits; ");
+  Serial.print(channelName);
+  Serial.print("   ");
   Serial.println(strBuffer);
   CharDisplayPrintLine(1, strBuffer);
   //Serial.print (" ");
   //Serial.print(strBuffer[0]);
   //Serial.print (" ");
   channelReading = atof(strBuffer);
-  Serial.print("printing channel reading as a float; ");
-  Serial.print("channelNumberXXX:: ");
-  Serial.print(channelNumberXXX);
-  Serial.print("    ");
-  Serial.println(channelReading);
+  Serial.print("printing channel reading as a float and units ");
+
+  Serial.print("  ");
+  Serial.print(channelReading);
+  Serial.print(" ");
+  Serial.println(channelUnits);
    // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
   int  choice = 7;  
   if (channelReading > 80 )

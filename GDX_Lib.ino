@@ -788,7 +788,7 @@ bool D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
     Serial.print(channelNumber);
     Serial.println("] info:");
     Serial.print("***  Description: ");
-    Serial.println(pResponse->sensorDescription);
+    Serial.println(pResponse->sensorDescription); 
     strcpy(channelName, pResponse->sensorDescription);//!!!note this works, but is it the right channel?
     Serial.print("***  ID: ");
     Serial.println(pResponse->sensorId);
@@ -839,12 +839,7 @@ bool D2PIO_GetChannelInfoAll()
     }
     testMask = testMask << 1;
   }
-  Serial.print("***testmask: &&&&&&&&&&&&&& ");
-  Serial.println(testMask);
-  Serial.print("***availablemasks: &&&&&&&&&&&&&& ");
-  Serial.println(availableMask);
-  availableChannels = availableMask;
-  return true;
+ ;  return true;
 }
 
 //=============================================================================
