@@ -1,5 +1,4 @@
 #include <ArduinoBLE.h>
-//@@@@@
 #define D2PIO_CMD_ID_GET_STATUS                          0x10
 #define D2PIO_CMD_ID_START_MEASUREMENTS                  0x18
 #define D2PIO_CMD_ID_STOP_MEASUREMENTS                   0x19
@@ -1032,6 +1031,7 @@ void GoDirectBLE_Start()
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
     GoDirectBLE_Start();
 }// End of begin stuff
+
 //=============================================================================
 // GoDirectBLE_Measure Function
 //=============================================================================

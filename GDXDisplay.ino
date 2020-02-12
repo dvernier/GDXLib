@@ -17,22 +17,21 @@ int choice;
   #define D2PIO_MAX_NUM_BYTES_IN_SENSOR_DESCRIPTION 60
   #define D2PIO_MAX_NUM_BYTES_IN_SENSOR_UNIT 32
 */
-char deviceNam[16];// 32 bytes
-char channelName[30];//60 bytes
-char channelUnits[16];// 32 bytes
-char sN[16];// 32 bytes
-
-uint8_t  batteryPercent;
+char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
+char channelName[32];//60 bytes
+char channelUnits[18];// 32 bytes
+char sN[16];// 32 bytes this is an expermment
+uint8_t batteryPercent;
 uint8_t chargerStatus;
 byte scanRSSI;
 char strBuffer[64];
 char strFW1[16];
 char strFW2[16];
-//byte batteryPercent;
-byte batteryLevel;
+
+byte batteryLevel;// junk, I think
 float channelReading;
 char sensorName[] = "GDX-ACC 0H010767"; // we will use this to display later
-//char sensorName[]="     ";
+//char sensorName[]="     ";//!!! this should be deviceName or someting like that
 //leave the name blank to have the program search for nearest GDX sensor
 // and connect.
 
@@ -79,7 +78,6 @@ void setup()
   delay(2000);
 
   //these have been set up in the library code:
-
   Serial.print("deviceName:: ");
   Serial.println (deviceNam);
   Serial.print("channelUnits:: ");
@@ -93,7 +91,6 @@ void setup()
   Serial.println (chargerStatus);
   Serial.println("FW1:  FW2:  BAT:");
   CharDisplayPrintLine(1, "FW1:  FW2:  BAT:");
-
   GoDirectBLE_GetStatus(strFW1, strFW2, batteryLevel);
   sprintf(&strBuffer[0], "%-6s",  strFW1);
   sprintf(&strBuffer[6], "%-6s",  strFW2);
@@ -104,7 +101,6 @@ void setup()
   Serial.print("batteryPercent after get status call:: ");
   Serial.println (batteryPercent);
   delay(1000);
-
 
   Serial.print("channelName:: ");
   Serial.println(channelName);
@@ -173,26 +169,6 @@ void setup()
   }
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
-
-  delay(100);
-  Serial.println (" repeating...");
-  if (GoDirectBLE_DisplayChannelAsInteger())
-  {
-    sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), strUnits);
-  }
-  else
-  {
-    sprintf(strBuffer, "%.1f %s", GoDirectBLE_GetMeasurement(), strUnits);
-    //DLV hack to round temp to 1 digits to the right of the decimal. !!!DLV hack to change rounding
-  }
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(2, strBuffer);
-  Serial.println("Data Table:");
-  Serial.print("#          reading");
-  Serial.print(channelName);
-  Serial.print("   ");
-  Serial.print(channelReading);
-  delay(2000);
 }
 
 void loop()
@@ -207,7 +183,7 @@ void loop()
     sprintf(strBuffer, "%.2f %s", GoDirectBLE_GetMeasurement(), strUnits);
 
   }
-  //Serial.print("printing buffer rounded to 2 digits; ");
+  /*Serial.print("printing buffer rounded to 2 digits; ");
   Serial.print(channelName);
   Serial.print("   ");
   Serial.println(strBuffer);
@@ -216,12 +192,13 @@ void loop()
   //Serial.print(strBuffer[0]);
   //Serial.print (" ");
   channelReading = atof(strBuffer);
+  */
   Serial.print("printing channel reading as a float and units ");
-
-  Serial.print("  ");
   Serial.print(channelReading);
   Serial.print(" ");
   Serial.println(channelUnits);
+  
+  // This code should be removed, unless you are doing the nametag thing.
    // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
   int  choice = 7;  
   if (channelReading > 80 )
@@ -305,7 +282,6 @@ void loop()
   strcpy(s4,"        DO YOU SIGN?");
       }
       break;
-
   } //end of switch
 
   Serial.println(s1);
@@ -313,8 +289,6 @@ void loop()
   Serial.println(s3);
   Serial.println(s4);
   delay(500);
-  
-
 }
 ////////////////////
 
