@@ -62,7 +62,7 @@ void setup()
   {
     Serial.println(sensorName);
     CharDisplayPrintLine(2, "specified");
-    GoDirectBLE_Begin("GDX-ACC 0H101767", 11, 1000);
+    GoDirectBLE_Begin("GDX-ACC 0H101767", 1, 1000);
   }
   delay(2000);
 
@@ -71,22 +71,24 @@ void setup()
   // characters to ones that we can display.
   sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
   ConvertUTF8ToASCII(strUnits);
-
-  Serial.print("ScanRSSI: ");
-  Serial.println(GoDirectBLE_GetScanRSSI());
-  CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
-  delay(2000);
-
+  delay(1000);
   //these have been set up in the library code:
   Serial.print("deviceName:: ");
   Serial.println (deviceNam);
+  CharDisplayPrintLine(1, deviceNam);
+  Serial.print("ScanRSSI via function: ");
+  Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
+  CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
+  delay(2000);
   Serial.print("channelName:: ");
-  Serial.println (channelName);
-  CharDisplayPrintLine(1, channelName);
+  Serial.print (channelName);
+  Serial.println("  channelName via funtion: ");
+  Serial.println(GoDirectBLE_GetChannelName());
   Serial.print("channelUnits:: ");
-  Serial.println (channelUnits);
+  Serial.print(channelUnits);
+  Serial.print("  channelUnits via funtion: ");
+  Serial.println(GoDirectBLE_GetChannelUnits()); 
   CharDisplayPrintLine(2, channelUnits);
-
   Serial.print("batteryPercent:: ");
   Serial.println (batteryPercent);
   Serial.print("chargerStatus:: ");
@@ -100,22 +102,10 @@ void setup()
   Serial.print("strBuffer: ");
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
-  Serial.print("batteryPercent after get status call:: ");
-  Serial.println (batteryPercent);
-  delay(1000);
-
-  Serial.print("channelName:: ");
-  Serial.println(channelName);
-  Serial.print("sN:: ");
-  Serial.println(sN);
-  CharDisplayPrintLine(1, channelName);
-
-  Serial.print("ChannelUnits:" );
-  Serial.println(GoDirectBLE_GetChannelUnits());
-
   delay(2000);
 
-  strcpy(sN,GoDirectBLE_GetSerialNumber());//this is experiment way to get info
+  GoDirectBLE_Measure() ;// should this be renamed START?
+/*
   GoDirectBLE_Measure() ;
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
@@ -171,6 +161,8 @@ void setup()
   }
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
+*/
+  
 }
 
 void loop()
@@ -189,7 +181,8 @@ void loop()
   Serial.print(channelName);
   Serial.print("   ");
   Serial.println(strBuffer);
-  CharDisplayPrintLine(1, strBuffer);
+  CharDisplayPrintLine(1, channelName);
+  CharDisplayPrintLine(2, strBuffer);
   //Serial.print (" ");
   //Serial.print(strBuffer[0]);
   //Serial.print (" ");
@@ -198,9 +191,12 @@ void loop()
   Serial.print("printing channel reading as a float and units ");
   Serial.print(channelReading);
   Serial.print(" ");
-  Serial.println(channelUnits);
+  Serial.print(" channelUnits ");
+  Serial.print(channelUnits);
+  Serial.print(" channelUnits as a function ");
+  Serial.println(GoDirectBLE_GetChannelUnits());
   
-  // This code should be removed, unless you are doing the nametag thing.
+  /* This code should be removed, unless you are doing the nametag thing.
    // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
   int  choice = 7;  
   if (channelReading > 80 )
@@ -291,6 +287,7 @@ void loop()
   Serial.println(s3);
   Serial.println(s4);
   delay(500);
+  */
 }
 ////////////////////
 

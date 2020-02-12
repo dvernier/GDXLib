@@ -181,10 +181,10 @@ bool DumpGatttService(BLEDevice peripheral, char* uuid)
 
   // Discover peripheral attributes
   delay(2000);
-  Serial.println("Discovering service attributes ...");
+  Serial.println("***Discovering service attributes ...");
   if (!peripheral.discoverService(uuid))
   {
-    Serial.println("Service attribute discovery failed!");
+    Serial.println("***Service attribute discovery failed!");
     return false;
   }
 
@@ -196,7 +196,7 @@ bool DumpGatttService(BLEDevice peripheral, char* uuid)
   delay(2000);
 
   int totalChars = peripheral.service(uuid).characteristicCount();
-  Serial.println("Characteristics: ");
+  Serial.println("***Characteristics: ");
   for (i = 0; i < totalChars; i++)
   {
     Serial.print("***  ");
@@ -292,10 +292,10 @@ bool D2PIO_DiscoverService(BLEDevice peripheral)
   // --------------------------------------------
   // Discover the D2PIO service
   // --------------------------------------------
-  Serial.println("Discovering D2PIO service attributes ...");
+  Serial.println("***Discovering D2PIO service attributes ...");
   if (!peripheral.discoverService(uuidService))
   {
-    Serial.println("ERROR: D2PIO service attribute discovery failed!");
+    Serial.println("***ERROR: D2PIO service attribute discovery failed!");
     return false;
   }
   Serial.print("***Found D2PIO service ");
@@ -307,7 +307,7 @@ bool D2PIO_DiscoverService(BLEDevice peripheral)
   g_d2pioCommand = peripheral.service(uuidService).characteristic(uuidCommand);
   if (!g_d2pioCommand)
   {
-    Serial.println("ERROR: D2PIO command characteristic discovery failed!");
+    Serial.println("***ERROR: D2PIO command characteristic discovery failed!");
     return false;
   }
   Serial.print("***Found D2PIO command characteristic ");
@@ -319,17 +319,17 @@ bool D2PIO_DiscoverService(BLEDevice peripheral)
   g_d2pioResponse = peripheral.service(uuidService).characteristic(uuidResponse);
   if (!g_d2pioResponse)
   {
-    Serial.println("ERROR: D2PIO response characteristic discovery failed!");
+    Serial.println("***ERROR: D2PIO response characteristic discovery failed!");
     return false;
   }
   Serial.print("***Found D2PIO response characteristic ");
   Serial.println(peripheral.service(uuidService).characteristic(uuidResponse).uuid());
 
   if (!g_d2pioResponse.subscribe()) {
-    Serial.println("ERROR: Failed to subscribe to D2PIO esponse characteristic");
+    Serial.println("***ERROR: Failed to subscribe to D2PIO esponse characteristic");
     return false;
   }
-  Serial.println("Subscribed to D2PIO response notifications");
+  Serial.println("***Subscribed to D2PIO response notifications");
   //d2pioResponse.setEventHandler(BLEValueUpdated, D2PIO_ResponseHandler);
 
   return true;
@@ -386,7 +386,7 @@ bool D2PIO_Write(const byte buffer[])
 
     if (!g_d2pioCommand.writeValue(&buffer[offset], lengthChunk))
     {
-      Serial.println("ERROR: D2PIO_Init write failed");
+      Serial.println("***ERROR: D2PIO_Init write failed");
       return false;
     }
 
@@ -413,7 +413,7 @@ bool D2PIO_ReadBlocking(byte buffer[], int timeout)
       timeoutCounter++;
       if (timeoutCounter > timeout)
       {
-        Serial.println("ERROR: D2PIO_ReadBlocking timeout!");
+        Serial.println("***ERROR: D2PIO_ReadBlocking timeout!");
         return false;
       }
       delay(1);
@@ -458,7 +458,7 @@ bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
       timeoutCounter++;
       if (timeoutCounter > timeout)
       {
-        Serial.println("ERROR: D2PIO_ReadMeasurement timeout!");
+        Serial.println("***ERROR: D2PIO_ReadMeasurement timeout!");
         return false;
       }
       delay(1);
@@ -666,7 +666,7 @@ bool D2PIO_GetStatus()
   pResponse = (D2PIOGetStatusCmdResponsePayload*)&g_ReadBuffer[6];
   memcpy(&g_status, pResponse, sizeof(D2PIOGetStatusCmdResponsePayload));
 
-  Serial.println("Device status:");
+  Serial.println("***Device status:");
   Serial.print("***  Status: ");
   Serial.println(pResponse->status);
   Serial.print("***  Master FW version: ");
@@ -714,7 +714,7 @@ bool D2PIO_GetDeviceInfo()
   pResponse = (D2PIOGetDeviceInfoCmdResponse*)&g_ReadBuffer[6];
   memcpy(&g_deviceInfo, pResponse, sizeof(D2PIOGetDeviceInfoCmdResponse));
 
-  Serial.println("Device info:");
+  Serial.println("***Device info:");
   Serial.print("***  Description: ");
   Serial.println(pResponse->DeviceDescription);
   Serial.println(pResponse->SerialNumber);
@@ -786,7 +786,7 @@ bool D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
   {
     Serial.print("***Channel[");
     Serial.print(channelNumber);
-    Serial.println("] info:");
+    Serial.println("***] info:");
     Serial.print("***  Description: ");
     Serial.println(pResponse->sensorDescription); 
     strcpy(channelName, pResponse->sensorDescription);//!!!note this works, but is it the right channel?
@@ -919,7 +919,7 @@ bool D2PIO_StartMeasurements(byte channelNumber)
 //=============================================================================
 void GoDirectBLE_Begin(const char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
 {
-  Serial.println("in Begin");
+  Serial.println("***in Begin");
   Serial.println(deviceName);
   g_deviceName = deviceName;
   g_channelNumber = channelNumber;
@@ -936,7 +936,7 @@ void GoDirectBLE_Begin(const char* deviceName, byte channelNumber, unsigned long
 //=============================================================================
 void GoDirectBLE_Begin()  // maybe rename this GoDirectStart()
 {
-  Serial.println("in Begin(GDX....)");
+  Serial.println("***in Begin(GDX....)");
   Serial.println(g_deviceName);
   g_deviceName = NULL;
   g_channelNumber = -1;
@@ -965,13 +965,19 @@ void GoDirectBLE_Start()
   while (scanResult != D2PIO_SCAN_RESULT_SUCCESS) //3
   {
     scanResult = D2PIO_Scan(g_autoConnect, GDX_BLE_AUTO_CONNECT_RSSI_THRESHOLD);
-    if (scanResult == D2PIO_SCAN_RESULT_SUCCESS) //3
-      Serial.println("D2PIO_SCAN_RESULT_SUCCESS");
+    Serial.print("***scanResult "); 
+    Serial.println(scanResult);
+      {
+        if (scanResult == D2PIO_SCAN_RESULT_SUCCESS) //3
+        break;
+      }
+      Serial.println("***D2PIO_SCAN_RESULT_SUCCESS");
+      {
     if (scanResult == D2PIO_SCAN_RESULT_WEAK) //1
-      Serial.println("D2PIO_SCAN_RESULT_WEAK");
+      Serial.println("***D2PIO_SCAN_RESULT_WEAK");
     if (scanResult == D2PIO_SCAN_RESULT_FLUSH) //2
       Serial.println("D2PIO_SCAN_RESULT_FLUSH");
-
+   delay(100);
   }//end while
   // Stop scanning
   BLE.stopScan();
@@ -1076,7 +1082,7 @@ void GoDirectBLE_Measure()  //
       g_MeasurementCounter++;
     }// end if
     else
-      Serial.println("x");
+      Serial.println("***x");
     delay(50);
   }//end while
   ///
@@ -1096,7 +1102,7 @@ void GoDirectBLE_Measure()  //
       g_MeasurementCounter++;
     }// end if
     else
-      Serial.println("x");
+      Serial.println("***$x");
     delay(50);
   }//end while
   ///
@@ -1141,7 +1147,7 @@ void GoDirectBLE_Read()
       g_MeasurementCounter++;
     }// end if
     else
-      Serial.println("x");
+      Serial.println("***&x");
     delay(500);
   }//end while
 }
