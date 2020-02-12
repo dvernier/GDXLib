@@ -682,7 +682,7 @@ bool D2PIO_GetStatus()
   Serial.print(pResponse->minorVersionSlaveCPU);
   Serial.print("***.");
   Serial.println(pResponse->buildNumSlaveCPU);
-  Serial.print("***  Battery percent: ");
+  Serial.print("*** in D2PIO_GetStatus Battery percent: ");
   batteryPercent=(pResponse->buildNumSlaveCPU);
   Serial.println(pResponse->batteryLevelPercent);
   //Serial.print("***  batteryLevelPercent: ");
@@ -690,6 +690,7 @@ bool D2PIO_GetStatus()
   
   Serial.print("***  Charger state: ");
   Serial.println(pResponse->chargerState);
+  chargerStatus= (pResponse->chargerState);//!!!
   return true;
 }
 
@@ -1022,7 +1023,7 @@ void GoDirectBLE_Start()
     if (!D2PIO_Autoset())
       GoDirectBLE_Start();
   }//end if
-
+  GoDirectBLE_GetStatus(strFW1, strFW2, batteryLevel);//!!!!DLV HACK 2/11/2020
   Serial.print("***D2PIO_GetChannelInfo(g_channelNumber");
   if (!D2PIO_GetChannelInfo(g_channelNumber, false))
     GoDirectBLE_Start();
@@ -1155,8 +1156,8 @@ void GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2,
   batteryPercent = g_status.batteryLevelPercent;
 
   batteryPercent = g_status.batteryLevelPercent;
-  Serial.print("***XEFEFEFEFD");
-  Serial.print(batteryPercent);
+  Serial.print("***in GoDirectBLE_GetStatus: batteryPercent ");
+  Serial.println(batteryPercent);//this is correct here in the library code
 }
 
 //=============================================================================

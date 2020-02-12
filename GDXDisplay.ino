@@ -20,9 +20,10 @@ int choice;
 char deviceNam[16];// 32 bytes
 char channelName[30];//60 bytes
 char channelUnits[16];// 32 bytes
+char sN[16];// 32 bytes
 
 uint8_t  batteryPercent;
-
+uint8_t chargerStatus;
 byte scanRSSI;
 char strBuffer[64];
 char strFW1[16];
@@ -88,9 +89,8 @@ void setup()
 
   Serial.print("batteryPercent:: ");
   Serial.println (batteryPercent);
-  Serial.print("batteryLevel:: ");
-  Serial.println (batteryLevel);
-
+  Serial.print("chargerStatus:: ");
+  Serial.println (chargerStatus);
   Serial.println("FW1:  FW2:  BAT:");
   CharDisplayPrintLine(1, "FW1:  FW2:  BAT:");
 
@@ -98,13 +98,18 @@ void setup()
   sprintf(&strBuffer[0], "%-6s",  strFW1);
   sprintf(&strBuffer[6], "%-6s",  strFW2);
   sprintf(&strBuffer[12], "%d%%", batteryLevel);
+  Serial.print("strBuffer: ");
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
+  Serial.print("batteryPercent after get status call:: ");
+  Serial.println (batteryPercent);
   delay(1000);
 
 
-  Serial.print("channelName: ");
+  Serial.print("channelName:: ");
   Serial.println(channelName);
+  Serial.print("sN:: ");
+  Serial.println(sN);
   CharDisplayPrintLine(1, GoDirectBLE_GetChannelName());
 
   Serial.print("ChannelUnits:" );
@@ -112,6 +117,7 @@ void setup()
   CharDisplayPrintLine(2, GoDirectBLE_GetChannelUnits());
   delay(2000);
 
+  strcpy(sN,GoDirectBLE_GetSerialNumber());//this is experiment way to get info
   GoDirectBLE_Measure() ;
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
