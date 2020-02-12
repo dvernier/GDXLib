@@ -45,8 +45,10 @@ void setup()
   Serial.println("Sensor display");
   CharDisplayPrintLine(1, "Vernier GDX");
   CharDisplayPrintLine(2, "Sensor display");
-  delay(1000);
-  Serial.println(" Looking for");
+  delay(5000);// long delay here to let me get serial monitor started
+  GoDirectBLE_Begin();
+  //GoDirectBLE_Begin("GDX-ACC 0H101767",3,1000);
+  /*Serial.println(" Looking for");
   CharDisplayPrintLine(1, "Looking for");
 
   if (sensorName[5] == ' ') //if no specific sensor seleted
@@ -56,7 +58,8 @@ void setup()
     delay(5000);
     Serial.println("any GDX sensor");
     CharDisplayPrintLine(2, "any GDX sensor");
-    GoDirectBLE_Begin();
+    //GoDirectBLE_Begin();
+    GoDirectBLE_Begin("GDX-ACC 0H101676",3,1000);
   }
   else
   {
@@ -67,7 +70,7 @@ void setup()
     
   }
   delay(2000);
-
+*/
   //this is from kevin's loop:
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
