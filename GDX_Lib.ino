@@ -965,19 +965,15 @@ void GoDirectBLE_Start()
   while (scanResult != D2PIO_SCAN_RESULT_SUCCESS) //3
   {
     scanResult = D2PIO_Scan(g_autoConnect, GDX_BLE_AUTO_CONNECT_RSSI_THRESHOLD);
-    Serial.print("***scanResult "); 
-    Serial.println(scanResult);
-      {
-        if (scanResult == D2PIO_SCAN_RESULT_SUCCESS) //3
-        break;
+    if (scanResult == D2PIO_SCAN_RESULT_SUCCESS) //3
+     {  
+       Serial.println("***D2PIO_SCAN_RESULT_SUCCESS");
+       break;
       }
-      Serial.println("***D2PIO_SCAN_RESULT_SUCCESS");
-      {
     if (scanResult == D2PIO_SCAN_RESULT_WEAK) //1
       Serial.println("***D2PIO_SCAN_RESULT_WEAK");
     if (scanResult == D2PIO_SCAN_RESULT_FLUSH) //2
       Serial.println("D2PIO_SCAN_RESULT_FLUSH");
-   delay(100);
   }//end while
   // Stop scanning
   BLE.stopScan();

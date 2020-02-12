@@ -63,6 +63,8 @@ void setup()
     Serial.println(sensorName);
     CharDisplayPrintLine(2, "specified");
     GoDirectBLE_Begin("GDX-ACC 0H101767", 1, 1000);
+    //GoDirectBLE_Begin();
+    
   }
   delay(2000);
 
