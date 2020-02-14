@@ -12,10 +12,9 @@ class GDXLib
   public:
     GDXLib();
     void autoID();
-    char* channelNameL()  {return _channelNameL;};
     
     void GoDirectBLE_Begin();
-    
+    char* channelNameL()  {return _channelNameL;};
     
 protected:// also known as local
 char _channelNameL[32];

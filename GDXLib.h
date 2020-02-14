@@ -11,11 +11,11 @@ public:
     GDXLib();
     
     void autoID();//this is the function for the autoID code
-    char* channelNameL()   { return _channelNameL ;};
     
 
     void GoDirectBLE_Begin();
-        /*
+    char* channelNameL()   { return _channelNameL ;};
+    /*
     // it returns calibration information
     int channel()       { return _channel; };
     float voltageID()   { return _voltageID; }; 

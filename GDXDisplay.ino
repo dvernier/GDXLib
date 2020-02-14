@@ -24,6 +24,8 @@ char channelName[32];//60 bytes
 char channelUnits[18];// 32 bytes
 uint8_t batteryPercent;
 uint8_t chargerStatus;
+char strFW1[16];
+char strFW2[16];
 /* GET RID OF BECAUSE IT IS DONE IN THE LIBARY 
 
 
@@ -32,8 +34,7 @@ char sN[16];// 32 bytes this is an expermment
 
 byte scanRSSI;
 char strBuffer[64];
-char strFW1[16];
-char strFW2[16];
+
 */
 byte batteryLevel;// junk, I think
 //float channelReading;
@@ -106,7 +107,7 @@ void setup()
   Serial.println (batteryPercent);
   Serial.print("chargerStatus:: ");
   Serial.println (chargerStatus);
-  Serial.println("FW1:  FW2:  BAT:");
+  /*Serial.println("FW1:  FW2:  BAT:");
   CharDisplayPrintLine(1, "FW1:  FW2:  BAT:");
   GoDirectBLE_GetStatus(strFW1, strFW2, batteryLevel);
   sprintf(&strBuffer[0], "%-6s",  strFW1);
@@ -115,7 +116,6 @@ void setup()
   Serial.print("strBuffer: ");
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
-  GDX.autoID();//!!!!!!!!!!!!!!!!!!!!!!!!!!
   */
   Serial.print("GDX.channelNameL() ");
   Serial.println(GDX.channelNameL());
