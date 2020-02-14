@@ -19,13 +19,13 @@ int choice;
 */
 #include "GDXLib.h"
 GDXLib GDX;//!!!!!!!!!!!!
-char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
-char channelName[32];//60 bytes
-char channelUnits[18];// 32 bytes
-uint8_t batteryPercent;
-uint8_t chargerStatus;
-char strFW1[16];
-char strFW2[16];
+//char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
+//char channelName[32];//60 bytes
+//char channelUnits[18];// 32 bytes
+//uint8_t batteryPercent;
+//uint8_t chargerStatus;
+//char strFW1[16];
+//char strFW2[16];
 /* GET RID OF BECAUSE IT IS DONE IN THE LIBARY 
 
 
@@ -78,6 +78,7 @@ void setup()
     
   }
   */
+  GDX.autoID();
   delay(2000);
 
   //this is from kevin's loop:
@@ -88,25 +89,25 @@ void setup()
   delay(1000);
   //these have been set up in the library code:
   Serial.print("deviceName:: ");
-  Serial.println (deviceNam);
-  CharDisplayPrintLine(1, deviceNam);
+  //Serial.println (deviceNam);
+  //CharDisplayPrintLine(1, deviceNam);
   //Serial.print("ScanRSSI via function: ");
   //Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
   //CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
   delay(2000);
   Serial.print("channelName:: ");
-  Serial.print (channelName);
+  //Serial.print (channelName);
   //Serial.println("  channelName via funtion: ");
   //Serial.println(GoDirectBLE_GetChannelName());
   Serial.print("channelUnits:: ");
   //Serial.print(channelUnits);
   //Serial.print("  channelUnits via funtion: ");
   //Serial.println(GoDirectBLE_GetChannelUnits()); 
-  CharDisplayPrintLine(2, channelUnits);
+  //CharDisplayPrintLine(2, channelUnits);
   Serial.print("batteryPercent:: ");
-  Serial.println (batteryPercent);
+  //Serial.println (batteryPercent);
   Serial.print("chargerStatus:: ");
-  Serial.println (chargerStatus);
+  //Serial.println (chargerStatus);
   /*Serial.println("FW1:  FW2:  BAT:");
   CharDisplayPrintLine(1, "FW1:  FW2:  BAT:");
   GoDirectBLE_GetStatus(strFW1, strFW2, batteryLevel);

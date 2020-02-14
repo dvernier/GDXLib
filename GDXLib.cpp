@@ -31,7 +31,7 @@ GDXLib::GDXLib()
 //=============================================================================
 void GDXLib::autoID()
 {
-  strcpy(_channelNameL, "Hello World");
+  Serial.print ( "***Hello World");
  
 }
   
