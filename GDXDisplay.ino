@@ -19,12 +19,17 @@ int choice;
 */
 #include "GDXLib.h"
 GDXLib GDX;//!!!!!!!!!!!!
-/* GET RID OF BECAUSE IT IS DONE IN THE LIBARRY char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
+char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
 char channelName[32];//60 bytes
 char channelUnits[18];// 32 bytes
-char sN[16];// 32 bytes this is an expermment
 uint8_t batteryPercent;
 uint8_t chargerStatus;
+/* GET RID OF BECAUSE IT IS DONE IN THE LIBARY 
+
+
+char sN[16];// 32 bytes this is an expermment
+
+
 byte scanRSSI;
 char strBuffer[64];
 char strFW1[16];
@@ -71,6 +76,7 @@ void setup()
     //GoDirectBLE_Begin();
     
   }
+  */
   delay(2000);
 
   //this is from kevin's loop:
@@ -79,22 +85,22 @@ void setup()
   //sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
  // ConvertUTF8ToASCII(strUnits);
   delay(1000);
-  /*these have been set up in the library code:
+  //these have been set up in the library code:
   Serial.print("deviceName:: ");
   Serial.println (deviceNam);
   CharDisplayPrintLine(1, deviceNam);
-  Serial.print("ScanRSSI via function: ");
-  Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
-  CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
+  //Serial.print("ScanRSSI via function: ");
+  //Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
+  //CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
   delay(2000);
   Serial.print("channelName:: ");
   Serial.print (channelName);
-  Serial.println("  channelName via funtion: ");
-  Serial.println(GoDirectBLE_GetChannelName());
+  //Serial.println("  channelName via funtion: ");
+  //Serial.println(GoDirectBLE_GetChannelName());
   Serial.print("channelUnits:: ");
-  Serial.print(channelUnits);
-  Serial.print("  channelUnits via funtion: ");
-  Serial.println(GoDirectBLE_GetChannelUnits()); 
+  //Serial.print(channelUnits);
+  //Serial.print("  channelUnits via funtion: ");
+  //Serial.println(GoDirectBLE_GetChannelUnits()); 
   CharDisplayPrintLine(2, channelUnits);
   Serial.print("batteryPercent:: ");
   Serial.println (batteryPercent);

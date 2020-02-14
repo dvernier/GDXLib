@@ -13,8 +13,6 @@ public:
     void autoID();//this is the function for the autoID code
     char* channelNameL()   { return _channelNameL ;};
     
-    char* GoDirectBLE_GetDeviceName(); // gets device name
-    char* deviceName()   { return _deviceName ;};
 
     void GoDirectBLE_Begin();
         /*
@@ -46,7 +44,6 @@ public:
 */
 protected://  also known as local
     char _channelNameL[32];
-    char _deviceName [32];
     /*
     float _voltageID;
     int  _channel;

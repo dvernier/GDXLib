@@ -16,12 +16,10 @@ class GDXLib
     
     void GoDirectBLE_Begin();
     
-    char* GoDirectBLE_GetDeviceName();
-    char* deviceName()  {return _deviceName;};
     
 protected:// also known as local
 char _channelNameL[32];
-char _deviceName [32];
+
 };
 #include "GDXLib.h"
 #include "Arduino.h"
@@ -1044,7 +1042,6 @@ void GoDirectBLE_Start()
     // Connect to the peripheral //Kevin's Connect
     Serial.print("***Connecting...");
   }
-/*TEMPORARY HACK 2/13/2020 DLV 
   //delay(2000);  // seems okay without this delay
   if (!D2PIO_DiscoverService(g_peripheral)) //Kevin's Discover
     GoDirectBLE_Start();
@@ -1087,7 +1084,7 @@ void GoDirectBLE_Start()
   Serial.print("***D2PIO_SetMeasurementPeriod");
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
     GoDirectBLE_Start();
-    */
+    
 }// End of begin stuff
 
 //=============================================================================
@@ -1277,7 +1274,7 @@ bool GoDirectBLE_DisplayChannelAsInteger()
 //=============================================================================
 // GoDirectBLE_GetChannelName() Function
 //=============================================================================
-GDXLib::char GoDirectBLE_GetChannelName()
+const char* GoDirectBLE_GetChannelName()
 {
   return g_channelInfo.sensorDescription;
 }
