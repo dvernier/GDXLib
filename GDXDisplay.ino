@@ -17,7 +17,9 @@ int choice;
   #define D2PIO_MAX_NUM_BYTES_IN_SENSOR_DESCRIPTION 60
   #define D2PIO_MAX_NUM_BYTES_IN_SENSOR_UNIT 32
 */
-char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
+#include "GDXLib.h"
+GDXLib GDX;//!!!!!!!!!!!!
+/* GET RID OF BECAUSE IT IS DONE IN THE LIBARRY char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
 char channelName[32];//60 bytes
 char channelUnits[18];// 32 bytes
 char sN[16];// 32 bytes this is an expermment
@@ -27,10 +29,10 @@ byte scanRSSI;
 char strBuffer[64];
 char strFW1[16];
 char strFW2[16];
-
+*/
 byte batteryLevel;// junk, I think
-float channelReading;
-char sensorName[] = "GDX-ACC 0H010767"; // we will use this to display later
+//float channelReading;
+//char sensorName[] = "GDX-ACC 0H010767"; // we will use this to display later
 //char sensorName[]="     ";//!!! this should be deviceName or someting like that
 //leave the name blank to have the program search for nearest GDX sensor
 // and connect.
@@ -46,7 +48,7 @@ void setup()
   CharDisplayPrintLine(1, "Vernier GDX");
   CharDisplayPrintLine(2, "Sensor display");
   delay(5000);// long delay here to let me get serial monitor started
-  GoDirectBLE_Begin();
+  GDX.GoDirectBLE_Begin();//this is an attempt to call the library
   //GoDirectBLE_Begin("GDX-ACC 0H101767",3,1000);
   /*Serial.println(" Looking for");
   CharDisplayPrintLine(1, "Looking for");
@@ -70,14 +72,14 @@ void setup()
     
   }
   delay(2000);
-*/
+
   //this is from kevin's loop:
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
-  sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
-  ConvertUTF8ToASCII(strUnits);
+  //sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
+ // ConvertUTF8ToASCII(strUnits);
   delay(1000);
-  //these have been set up in the library code:
+  /*these have been set up in the library code:
   Serial.print("deviceName:: ");
   Serial.println (deviceNam);
   CharDisplayPrintLine(1, deviceNam);
@@ -107,9 +109,13 @@ void setup()
   Serial.print("strBuffer: ");
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
+  GDX.autoID();//!!!!!!!!!!!!!!!!!!!!!!!!!!
+  */
+  Serial.print("GDX.channelNameL() ");
+  Serial.println(GDX.channelNameL());
   delay(2000);
 
-  GoDirectBLE_Measure() ;// should this be renamed START?
+//  GoDirectBLE_Measure() ;// should this be renamed START?
 /*
   GoDirectBLE_Measure() ;
   // Cache the unit string and try to remap special UTF8
@@ -172,7 +178,7 @@ void setup()
 
 void loop()
 {
-  GoDirectBLE_Read();
+  /*GoDirectBLE_Read();
   if (GoDirectBLE_DisplayChannelAsInteger())
   {
     sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), strUnits);
@@ -193,7 +199,7 @@ void loop()
   //Serial.print (" ");
   channelReading = atof(strBuffer);
   
-  Serial.print("printing channel reading as a float and units ");
+  /*Serial.print("printing channel reading as a float and units ");
   Serial.print(channelReading);
   Serial.print(" ");
   Serial.print(" channelUnits ");
@@ -201,7 +207,7 @@ void loop()
   Serial.print(" channelUnits as a function ");
   Serial.println(GoDirectBLE_GetChannelUnits());
   
-  /* This code should be removed, unless you are doing the nametag thing.
+   This code should be removed, unless you are doing the nametag thing.
    // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
   int  choice = 7;  
   if (channelReading > 80 )
