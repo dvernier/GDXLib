@@ -14,10 +14,10 @@ class GDXLib
     void autoID();
     
     void GoDirectBLE_Begin();
-    char* channelNameL()  {return _channelNameL;};
+    char* channelUnits()  {return _channelUnits;};
     
 protected:// also known as local
-char _channelNameL[32];
+char _channelUnits[32];
 
 };
 #include "GDXLib.h"
@@ -31,6 +31,7 @@ GDXLib::GDXLib()
 //=============================================================================
 void GDXLib::autoID()
 {
+  strcpy(_channelUnits, "new units");
   Serial.print ( "***Hello World");
  
 }
@@ -1069,7 +1070,9 @@ void GoDirectBLE_Start()
   Serial.print("***D2PIO_GetChannelInfoAll()");
   if (!D2PIO_GetChannelInfoAll())
     GoDirectBLE_Start();
-
+ 
+  Serial.print ( "***channelUnits from begin code ");
+  Serial.println (channelUnits);// these came out as degrees
   if (g_autoConnect)
   {
     if (!D2PIO_Autoset())

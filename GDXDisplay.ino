@@ -118,8 +118,8 @@ void setup()
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
   */
-  Serial.print("GDX.channelNameL() ");
-  Serial.println(GDX.channelNameL());
+  Serial.print("GDX.channelUnits() ");
+  Serial.println(GDX.channelUnits());
   delay(2000);
 
 //  GoDirectBLE_Measure() ;// should this be renamed START?

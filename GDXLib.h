@@ -14,7 +14,7 @@ public:
     
 
     void GoDirectBLE_Begin();
-    char* channelNameL()   { return _channelNameL ;};
+    char* channelUnits()   { return _channelUnits ;};
     /*
     // it returns calibration information
     int channel()       { return _channel; };
@@ -43,7 +43,7 @@ public:
     float distance()     { return _distance; };
 */
 protected://  also known as local
-    char _channelNameL[32];
+    char _channelUnits[32];
     /*
     float _voltageID;
     int  _channel;
