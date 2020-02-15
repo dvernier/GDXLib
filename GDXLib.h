@@ -11,7 +11,7 @@ public:
     GDXLib();
     
     void autoID();//this is the function for the autoID code
-    
+        char* channelNameL()   { return _channelNameL ;};
 
     void GoDirectBLE_Begin();
     char* channelUnits()   { return _channelUnits ;};
@@ -44,6 +44,7 @@ public:
 */
 protected://  also known as local
     char _channelUnits[32];
+    char _channelNameL[32];
     /*
     float _voltageID;
     int  _channel;

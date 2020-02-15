@@ -12,12 +12,14 @@ class GDXLib
   public:
     GDXLib();
     void autoID();
-    
+        char* channelNameL()  {return _channelNameL;};
+        char static _channelNameL[32]; 
     void GoDirectBLE_Begin();
     char* channelUnits()  {return _channelUnits;};
     
 protected:// also known as local
 char _channelUnits[32];
+
 
 };
 #include "GDXLib.h"
@@ -31,10 +33,15 @@ GDXLib::GDXLib()
 //=============================================================================
 void GDXLib::autoID()
 {
-  strcpy(_channelUnits, "new units");
-  Serial.print ( "***Hello World");
+   Serial.print ( "***this is in the AutoID function");
+   strcpy(channelNameL(), "Hello World");
+   Serial.print("*** _channelNameL ");
+   Serial.println(_channelNameL);
+   const char* GoDirectBLE_GetChannelName();
  
 }
+
+ 
   
 ///////////////////////////
 char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
@@ -771,6 +778,10 @@ bool D2PIO_GetDeviceInfo()
   Serial.print("***  Device name: ");
   Serial.println(pResponse->DeviceName);
   strcpy(deviceNam, pResponse->DeviceName);//!!!
+//DLV Hack 2/14/20:
+   strcpy(GDXLib::_channelNameL, pResponse->DeviceName);
+   Serial.print("@@@ _channelNameL ");
+   Serial.println(_channelNameL);
   Serial.print("***  Mfg ID: ");
   Serial.println(pResponse->manufacturerId);
   Serial.print("***  Mfg Date: ");

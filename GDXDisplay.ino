@@ -120,11 +120,13 @@ void setup()
   */
   Serial.print("GDX.channelUnits() ");
   Serial.println(GDX.channelUnits());
+  Serial.print("GDX.channelNameL() ");
+  Serial.println(GDX.channelUnits());
   delay(2000);
 
 //  GoDirectBLE_Measure() ;// should this be renamed START?
-/*
-  GoDirectBLE_Measure() ;
+
+ /* GoDirectBLE_Measure() ;
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
   sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
