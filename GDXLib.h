@@ -1,69 +1,61 @@
-
 #ifndef GDXLib_h
 #define GDXLib_h
-#define GDXLIB_LIB_VERSION "0.1" // displayed automatically
+//define GDXLIB_LIB_VERSION "0.1" // displayed automatically
+// This is a library to make using GDX sensors easy
+#include "ArduinoBLE.h"
 
-/* This is a library to make using GDX sensors easy
-*/
-class GDXLib
-{
-public:
-    GDXLib();
-    
-    void autoID();//this is the function for the autoID code
-        char* channelNameL()   { return _channelNameL ;};
-
+class GDXLib {
+ public:
+    GDXLib();//definition of the GDXLib class
     void GoDirectBLE_Begin();
-    char* channelUnits()   { return _channelUnits ;};
-    /*
-    // it returns calibration information
-    int channel()       { return _channel; };
-    float voltageID()   { return _voltageID; }; 
-    int sensorNumber()  { return _sensorNumber;}; 
-    // Jenny suggests this change:  
-    char* sensorName()   { return _sensorName ;};
-    char* shortName()    { return _shortName  ;};
-    char* sensorUnits()  { return _sensorUnits;};
-    float slope()        { return _slope; }; 
-    float intercept()    { return _intercept; }; 
-    float cFactor()      { return _cFactor; }; 
-    int calEquationType(){ return _calEquationType; };
-    int page()           { return _page; }; 
+    void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
+    void GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodInMilliseconds);//a public method
+    float readSensor();//a public method
+    char strBuffer[64]; //used in Read Sensor
+    
+ private:// also known as local  
+    char* _deviceName;  // used in begin
+    byte _channelNumber;// used in begin
+    unsigned long _samplePeriodInMilliseconds;// used in begin
+    
+    int _a;//used in BeginL
+    int _b;//used in BeginL
+    int _c;//used in BeginL
+    char _strBuffer[64]; //used in Read Sensor
+    
+    bool DumpGatttService(BLEDevice peripheral, char* uuid);
+    bool D2PIO_DiscoverService(BLEDevice peripheral);
+    byte D2PIO_CalculateChecksum(const byte buffer[]);
+    void D2PIO_Dump(const char* strPrefix, const byte buffer[]);
+    bool D2PIO_Write(const byte buffer[]);
+    bool D2PIO_ReadBlocking(byte buffer[], int timeout);
+    bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
+    bool D2PIO_Init();
+    bool D2PIO_SetMeasurementPeriod(unsigned long measurementPeriodInMilliseconds);
+    bool D2PIO_GetAvailableChannels(unsigned long& availableMask);
+    bool D2PIO_GetDefaultChannels(unsigned long& defaultMask);
+    bool D2PIO_GetStatus();
+    bool D2PIO_GetDeviceInfo();
+    bool D2PIO_GetChannelInfo(byte channelNumber, bool verbose);
+    bool D2PIO_GetChannelInfoAll();
+    bool D2PIO_Autoset();
+    bool D2PIO_StartMeasurements(byte channelNumber);
+    
+    
+    void GoDirectBLE_Measure();  //
+    //void GoDirectBLE_Start();
 
-    float readSensor();//This function converts count to sensor reading
-    float sensorReading()     { return _sensorReading; };
-
-    void DCUPWM(int PWMSetting); //function to control PWM via the DCU, line 4 (Arduino line 9)
-
-    void DCU (int DCUSetting); //function for controlling a DCU
-  
-    void DCUStep(int stepCount, int stepDirection, int stepDelay); //function for stepper motors
-
-    float readMotionDetector();//function for Motion Detectors
-    float distance()     { return _distance; };
-*/
-protected://  also known as local
-    char _channelUnits[32];
-    char _channelNameL[32];
-    /*
-    float _voltageID;
-    int  _channel;
-    int _sensorNumber;
-    char _sensorName[16];
-    char _shortName[12];// 11 char + terminator
-    char _sensorUnits[7];
-    float _slope;
-    float _sum;
-    float _intercept;
-    float _cFactor;
-    int _calEquationType;
-    int _page;
-    float _sensorReading;
-    float _distance;
-    // this misc. variable is used many places
-    int _i;
-    */
+    void GoDirectBLE_Reset();  //
+    void GoDirectBLE_Read();
+    void GoDirectBLE_GetStatus();
+    byte GoDirectBLE_GetScanRSSI();
+    const char* GoDirectBLE_GetDeviceName();
+    const char* GoDirectBLE_GetSerialNumber();
+    const char* GoDirectBLE_GetOrderCode();
+    const char* GoDirectBLE_GetChannelUnits();
+    bool GoDirectBLE_DisplayChannelAsInteger();
+    char* GoDirectBLE_GetChannelName();
+    float GoDirectBLE_GetMeasurement();
+    void GoDirectBLE_End();
 };
 #endif
-
-// END OF FILE

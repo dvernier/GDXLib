@@ -19,22 +19,16 @@ int choice;
 */
 #include "GDXLib.h"
 GDXLib GDX;//!!!!!!!!!!!!
-//char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
-//char channelName[32];//60 bytes
-//char channelUnits[18];// 32 bytes
-//uint8_t batteryPercent;
-//uint8_t chargerStatus;
-//char strFW1[16];
-//char strFW2[16];
-/* GET RID OF BECAUSE IT IS DONE IN THE LIBARY 
-
-
+/* GET RID OF BECAUSE IT IS DONE IN THE LIBARRY char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
+char channelName[32];//60 bytes
+char channelUnits[18];// 32 bytes
 char sN[16];// 32 bytes this is an expermment
-
-
+uint8_t batteryPercent;
+uint8_t chargerStatus;
 byte scanRSSI;
 char strBuffer[64];
-
+char strFW1[16];
+char strFW2[16];
 */
 byte batteryLevel;// junk, I think
 //float channelReading;
@@ -53,9 +47,19 @@ void setup()
   Serial.println("Sensor display");
   CharDisplayPrintLine(1, "Vernier GDX");
   CharDisplayPrintLine(2, "Sensor display");
-  delay(5000);// long delay here to let me get serial monitor started
-  GDX.GoDirectBLE_Begin();//this is an attempt to call the library
-  //GoDirectBLE_Begin("GDX-ACC 0H101767",3,1000);
+  delay(2000);// long delay here to let me get serial monitor started
+  Serial.print("sensorReading ");
+  Serial.println(GDX.readSensor());//this sort of works
+  delay(2000);
+  GDX.GoDirectBLE_BeginL(3,1000);//this fake library method works
+  Serial.println("after mock library call.,");
+  delay(2000);
+
+  Serial.print("after REAL BLE CALL.,");
+  delay(2000);
+
+  //GDX.GoDirectBLE_Begin();//this is an attempt to call the library
+  GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 1000);
   /*Serial.println(" Looking for");
   CharDisplayPrintLine(1, "Looking for");
 
@@ -77,8 +81,6 @@ void setup()
     //GoDirectBLE_Begin();
     
   }
-  */
-  GDX.autoID();
   delay(2000);
 
   //this is from kevin's loop:
@@ -87,28 +89,28 @@ void setup()
   //sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
  // ConvertUTF8ToASCII(strUnits);
   delay(1000);
-  //these have been set up in the library code:
+  /*these have been set up in the library code:
   Serial.print("deviceName:: ");
-  //Serial.println (deviceNam);
-  //CharDisplayPrintLine(1, deviceNam);
-  //Serial.print("ScanRSSI via function: ");
-  //Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
-  //CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
+  Serial.println (deviceNam);
+  CharDisplayPrintLine(1, deviceNam);
+  Serial.print("ScanRSSI via function: ");
+  Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
+  CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
   delay(2000);
   Serial.print("channelName:: ");
-  //Serial.print (channelName);
-  //Serial.println("  channelName via funtion: ");
-  //Serial.println(GoDirectBLE_GetChannelName());
+  Serial.print (channelName);
+  Serial.println("  channelName via funtion: ");
+  Serial.println(GoDirectBLE_GetChannelName());
   Serial.print("channelUnits:: ");
-  //Serial.print(channelUnits);
-  //Serial.print("  channelUnits via funtion: ");
-  //Serial.println(GoDirectBLE_GetChannelUnits()); 
-  //CharDisplayPrintLine(2, channelUnits);
+  Serial.print(channelUnits);
+  Serial.print("  channelUnits via funtion: ");
+  Serial.println(GoDirectBLE_GetChannelUnits()); 
+  CharDisplayPrintLine(2, channelUnits);
   Serial.print("batteryPercent:: ");
-  //Serial.println (batteryPercent);
+  Serial.println (batteryPercent);
   Serial.print("chargerStatus:: ");
-  //Serial.println (chargerStatus);
-  /*Serial.println("FW1:  FW2:  BAT:");
+  Serial.println (chargerStatus);
+  Serial.println("FW1:  FW2:  BAT:");
   CharDisplayPrintLine(1, "FW1:  FW2:  BAT:");
   GoDirectBLE_GetStatus(strFW1, strFW2, batteryLevel);
   sprintf(&strBuffer[0], "%-6s",  strFW1);
@@ -117,16 +119,12 @@ void setup()
   Serial.print("strBuffer: ");
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
-  */
-  Serial.print("GDX.channelUnits() ");
-  Serial.println(GDX.channelUnits());
-  Serial.print("GDX.channelNameL() ");
-  Serial.println(GDX.channelUnits());
-  delay(2000);
+   */
+
 
 //  GoDirectBLE_Measure() ;// should this be renamed START?
-
- /* GoDirectBLE_Measure() ;
+/*
+  GoDirectBLE_Measure() ;
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
   sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
@@ -182,132 +180,14 @@ void setup()
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
 */
-  
+
 }
 
 void loop()
 {
-  /*GoDirectBLE_Read();
-  if (GoDirectBLE_DisplayChannelAsInteger())
-  {
-    sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), strUnits);
-  }
-  else
-  {
-    sprintf(strBuffer, "%.2f %s", GoDirectBLE_GetMeasurement(), strUnits);
-
-  }
-  Serial.print("printing buffer rounded to 2 digits; ");
-  Serial.print(channelName);
-  Serial.print("   ");
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(1, channelName);
-  CharDisplayPrintLine(2, strBuffer);
-  //Serial.print (" ");
-  //Serial.print(strBuffer[0]);
-  //Serial.print (" ");
-  channelReading = atof(strBuffer);
-  
-  /*Serial.print("printing channel reading as a float and units ");
-  Serial.print(channelReading);
-  Serial.print(" ");
-  Serial.print(" channelUnits ");
-  Serial.print(channelUnits);
-  Serial.print(" channelUnits as a function ");
-  Serial.println(GoDirectBLE_GetChannelUnits());
-  
-   This code should be removed, unless you are doing the nametag thing.
-   // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
-  int  choice = 7;  
-  if (channelReading > 80 )
-    int choice = 1;
-  else if (channelReading > 50 )
-    choice = 2;
-  else if (channelReading > 20 )
-    choice = 3;
-  else if (channelReading >-20 )
-    choice = 4;
-  else if (channelReading >-50 )
-    choice = 5;
-  else if (channelReading >-80 )
-    choice = 6;
-    else choice=7;
-  Serial.print("channelReading ");
-  Serial.println (channelReading);
-  Serial.print("  choice ");
-  Serial.println (choice);
-
-  switch (choice) {
-    case 1:
-      {
-    //         "12345678901234567890";
-    strcpy( s1,"   90    WELCOME    ");
-    strcpy( s2,"   NSTA 2020 BOSTON ");
-    strcpy( s3,"                    ");
-    strcpy( s4,"    DAVE VERNIER    ");
-      }
-      break;
-    case 2:
-      {
-        //      "12345678901234567890";
-   strcpy( s1, " 60  PROGRAMMABLE   ");
-   strcpy( s2, "NAMETAG IS A FUN    ");
-   strcpy( s3, "  STUDENT PROJECT   ");
-   strcpy( s4, "OUR GDX SENSORS     ");
-      }
-      break;
-    case 3:
-      {
-        //     "12345678901234567890");
-    strcpy(s1, "30  IT IS CONTROLLED");
-    strcpy(s2, "BY AN ARDUINO       ");
-    strcpy(s3, "NANO 33 BLE         ");
-    strcpy(s4, "                    ");
-      }
-      break;
-    case 4:
-     {
-        //     "12345678901234567890");
-    strcpy(s1, "LEVEL      ONTROLLED");
-    strcpy(s2, "BY AN ARDUINO       ");
-    strcpy(s3, "NANO 33 BLE         ");
-    strcpy(s4, "                    ");
-      }
-      break;
-    case 5:
-    {
-        //     "12345678901234567890");
-    strcpy(s1, " 30 down");
-    strcpy(s2, "BY AN ARDUINO       ");
-    strcpy(s3, "NANO 33 BLE         ");
-    strcpy(s4, "                    ");
-    }
-      break;
-    case 6:
-    {
-    strcpy(s1, "  60 degress down");
-    strcpy(s2, "BY AN ARDUINO       ");
-    strcpy(s3, "NANO 33 BLE         ");
-    strcpy(s4, "                    ");
-    }
-      break;
-    case 7:
-      { 
-         // "12345678901234567890";
-  strcpy(s1," DOWN 90              ");
-  strcpy(s2,"   HELLO, I'M DAVID ");
-  strcpy(s3,"   I'M DEAF;        ");
-  strcpy(s4,"        DO YOU SIGN?");
-      }
-      break;
-  } //end of switch
-
-  Serial.println(s1);
-  Serial.println(s2);
-  Serial.println(s3);
-  Serial.println(s4);
-  delay(500);
-  */
+  Serial.print("sensorReading ");
+  Serial.println(GDX.readSensor());//this sort of works
+  delay(2000);
 }
 ////////////////////
 
