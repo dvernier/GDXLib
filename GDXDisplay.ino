@@ -3,10 +3,7 @@
 //should these be global?????
 static int state = -1;
 static char strUnits[16];
-char* s1 = "                    ";
-char* s2 = "                    ";
-char* s3 = "                    ";
-char* s4 = "                    ";
+
 int choice;
 /*from lib:
   #define D2PIO_MAX_ORDERCODE_LENGTH 16

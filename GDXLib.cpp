@@ -7,30 +7,52 @@ Version 0.1
 GDXLib::GDXLib()
 { 
 }
+//=============================================================================
+// GoDirectBLE_Test() Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//=============================================================================
+void GDXLib::GoDirectBLE_Test()
+{
+  Serial.println( "*** test function ");
+}
 void GDXLib::GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodInMilliseconds)
  { _a=6;
    _b=9;
    _c=_a+_b;
    Serial.print ("*** ");
    Serial.println(_c);
-   void GoDirectBLE_Test();//note I am calling this and it is not listed in the header as private.
+   GDXLib::GoDirectBLE_Test();//note I am calling this and it causes an error
   }
-float GDXLib::readSensor()
+float GDXLib::readSensor() 
 {
   float sensorReading= 34343434;
   char strBuffer[64];
-  
-  if (GoDirectBLE_DisplayChannelAsInteger())
-  {
-    //sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), strUnits);
-    sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement());
-  }
-  else
-  {
-    //sprintf(strBuffer, "%.2f %s", GoDirectBLE_GetMeasurement(), strUnits);
-    sprintf(strBuffer, "%.2f %s", GoDirectBLE_GetMeasurement());
+  //GoDirectBLE_Test();//note I am calling this and it is not listed in the header as private.
+  /*
+  //if (!D2PIO_StartMeasurements(g_channelNumber))
+  if (!D2PIO_StartMeasurements(1))//HACK!!!!!!
+    GoDirectBLE_Reset();
 
-  }
+  int g_MeasurementCounter = 0;
+  float g_measurement = 0.0;
+
+ if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
+  // Make sure the sensor is still around
+
+  /*    
+  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
+      {
+      if ((g_samplePeriodInMilliseconds * g_MeasurementCounter) > 86400000)//reconnet every day!!!DLV Hack
+         GoDirectBLE_Reset();
+  
+      
+      
+     For debugging...take a limited amount of measurements then disconnect
+   if ((g_samplePeriodInMilliseconds * g_MeasurementCounter) > 30000)
+      GoDirectBLE_Reset();
+    
+   g_MeasurementCounter++;
+
+
 
   Serial.print(strBuffer);
  // CharDisplayPrintLine(2, strBuffer);
@@ -39,7 +61,9 @@ float GDXLib::readSensor()
   Serial.print (" ");
   sensorReading = atof(strBuffer);
   Serial.println(sensorReading);
+  */
   return sensorReading;
+ //end of function, data in buffer
 }
 
 // note that the begin methods are way below, but they should be set up
@@ -1122,8 +1146,8 @@ void GoDirectBLE_Measure()  //
   g_MeasurementCounter = 0;
   g_measurement = 0.0;
 
-  Serial.print("*** strbuffer ");
-  Serial.println(strbuffer);
+  //Serial.print("*** strbuffer ");
+  // Serial.println(strbuffer);
 
   g_MeasurementCounter = 0;
   g_measurement = 0.0;
@@ -1134,12 +1158,7 @@ void GoDirectBLE_Measure()  //
   Serial.print("***g_MeasurementCounter2");
   Serial.println(g_MeasurementCounter);
   g_MeasurementCounter++;
-    }// end if
-    else
-      Serial.println("***$x");
-    delay(50);
-  }//end while
-  ///
+   
 
 }//end function
 
@@ -1277,11 +1296,4 @@ float GoDirectBLE_GetMeasurement()
 void GoDirectBLE_End()
 {
   BLE.end();
-}
-//=============================================================================
-// GoDirectBLE_Test() Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//=============================================================================
-void GoDirectBLE_Test()
-{
-  Serial.println( "*** test function ");
 }

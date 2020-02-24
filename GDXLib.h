@@ -12,6 +12,8 @@ class GDXLib {
     void GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodInMilliseconds);//a public method
     float readSensor();//a public method
     char strBuffer[64]; //used in Read Sensor
+    static byte g_ReadBuffer[256];////used in Read Sensor
+    void GoDirectBLE_Test();// should not need to be public
     
  private:// also known as local  
     char* _deviceName;  // used in begin
@@ -57,5 +59,6 @@ class GDXLib {
     char* GoDirectBLE_GetChannelName();
     float GoDirectBLE_GetMeasurement();
     void GoDirectBLE_End();
+    //void GoDirectBLE_Test();
 };
 #endif
