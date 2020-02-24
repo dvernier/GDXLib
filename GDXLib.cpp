@@ -7,13 +7,7 @@ Version 0.1
 GDXLib::GDXLib()
 { 
 }
-//=============================================================================
-// GoDirectBLE_Test() Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//=============================================================================
-void GDXLib::GoDirectBLE_Test()
-{
-  Serial.println( "*** test function ");
-}
+
 void GDXLib::GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodInMilliseconds)
  { _a=6;
    _b=9;
@@ -26,7 +20,7 @@ float GDXLib::readSensor()
 {
   float sensorReading= 34343434;
   char strBuffer[64];
-  //GoDirectBLE_Test();//note I am calling this and it is not listed in the header as private.
+  GoDirectBLE_Test();//note I am calling this and it is not listed in the header as private.
   /*
   //if (!D2PIO_StartMeasurements(g_channelNumber))
   if (!D2PIO_StartMeasurements(1))//HACK!!!!!!
@@ -1296,4 +1290,14 @@ float GoDirectBLE_GetMeasurement()
 void GoDirectBLE_End()
 {
   BLE.end();
+}
+//=============================================================================
+// GoDirectBLE_Test() Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//=============================================================================
+void GDXLib::GoDirectBLE_Test()
+{
+  Serial.println( "*** test function ");
+  Serial.print ("*** ");
+  Serial.println(_c);
+  _c=_c+1;
 }
