@@ -11,12 +11,14 @@ class GDXLib {
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
     void GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodInMilliseconds);//a public method
     float readSensor();//a public method
-    char strBuffer[64]; //used in Read Sensor
-    static byte g_ReadBuffer[256];////used in Read Sensor
-
-    
+    //char strBuffer[64]; //used in Read Sensor
+    //static byte g_ReadBuffer[256];////used in Read Sensor
+    float getNumber();
+   /* this is a total failure, copy the concept of the older Vernier Arduino Library) 
+    void autoID();
+      char* shortName()     {return _shortName ;};
+    */
  private:// also known as local  
-    char* _deviceName;  // used in begin
     byte _channelNumber;// used in begin
     unsigned long _samplePeriodInMilliseconds;// used in begin
     
@@ -45,7 +47,7 @@ class GDXLib {
     
     
     void GoDirectBLE_Measure();  //
-    //void GoDirectBLE_Start();
+    void GoDirectBLE_Start();
 
     void GoDirectBLE_Reset();  //
     void GoDirectBLE_Read();
@@ -62,5 +64,6 @@ class GDXLib {
     void GoDirectBLE_Test();
     void GoDirectBLE_Test2();
     void GoDirectBLE_Test3();
+ //   char _shortName[20]; from attempt to make the style of the old Arduino library
 };
 #endif

@@ -44,19 +44,30 @@ void setup()
   Serial.println("Sensor display");
   CharDisplayPrintLine(1, "Vernier GDX");
   CharDisplayPrintLine(2, "Sensor display");
-  delay(2000);// long delay here to let me get serial monitor started
-  Serial.print("sensorReading ");
-  Serial.println(GDX.readSensor());//this sort of works
-  delay(2000);
+  delay(5000);// long delay here to let me get serial monitor started
+  Serial.print("after 5 s delay");
+
+  
+  //Serial.print("sensorReading ");
+  //Serial.println(GDX.readSensor());//this sort of works
+  delay(5000);
   GDX.GoDirectBLE_BeginL(3,1000);//this fake library method works
   Serial.println("after mock library call.,");
   delay(2000);
-
-  Serial.print("after REAL BLE CALL.,");
+  GDX.GoDirectBLE_BeginL(3,1000);//this fake library method works
+  Serial.print("after getNumber call ");
+  Serial.println(GDX.getNumber());
   delay(2000);
 
+  /*GDX.autoID();
+  Serial.print("after autoID call ");
+  Serial.print(GDX.shortName());
+   */ 
+
   //GDX.GoDirectBLE_Begin();//this is an attempt to call the library
-  GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 1000);
+  GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
+  Serial.print("after REAL BLE CALL.,");
+  delay(2000);
   /*Serial.println(" Looking for");
   CharDisplayPrintLine(1, "Looking for");
 
@@ -184,6 +195,8 @@ void loop()
 {
   Serial.print("sensorReading ");
   Serial.println(GDX.readSensor());//this sort of works
+  Serial.print("after getNumber call ");
+  Serial.println(GDX.getNumber());
   delay(2000);
 }
 ////////////////////
