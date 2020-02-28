@@ -979,7 +979,7 @@ bool GDXLib::D2PIO_Autoset()
 //=============================================================================
 // D2PIO_StartMeasurements() Function
 //=============================================================================
-bool GDXLib::GDXLib::D2PIO_StartMeasurements(byte channelNumber)
+bool GDXLib::D2PIO_StartMeasurements(byte channelNumber)
 {
   byte command[] = {
     0x58, 0x00, 0x00, 0x00, 0x18,
@@ -1081,6 +1081,8 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
     // Connect to the peripheral //Kevin's Connect
     Serial.print("***Connecting...");
     Serial.println("***startMeasurements...");
+    Serial.print("***g_channelNumber ");
+    Serial.println(g_channelNumber);
     if (!D2PIO_StartMeasurements(g_channelNumber))
         GoDirectBLE_Start();
    delay(2000);  // seems okay without this delay
