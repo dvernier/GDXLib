@@ -232,7 +232,7 @@ void GDXLib::GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodIn
 
  float GDXLib::getNumber()
  {
- //byte number=GoDirectBLE_GetScanRSSI(); //this works!
+ byte number=GoDirectBLE_GetScanRSSI(); //this works!
  float sss=GoDirectBLE_GetMeasurement();
  return sss;
  }
@@ -243,20 +243,13 @@ void GDXLib::GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodIn
  */
 float GDXLib::readSensor() 
 {
-  float sensorReading= 34343434;
   char strBuffer[64];
- 
-  GoDirectBLE_Test();//note I am calling this and it is not listed in the header as private.
   if (!BLE.connected())
       GoDirectBLE_Start();//note this works without the "GDXLib."
-  //
-  // the function being called is labelled as follows:  bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
   if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))//'g_ReadBuffer' was not declared in this scope
     GoDirectBLE_Start();
-   
-  sensorReading=g_measurement;
-  return sensorReading;
-
+ channelReading=g_measurement;
+  return channelReading;
   }
 
 
