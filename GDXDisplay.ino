@@ -66,7 +66,7 @@ void setup()
 
   //GDX.GoDirectBLE_Begin();//this is an attempt to call the library
   GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
-  Serial.print("after REAL BLE CALL.,");
+  Serial.println("after REAL BLE CALL.,");
   delay(2000);
   /*Serial.println(" Looking for");
   CharDisplayPrintLine(1, "Looking for");
@@ -79,16 +79,17 @@ void setup()
     Serial.println("any GDX sensor");
     CharDisplayPrintLine(2, "any GDX sensor");
     //GoDirectBLE_Begin();
-    GoDirectBLE_Begin("GDX-ACC 0H101676",3,1000);
+    GoDirectBLE_Begin("GDX-TMP 0F1038J5",3,1000);
   }
   else
   {
     Serial.println(sensorName);
     CharDisplayPrintLine(2, "specified");
-    GoDirectBLE_Begin("GDX-ACC 0H101767", 1, 1000);
+    GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
     //GoDirectBLE_Begin();
     
   }
+  */
   delay(2000);
 
   //this is from kevin's loop:
@@ -97,37 +98,37 @@ void setup()
   //sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
  // ConvertUTF8ToASCII(strUnits);
   delay(1000);
-  /*these have been set up in the library code:
-  Serial.print("deviceName:: ");
-  Serial.println (deviceNam);
-  CharDisplayPrintLine(1, deviceNam);
+  //these have been set up in the library code:
+  //Serial.print("deviceName:: ");
+  //Serial.println (deviceNam);
+  //CharDisplayPrintLine(1, deviceNam);
   Serial.print("ScanRSSI via function: ");
-  Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
-  CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
+  //Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
+  //CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
   delay(2000);
   Serial.print("channelName:: ");
-  Serial.print (channelName);
+  //Serial.print (channelName);
   Serial.println("  channelName via funtion: ");
-  Serial.println(GoDirectBLE_GetChannelName());
+  //Serial.println(GoDirectBLE_GetChannelName());
   Serial.print("channelUnits:: ");
-  Serial.print(channelUnits);
+  //Serial.print(channelUnits);
   Serial.print("  channelUnits via funtion: ");
-  Serial.println(GoDirectBLE_GetChannelUnits()); 
-  CharDisplayPrintLine(2, channelUnits);
+  //Serial.println(GoDirectBLE_GetChannelUnits()); 
+  //CharDisplayPrintLine(2, channelUnits);
   Serial.print("batteryPercent:: ");
-  Serial.println (batteryPercent);
-  Serial.print("chargerStatus:: ");
-  Serial.println (chargerStatus);
+  //Serial.println (batteryPercent);
+  //Serial.print("chargerStatus:: ");
+  //Serial.println (chargerStatus);
   Serial.println("FW1:  FW2:  BAT:");
   CharDisplayPrintLine(1, "FW1:  FW2:  BAT:");
-  GoDirectBLE_GetStatus(strFW1, strFW2, batteryLevel);
-  sprintf(&strBuffer[0], "%-6s",  strFW1);
-  sprintf(&strBuffer[6], "%-6s",  strFW2);
-  sprintf(&strBuffer[12], "%d%%", batteryLevel);
+  //GoDirectBLE_GetStatus(strFW1, strFW2, batteryLevel);
+  //sprintf(&strBuffer[0], "%-6s",  strFW1);
+  //sprintf(&strBuffer[6], "%-6s",  strFW2);
+  //sprintf(&strBuffer[12], "%d%%", batteryLevel);
   Serial.print("strBuffer: ");
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(2, strBuffer);
-   */
+  //Serial.println(strBuffer);
+  //CharDisplayPrintLine(2, strBuffer);
+   
 
 
 //  GoDirectBLE_Measure() ;// should this be renamed START?
@@ -188,7 +189,7 @@ void setup()
   Serial.println(strBuffer);
   CharDisplayPrintLine(2, strBuffer);
 */
-
+Serial.println("Starting loop...");
 }
 
 void loop()
