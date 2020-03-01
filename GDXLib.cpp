@@ -256,6 +256,7 @@ float GDXLib::readSensor()
 // note that the begin methods are way below, but they should be set up
 //void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
 //void GDXLib::GoDirectBLE_Begin()  // maybe rename this GoDirectStart()
+//void GDXLib::GoDirectBLE_Scan();
 
 //=============================================================================
 // DumpGatttService() Function
@@ -1018,6 +1019,19 @@ void GDXLib::GoDirectBLE_Start()
   else
     BLE.scanForName(g_deviceName, true);
 }
+//=============================================================================
+// GoDirectBLE_Begin() Function
+//=============================================================================
+void GDXLib::GoDirectBLE_Begin()  // maybe rename this GoDirectStart()
+{
+  //Serial.println("***in Begin(GDX....");
+  //Serial.println(g_deviceName);
+  g_deviceName = NULL;
+  g_channelNumber = -1;
+  g_samplePeriodInMilliseconds = 0;
+  g_autoConnect = true;
+  GoDirectBLE_Scan();
+} //end begin
 
 //=============================================================================
 // GoDirectBLE_Begin() Function
@@ -1033,7 +1047,14 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   //Serial.print("***g_channelNumber specified ");
   //Serial.println(g_channelNumber);
   //Serial.print("***deviceName");
-  //Serial.println(deviceName);
+  //Serial.println(deviceName);  
+  GoDirectBLE_Scan();
+  } //end begin
+//=============================================================================
+// GoDirectBLE_Scan() Function
+//=============================================================================
+  void GDXLib::GoDirectBLE_Scan()
+  {
   BLE.begin();
   //Serial.print("***BLE reset");
   // Cleanup any old connections //Kevin's reset
@@ -1059,6 +1080,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
     if (scanResult == D2PIO_SCAN_RESULT_FLUSH) //2
       Serial.println("D2PIO_SCAN_RESULT_FLUSH");
   }//end while
+  
   // Stop scanning
   BLE.stopScan();
   //Serial.print("***Connecting...");
@@ -1066,8 +1088,8 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   {
     Serial.println("FAILED!");
     GoDirectBLE_Start();
-  }
-  else//end if
+  }//end if
+  else
   {
     Serial.println("SUCCESS");
    //delay(2000);  // seems okay without this delay
@@ -1093,7 +1115,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   //Serial.print("***D2PIO_GetDeviceInfo()");
   if (!D2PIO_GetDeviceInfo()) //Kevin's Setup
     GoDirectBLE_Start();
-
+    
   //Serial.print("***D2PIO_GetChannelInfoAll()");
   if (!D2PIO_GetChannelInfoAll())
     GoDirectBLE_Start();
@@ -1123,90 +1145,9 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   //Serial.println(g_measurement);
   //Serial.print("***g_MeasurementCounter2");
   //Serial.println(g_MeasurementCounter);
-  }
-}
-//=============================================================================
-// GoDirectBLE_Begin() Function
-//=============================================================================
-void GDXLib::GoDirectBLE_Begin()  // maybe rename this GoDirectStart()
-{
-  //Serial.println("***in Begin(GDX....");
-  //Serial.println(g_deviceName);
-  g_deviceName = NULL;
-  g_channelNumber = -1;
-  g_samplePeriodInMilliseconds = 0;
-  g_autoConnect = true;
-  GoDirectBLE_Start();//!!!! error here finding Start 
-} //end begins
-
-/*TEMPORARY HACK 2/13/2020 DLV 
-  
-
- 
-
-
-//=============================================================================
-// GoDirectBLE_Measure Function
-//=============================================================================
-void GDXLib::GoDirectBLE_Measure()  //
-{
-  if (!BLE.connected())
-    GoDirectBLE_Start();
-// I seem to get to here ok:
-  //Serial.println("D2PIO_StartMeasurements  ");
-  //Serial.println("g_channelNumber %%");
-  //Serial.println(g_channelNumber);
-
-  g_MeasurementCounter++;
-   
-
-}//end function
-
-//=============================================================================
-// GoDirectBLE_Reset Function
-//=============================================================================
-void GDXLib::GoDirectBLE_Reset()  //
-{
-  // Cleanup any old connections
-  if (BLE.connected())
-    BLE.disconnect();
+  }//end else
 }
 
-//=============================================================================
-// GoDirectBLE_Read() Function***
-//=============================================================================
-void GDXLib::GoDirectBLE_Read()
-{
-  g_MeasurementCounter = 0;
-  g_measurement = 0.0;
-  // Make sure the sensor is still around
-  if (!BLE.connected())
-    GoDirectBLE_Start();
-
-  bool data_read = 0;
-  while (data_read == 0)
-  {
-  /*  THIS FAILS, SO I HACKED ALL OF THIS OUT
-    //bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
-    if (D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
-    {
-      data_read = 1;
-      //Serial.print("***g_measurement in loop "); // this is good!!!!
-        //Serial.println(g_measurement);
-        //Serial.print("***g_MeasurementCounter in loop");
-        //Serial.println(g_MeasurementCounter);
-      
-      //taken out 2/1/2020GoDirectBLE_Read()
-      g_MeasurementCounter++;
-    }// end if
-
-    else
-      //Serial.println("***&x");
-    delay(500);
-        
-  }//end while
-}
-*/
 //=============================================================================
 // GoDirectBLE_GetStatus() Function
 //=============================================================================
@@ -1308,14 +1249,4 @@ void GDXLib::GoDirectBLE_Test()
   Serial.print ("*** ");
   //Serial.println(_c);
   _c=_c+1;
-}
-//=============================================================================
-// GoDirectBLE_Test3() Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//=============================================================================
-void GDXLib::GoDirectBLE_Test3()
-{
-  //Serial.println( "*** test3 function ");
-  Serial.print ("*** ");
-  //Serial.println(_c);
-  _c=_c+77;
 }

@@ -6,10 +6,9 @@ void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  delay(100);
-  //GDX.GoDirectBLE_Begin();//this is an attempt to call the library
-  GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
-  Serial.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ");
+  delay(10000);//HACK
+  GDX.GoDirectBLE_Begin();//
+  //GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
   Serial.print("RSSI ");
   Serial.println(GDX.getNumber());
   delay(2000);
