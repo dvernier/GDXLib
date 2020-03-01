@@ -1,0 +1,1 @@
+name=GDXDisplayversion=0.2author=Dave Vernier <dvernier@vernier. com>sentence=A library to allow use of Arduino Nano 33 BLE with Vernier GDX sensors.paragraph= A library to allow use of Arduino Nano 33 BLE with Vernier GDX sensors.categoryurlarchitecture

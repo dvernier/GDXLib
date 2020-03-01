@@ -1,0 +1,1 @@
+Syntax coloring map for GDX Display Library# DataTypes (KEYWORD1)VernierLib	KEYWORD1 getRSSI 	KEYWORD1getChar 	KEYWORD1# Functions (KEYWORD2)readSensor	KEYWORD2getRSSI	KEYWORD2readChar	KEYWORD2

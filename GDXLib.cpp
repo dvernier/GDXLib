@@ -196,51 +196,30 @@ static unsigned long                               g_RSSIAge;
 
  //below are mentions of functions to avoid the not found stuff!!!
 void GoDirectBLE_Start();
-void GoDirectBLE_GetStatus();
 bool D2PIO_StartMeasurements(byte channelNumber);
 byte D2PIO_CalculateChecksum(const byte buffer[]);
 bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
 
 //=============================================================================
-// GoDirectBLE_Test2() Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//=============================================================================
-void GDXLib::GoDirectBLE_Test2()//test function to call at the top
-{
-  //Serial.println( "*** test2 function at the top ");
-  Serial.print ("*** ");
-  //Serial.println(_c);
-  _c=_c+5;
-}
-//=============================================================================
-// GoDirectBeginL() Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// getRSSI()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
-void GDXLib::GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodInMilliseconds)
- { 
-  //if (2>3)
-  // GoDirectBLE_Start();//HACK
-   _a=6;
-   _b=9;
-   _c=_a+_b;
-   Serial.print ("*** in BeginL ");
-   Serial.print ("*** ");
-   //Serial.println(_c);
-   GoDirectBLE_Test();//at the bottom
-   GoDirectBLE_Test2();//at the top using "GDXLib.GoDirectBLE_Test2();"fails
-   GoDirectBLE_Test3();//bottom; using "GDXLib.GoDirectBLE_Test3(); " fails here
-   Serial.print(" end of GoDirectBLE_BeginL");
- }
-
- float GDXLib::getNumber()
+  byte GDXLib::getRSSI()
  {
  byte number=GoDirectBLE_GetScanRSSI(); //this works!
- float sss=GoDirectBLE_GetMeasurement();
- return sss;
+ return number;
  }
-/* void GDXLib::autoID()
+//=============================================================================
+// getChar()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//=============================================================================!@
+ byte GDXLib::getChar()
  {
- _shortName[20]="1234567890123456789";
+ strcpy(channelUnits,GoDirectBLE_GetChannelUnits());
+ return byte(channelUnits[0]);
  }
- */
+
+ //=============================================================================
+// readSensor() Function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//=============================================================================!@
 float GDXLib::readSensor() 
 {
   char strBuffer[64];
@@ -251,7 +230,6 @@ float GDXLib::readSensor()
  channelReading=g_measurement;
   return channelReading;
   }
-
 
 // note that the begin methods are way below, but they should be set up
 //void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
@@ -811,9 +789,9 @@ bool GDXLib::D2PIO_GetDeviceInfo()
   //Serial.println(pResponse->manufacturerId);
   //Serial.print("***  Mfg Date: ");
   //Serial.print(pResponse->ManufacturedMonth);
-  //Serial.print("***/");
+  //Serial.print("***");
   //Serial.print(pResponse->ManufacturedDay);
-  //Serial.print("***/");
+  //Serial.print("***");
   //Serial.println(pResponse->manufacturedYear);
   //Serial.print("***  Master FW version: ");
   //Serial.print(pResponse->majorVersionMasterCPU);
@@ -1155,11 +1133,10 @@ void GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2,
 {
   sprintf(strFirmwareVersion1, "%d.%d", g_status.majorVersionMasterCPU, g_status.minorVersionMasterCPU);
   sprintf(strFirmwareVersion2, "%d.%d", g_status.majorVersionSlaveCPU,  g_status.minorVersionSlaveCPU);
-  batteryPercent = g_status.batteryLevelPercent;
 
   batteryPercent = g_status.batteryLevelPercent;
-  //Serial.print("***in GoDirectBLE_GetStatus: batteryPercent ");
-  //Serial.println(batteryPercent);//this is correct here in the library code
+  Serial.print("***in GoDirectBLE_GetStatus: batteryPercent ");
+  Serial.println(batteryPercent);//this is correct here in the library code
 }
 
 //=============================================================================
