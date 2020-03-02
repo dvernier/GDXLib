@@ -12,8 +12,9 @@ char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
 char channelName[32];//60 bytes
 char channelUnits[18];// 32 bytes
 char sN[16];// 32 bytes this is an expermment
-uint8_t batteryPercent;//HACK
+uint8_t Percent;//HACK
 uint8_t chargerStatus;
+int batteryPercent;
 byte scanRSSI;
 char strBuffer[64];
 char strFW1[16];
@@ -209,12 +210,23 @@ bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
  return number;
  }
 //=============================================================================
-// getChar()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// getChannelUnits()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
- byte GDXLib::getChar()
+ void GDXLib::getChannelUnits(char *units, int len)
  {
- strcpy(channelUnits,GoDirectBLE_GetChannelUnits());
- return byte(channelUnits[0]);
+ strncpy(units,GoDirectBLE_GetChannelUnits(), len);
+ }
+//=============================================================================
+// getBatteryStatus()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//=============================================================================!@
+ uint8_t GDXLib::getBatteryStatus()
+ {
+ batteryPercent=GoDirectBLE_GetBatteryStatus();//!!!!DLV HACK 2/11/2020
+ Serial.print("*** g_status.batteryLevelPercent ");
+ Serial.println(g_status.batteryLevelPercent);
+ Serial.print("batteryPercent ");
+ Serial.println(batteryPercent);
+ return batteryPercent;
  }
 
  //=============================================================================
@@ -746,7 +758,7 @@ bool GDXLib::D2PIO_GetStatus()
   //Serial.print("***.");
   //Serial.println(pResponse->buildNumSlaveCPU);
   //Serial.print("*** in D2PIO_GetStatus Battery percent: ");
-  batteryPercent=(pResponse->batteryLevelPercent);
+  //batteryPercent=(pResponse->batteryLevelPercent);//WHAT IS THIS????????
   //Serial.println(pResponse->batteryLevelPercent);
   ////Serial.print("***  batteryLevelPercent: ");
   ////Serial.println(batteryLevelPercent);
@@ -1129,7 +1141,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
 //=============================================================================
 // GoDirectBLE_GetStatus() Function
 //=============================================================================
-void GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2, byte& batteryPercent)
+void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2, byte& batteryPercent)
 {
   sprintf(strFirmwareVersion1, "%d.%d", g_status.majorVersionMasterCPU, g_status.minorVersionMasterCPU);
   sprintf(strFirmwareVersion2, "%d.%d", g_status.majorVersionSlaveCPU,  g_status.minorVersionSlaveCPU);
@@ -1184,6 +1196,13 @@ const char* GDXLib::GoDirectBLE_GetOrderCode()
 const char* GDXLib::GoDirectBLE_GetChannelUnits()
 {
   return g_channelInfo.sensorUnit;
+}
+//=============================================================================
+// GoDirectBLE_GetBatteryStatus() Function
+//=============================================================================
+uint8_t GDXLib::GoDirectBLE_GetBatteryStatus()
+{
+  return g_status.batteryLevelPercent;
 }
 
 //=============================================================================

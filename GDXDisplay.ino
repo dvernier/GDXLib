@@ -21,8 +21,8 @@ void setup()
   //GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
   Serial.print("RSSI ");
   Serial.println(GDX.getRSSI());
-  Serial.print("char: ");
-  Serial.println(GDX.getChar());
+  Serial.print("channelUnits: ");
+  //Serial.println(GDX.getChannelUnits());
   delay(2000);
   Serial.println ("Data Table:");
   // Initialize the character display
@@ -32,6 +32,8 @@ void setup()
 {
   float channelReading =GDX.readSensor();//
   char strBuffer[64];
+  char units[10];
+  GDX.getChannelUnits(units, 10);
   Serial.print("channelReading = ");
   Serial.println(channelReading);
   #if defined DEBUG1
@@ -41,8 +43,11 @@ void setup()
   #endif //DEBUG1
   Serial.print("RSSI ");
   Serial.println(GDX.getRSSI());
-  Serial.print("first byte of string brought back from Library: ");
-  Serial.println(GDX.getChar());
+  Serial.print("units returned Jenny's C way: ");
+  Serial.println(units);
+  Serial.println("  ");
+  Serial.print("battery percent: ");
+  Serial.println(GDX.getBatteryStatus());
   delay(1000);
 }
 

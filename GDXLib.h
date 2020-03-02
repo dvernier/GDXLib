@@ -14,7 +14,8 @@ class GDXLib {
     char strBuffer[64]; //used in Read Sensor
     //static byte g_ReadBuffer[256];////used in Read Sensor
     byte getRSSI();
-    byte getChar();
+    void getChannelUnits(char *units, int len);
+    uint8_t getBatteryStatus();
     
  private:// also known as local  
     byte _channelNumber;// used in begin
@@ -49,12 +50,13 @@ class GDXLib {
     void GoDirectBLE_Scan();
     void GoDirectBLE_Reset();  //
     void GoDirectBLE_Read();
-    //void GoDirectBLE_GetStatus();
+    void GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2, byte& batteryPercent);
     byte GoDirectBLE_GetScanRSSI();
     const char* GoDirectBLE_GetDeviceName();
     const char* GoDirectBLE_GetSerialNumber();
     const char* GoDirectBLE_GetOrderCode();
     const char* GoDirectBLE_GetChannelUnits();
+    uint8_t GoDirectBLE_GetBatteryStatus();
     bool GoDirectBLE_DisplayChannelAsInteger();
     char* GoDirectBLE_GetChannelName();
     float GoDirectBLE_GetMeasurement();
@@ -62,6 +64,6 @@ class GDXLib {
     void GoDirectBLE_Test();
     void GoDirectBLE_Test2();
     void GoDirectBLE_Test3();
- //   char _shortName[20]; from attempt to make the style of the old Arduino library
+    //uint8_t getBatteryStatus();//cannot be overloaded
 };
 #endif
