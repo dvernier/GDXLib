@@ -12,7 +12,7 @@ class GDXLib
     void autoID();//this is the function for the autoID code
     // it returns calibration information
     int channel()       { return _channel; };
-    char* sensorName()   { return _sensorName ;};
+    char* channelNameX()   { return _channelNameX ;};
     
     void GoDirectBLE_Begin();
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
@@ -26,9 +26,8 @@ class GDXLib
     
  private:// also known as local  
     int  _channel;
-    int _sensorNumber;
-    char _sensorName[4];
-    
+    char _channelNameX[32];//60 bytes
+    char _channelUnits[18];// 32 bytes
     byte _channelNumber;// used in begin
     unsigned long _samplePeriodInMilliseconds;// used in begin
     

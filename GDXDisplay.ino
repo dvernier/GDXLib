@@ -8,7 +8,7 @@ void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  GDX.autoID();// this is the routine to do the autoID
+
   #if defined DEBUG1
     CharDisplayInit();
     delay (200);
@@ -17,14 +17,15 @@ void setup()
     delay(2000);
   #endif //DEBUG1
  
-  delay(10000);//HACK
+  delay(1000);//HACK DELAY
   GDX.GoDirectBLE_Begin();//
   //GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
   Serial.print("RSSI ");
   Serial.println(GDX.getRSSI());
   Serial.print("channelUnits: ");
   //Serial.println(GDX.getChannelUnits());
-  delay(2000);
+  GDX.autoID();// this is the routine to do the autoID
+  delay(20000);//BIG DELAY
   Serial.println ("Data Table:");
   // Initialize the character display
  
@@ -75,9 +76,9 @@ void CharDisplayPrintLine(int line, const char* strText)
   Serial.print("Sensor channel: "); 
   Serial.print("\t");
   Serial.println(GDX.channel());
-  Serial.print("Sensor Name: ");
+  Serial.print("Channel Name: ");
   Serial.print("\t");
-  Serial.println(GDX.sensorName());
+  Serial.println(GDX.channelNameX());
 }
 
 void CharDisplayPrintBarGraph(int line, byte value)

@@ -11,8 +11,9 @@ GDXLib::GDXLib()
 }
 ////////////////////////////////
 char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
-char channelName[32];//60 bytes
+char channelNameX[32];//60 bytes
 char channelUnits[18];// 32 bytes
+int channelNumber;
 char sN[16];// 32 bytes this is an expermment
 uint8_t Percent;//HACK
 uint8_t chargerStatus;
@@ -208,16 +209,15 @@ bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
 //=============================================================================!@
 void GDXLib::autoID()
 {
-  _channel =1;//this is the Analog 1 only version of the library\  
-  _sensorNumber=0;
   // Determine the sensor name:
-  //
-  //_sensorName[16]="1234567890123456"; // I am using 16 characters here, plus terminator.
-  _sensorName[0]='a'; 
-  _sensorName[1]='b'; 
-  _sensorName[2]='c'; 
-  _sensorName[3]='\0'; // THESE MAY NOT BE NECESSARY
-    //  _sensorName[16] = '\0';
+  strcpy(_channelNameX, GoDirectBLE_GetChannelName());
+  Serial.print("*** _channelNameX: ");
+  Serial.println(_channelNameX);
+  strcpy(_channelUnits, GDXLib::GoDirectBLE_GetChannelUnits());
+  //strcpy(_channelName, GoDirectBLE_GetChannelName());
+  //strcpy(_channelName, GoDirectBLE_GetChannelName());
+  _channel = g_channelNumber;
+
   }// end of AutoID function
   //=============================================================================
 // getRSSI()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -883,7 +883,7 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
     //Serial.println("***] info:");
     //Serial.print("***  Description: ");
     //Serial.println(pResponse->sensorDescription); 
-    strcpy(channelName, pResponse->sensorDescription);//!!!note this works, but is it the right channel?
+    //strcpy(channelName, pResponse->sensorDescription);//!!!note this works, but is it the right channel?
     //Serial.print("***  ID: ");
     //Serial.println(pResponse->sensorId);
     //Serial.print("***  Measurement type: ");
