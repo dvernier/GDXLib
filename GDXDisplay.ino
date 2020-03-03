@@ -8,6 +8,7 @@ void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
+  GDX.autoID();// this is the routine to do the autoID
   #if defined DEBUG1
     CharDisplayInit();
     delay (200);
@@ -70,6 +71,13 @@ void CharDisplayPrintLine(int line, const char* strText)
   Serial1.write((uint8_t)254); 
   Serial1.write(lineCode);  
   Serial1.write(strBuffer, 16);
+  Serial.println("Sensor Information:"); 
+  Serial.print("Sensor channel: "); 
+  Serial.print("\t");
+  Serial.println(GDX.channel());
+  Serial.print("Sensor Name: ");
+  Serial.print("\t");
+  Serial.println(GDX.sensorName());
 }
 
 void CharDisplayPrintBarGraph(int line, byte value)

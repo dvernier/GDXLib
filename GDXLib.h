@@ -4,9 +4,16 @@
 // This is a library to make using GDX sensors easy
 #include "ArduinoBLE.h"
 
-class GDXLib {
+class GDXLib 
+{
  public:
     GDXLib();//definition of the GDXLib class
+    
+    void autoID();//this is the function for the autoID code
+    // it returns calibration information
+    int channel()       { return _channel; };
+    char* sensorName()   { return _sensorName ;};
+    
     void GoDirectBLE_Begin();
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
     void GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodInMilliseconds);//a public method
@@ -18,6 +25,10 @@ class GDXLib {
     uint8_t getBatteryStatus();
     
  private:// also known as local  
+    int  _channel;
+    int _sensorNumber;
+    char _sensorName[4];
+    
     byte _channelNumber;// used in begin
     unsigned long _samplePeriodInMilliseconds;// used in begin
     

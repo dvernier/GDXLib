@@ -2,8 +2,10 @@
 Version 0.1
 */
 #include "ArduinoBLE.h"
+#include "Arduino.h"
 #include "GDXLib.h"
 #define GDXLib_LIB_VERSION "0.1"//automatically displayed
+
 GDXLib::GDXLib()
 { 
 }
@@ -202,6 +204,22 @@ byte D2PIO_CalculateChecksum(const byte buffer[]);
 bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
 
 //=============================================================================
+// autoID()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//=============================================================================!@
+void GDXLib::autoID()
+{
+  _channel =1;//this is the Analog 1 only version of the library\  
+  _sensorNumber=0;
+  // Determine the sensor name:
+  //
+  //_sensorName[16]="1234567890123456"; // I am using 16 characters here, plus terminator.
+  _sensorName[0]='a'; 
+  _sensorName[1]='b'; 
+  _sensorName[2]='c'; 
+  _sensorName[3]='\0'; // THESE MAY NOT BE NECESSARY
+    //  _sensorName[16] = '\0';
+  }// end of AutoID function
+  //=============================================================================
 // getRSSI()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
   byte GDXLib::getRSSI()
