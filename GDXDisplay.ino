@@ -1,8 +1,6 @@
 #include <ArduinoBLE.h>
-static char strUnits[16];
 #include "GDXLib.h"
 GDXLib GDX;
-
 #define DEBUG1//ADD FOR DISPLAY
 void setup()
 {
@@ -17,15 +15,12 @@ void setup()
     delay(2000);
   #endif //DEBUG1
  
-  delay(1000);//HACK DELAY
+  delay(100);//HACK DELAY
   GDX.GoDirectBLE_Begin();//
   //GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
-  Serial.print("RSSI ");
-  Serial.println(GDX.getRSSI());
-  Serial.print("channelUnits: ");
-  //Serial.println(GDX.getChannelUnits());
+ 
   GDX.autoID();// this is the routine to do the autoID
-  delay(20000);//BIG DELAY
+  delay(2000);//BIG DELAY
   Serial.println ("Data Table:");
   // Initialize the character display
  
@@ -34,22 +29,28 @@ void setup()
 {
   float channelReading =GDX.readSensor();//
   char strBuffer[64];
-  char units[10];
-  GDX.getChannelUnits(units, 10);
+  char units[18];
+
   Serial.print("channelReading = ");
   Serial.println(channelReading);
+
+  GDX.getChannelUnits(units, 18);//Jenny's method of getting a string
+  Serial.print("units returned Jenny's C way: ");
+  Serial.println(units);
+  Serial.print("RSSI ");
+  Serial.println(GDX.getRSSI());
+  Serial.print("battery percent: ");
+  Serial.println(GDX.getBatteryStatus());
+  Serial.print("channelName: ");
+  Serial.println(GDX.channelNameX());
+  Serial.print("channelUnits: ");
+  Serial.println(GDX.channelUnits());
   #if defined DEBUG1
     sprintf(strBuffer, "%.2f", channelReading);
     CharDisplayPrintLine(1, strBuffer);
-    CharDisplayPrintLine(2, "Units....");
+  //  strcpy(strBuffer,channelUnits());
+    CharDisplayPrintLine(2, strBuffer);
   #endif //DEBUG1
-  Serial.print("RSSI ");
-  Serial.println(GDX.getRSSI());
-  Serial.print("units returned Jenny's C way: ");
-  Serial.println(units);
-  Serial.println("  ");
-  Serial.print("battery percent: ");
-  Serial.println(GDX.getBatteryStatus());
   delay(1000);
 }
 
@@ -72,13 +73,6 @@ void CharDisplayPrintLine(int line, const char* strText)
   Serial1.write((uint8_t)254); 
   Serial1.write(lineCode);  
   Serial1.write(strBuffer, 16);
-  Serial.println("Sensor Information:"); 
-  Serial.print("Sensor channel: "); 
-  Serial.print("\t");
-  Serial.println(GDX.channel());
-  Serial.print("Channel Name: ");
-  Serial.print("\t");
-  Serial.println(GDX.channelNameX());
 }
 
 void CharDisplayPrintBarGraph(int line, byte value)

@@ -13,6 +13,7 @@ class GDXLib
     // it returns calibration information
     int channel()       { return _channel; };
     char* channelNameX()   { return _channelNameX ;};
+    char* channelUnits()   { return _channelUnits ;};
     
     void GoDirectBLE_Begin();
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
@@ -26,8 +27,8 @@ class GDXLib
     
  private:// also known as local  
     int  _channel;
-    char _channelNameX[32];//60 bytes
-    char _channelUnits[18];// 32 bytes
+    char _channelNameX[64];//60 bytes I AM CHANGING THIS FROM 32 TO TO 64
+    char _channelUnits[64];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 64
     byte _channelNumber;// used in begin
     unsigned long _samplePeriodInMilliseconds;// used in begin
     

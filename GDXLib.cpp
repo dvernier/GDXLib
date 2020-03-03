@@ -7,12 +7,9 @@ Version 0.1
 #define GDXLib_LIB_VERSION "0.1"//automatically displayed
 
 GDXLib::GDXLib()
-{ 
-}
-////////////////////////////////
-char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
-char channelNameX[32];//60 bytes
-char channelUnits[18];// 32 bytes
+{}
+char channelNameX[64];//60 bytes
+char channelUnits[36];// 32 bytes !!! I made these bigger to avoid problems
 int channelNumber;
 char sN[16];// 32 bytes this is an expermment
 uint8_t Percent;//HACK
@@ -214,7 +211,7 @@ void GDXLib::autoID()
   Serial.print("*** _channelNameX: ");
   Serial.println(_channelNameX);
   strcpy(_channelUnits, GDXLib::GoDirectBLE_GetChannelUnits());
-  //strcpy(_channelName, GoDirectBLE_GetChannelName());
+  strcpy(_channelNameX, GoDirectBLE_GetChannelName());
   //strcpy(_channelName, GoDirectBLE_GetChannelName());
   _channel = g_channelNumber;
 
@@ -814,7 +811,7 @@ bool GDXLib::D2PIO_GetDeviceInfo()
   //Serial.println(pResponse->SerialNumber);
   //Serial.print("***  Device name: ");
   //Serial.println(pResponse->DeviceName);
-  strcpy(deviceNam, pResponse->DeviceName);//!!!
+  //strcpy(deviceNam, pResponse->DeviceName);//!!!
   //Serial.print("***  Mfg ID: ");
   //Serial.println(pResponse->manufacturerId);
   //Serial.print("***  Mfg Date: ");
@@ -892,7 +889,7 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
     //Serial.println(pResponse->samplingMode);
     //Serial.print("***  Units: ");
     //Serial.println(pResponse->sensorUnit);
-    strcpy(channelUnits, pResponse->sensorUnit);//!!!note this works, but is it the right channel?
+    //strcpy(channelUnits, pResponse->sensorUnit);//!!!note this works, but is it the right channel?
     //Serial.print("***  Measurement uncertainty: ");
     //Serial.println(pResponse->measurementUncertainty);
     //Serial.print("***  Measurement min: ");
