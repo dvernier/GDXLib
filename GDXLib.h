@@ -25,8 +25,8 @@ class GDXLib
     
  private:// also known as local  
     int  _channel;
-    char _channelNameX[64];//60 bytes I AM CHANGING THIS FROM 32 TO TO 64
-    char _channelUnits[64];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 64
+    char _channelNameX[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
+    char _channelUnits[66];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 66
     byte _RSSI;
     uint8_t _batteryPercent;
     unsigned long _samplePeriodInMilliseconds;// used in begin
