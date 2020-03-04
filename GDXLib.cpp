@@ -213,10 +213,11 @@ void GDXLib::autoID()
   strcpy(_channelUnits, GDXLib::GoDirectBLE_GetChannelUnits());
   strcpy(_channelNameX, GoDirectBLE_GetChannelName());
   //strcpy(_channelName, GoDirectBLE_GetChannelName());
-  _channel = g_channelNumber;
+  _RSSI=GoDirectBLE_GetScanRSSI(); 
+  _batteryPercent=GoDirectBLE_GetBatteryStatus();
 
   }// end of AutoID function
-  //=============================================================================
+  /*=============================================================================
 // getRSSI()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
   byte GDXLib::getRSSI()
@@ -224,26 +225,24 @@ void GDXLib::autoID()
  byte number=GoDirectBLE_GetScanRSSI(); //this works!
  return number;
  }
-//=============================================================================
+ */
+/*=============================================================================
 // getChannelUnits()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
  void GDXLib::getChannelUnits(char *units, int len)
  {
  strncpy(units,GoDirectBLE_GetChannelUnits(), len);
  }
+
 //=============================================================================
 // getBatteryStatus()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
  uint8_t GDXLib::getBatteryStatus()
  {
- batteryPercent=GoDirectBLE_GetBatteryStatus();//!!!!DLV HACK 2/11/2020
- Serial.print("*** g_status.batteryLevelPercent ");
- Serial.println(g_status.batteryLevelPercent);
- Serial.print("batteryPercent ");
- Serial.println(batteryPercent);
+ batteryPercent=GoDirectBLE_GetBatteryStatus();
  return batteryPercent;
  }
-
+*/
  //=============================================================================
 // readSensor() Function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
@@ -1258,6 +1257,5 @@ void GDXLib::GoDirectBLE_Test()
 {
   //Serial.println( "*** test function at the bottom");
   Serial.print ("*** ");
-  //Serial.println(_c);
-  _c=_c+1;
+
 }

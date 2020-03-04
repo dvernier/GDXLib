@@ -11,30 +11,26 @@ class GDXLib
     
     void autoID();//this is the function for the autoID code
     // it returns calibration information
-    int channel()       { return _channel; };
-    char* channelNameX()   { return _channelNameX ;};
-    char* channelUnits()   { return _channelUnits ;};
+    char* channelNameX()     { return _channelNameX ;};
+    char* channelUnits()     { return _channelUnits ;};
+    uint8_t batteryPercent() { return _batteryPercent ;};
+    byte RSSI()              { return _RSSI ;};
     
     void GoDirectBLE_Begin();
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
-    void GoDirectBLE_BeginL(byte channelNumber, unsigned long samplePeriodInMilliseconds);//a public method
+    
     float readSensor();//a public method
     char strBuffer[64]; //used in Read Sensor
     //static byte g_ReadBuffer[256];////used in Read Sensor
-    byte getRSSI();
-    void getChannelUnits(char *units, int len);
-    uint8_t getBatteryStatus();
     
  private:// also known as local  
     int  _channel;
     char _channelNameX[64];//60 bytes I AM CHANGING THIS FROM 32 TO TO 64
     char _channelUnits[64];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 64
-    byte _channelNumber;// used in begin
+    byte _RSSI;
+    uint8_t _batteryPercent;
     unsigned long _samplePeriodInMilliseconds;// used in begin
     
-    int _a;//used in BeginL
-    int _b;//used in BeginL
-    int _c;//used in BeginL
     char _strBuffer[64]; //used in Read Sensor
     
     bool DumpGatttService(BLEDevice peripheral, char* uuid);
