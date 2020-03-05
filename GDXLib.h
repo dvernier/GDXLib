@@ -12,8 +12,10 @@ class GDXLib
     void autoID();//this is the function for the autoID code
     // it returns calibration information
     char* channelNameX()     { return _channelNameX ;};
+    char* deviceName()       { return _deviceName ;};
     char* channelUnits()     { return _channelUnits ;};
     uint8_t batteryPercent() { return _batteryPercent ;};
+    uint8_t chargeState()    { return _chargeState ;};
     byte RSSI()              { return _RSSI ;};
     
     void GoDirectBLE_Begin();
@@ -26,9 +28,11 @@ class GDXLib
  private:// also known as local  
     int  _channel;
     char _channelNameX[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
+    char _deviceName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
     char _channelUnits[66];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 66
     byte _RSSI;
     uint8_t _batteryPercent;
+    uint8_t _chargeState;
     unsigned long _samplePeriodInMilliseconds;// used in begin
     
     char _strBuffer[64]; //used in Read Sensor
@@ -64,6 +68,7 @@ class GDXLib
     const char* GoDirectBLE_GetOrderCode();
     const char* GoDirectBLE_GetChannelUnits();
     uint8_t GoDirectBLE_GetBatteryStatus();
+    uint8_t GoDirectBLE_GetChargeStatus();
     bool GoDirectBLE_DisplayChannelAsInteger();
     char* GoDirectBLE_GetChannelName();
     float GoDirectBLE_GetMeasurement();

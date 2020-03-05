@@ -9,6 +9,7 @@ Version 0.1
 GDXLib::GDXLib()
 {}
 char channelNameX[64];//60 bytes
+char deviceName[64];//60 bytes
 char channelUnits[36];// 32 bytes !!! I made these bigger to avoid problems
 int channelNumber;
 char sN[16];// 32 bytes this is an expermment
@@ -212,9 +213,11 @@ void GDXLib::autoID()
   Serial.println(_channelNameX);
   strcpy(_channelUnits, GDXLib::GoDirectBLE_GetChannelUnits());
   strcpy(_channelNameX, GoDirectBLE_GetChannelName());
+  strcpy(_deviceName, GoDirectBLE_GetDeviceName());
   //strcpy(_channelName, GoDirectBLE_GetChannelName());
   _RSSI=GoDirectBLE_GetScanRSSI(); 
   _batteryPercent=GoDirectBLE_GetBatteryStatus();
+  _chargeState   =GoDirectBLE_GetChargeStatus();
 
   }// end of AutoID function
   /*=============================================================================
@@ -1218,7 +1221,13 @@ uint8_t GDXLib::GoDirectBLE_GetBatteryStatus()
 {
   return g_status.batteryLevelPercent;
 }
-
+//=============================================================================
+// GoDirectBLE_GetChargeStatus() Function
+//=============================================================================
+uint8_t GDXLib::GoDirectBLE_GetChargeStatus()
+{
+  return g_status.chargerState;
+}
 //=============================================================================
 // GoDirectBLE_DisplayChannelAsInteger() Function
 //=============================================================================
