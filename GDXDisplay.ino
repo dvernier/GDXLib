@@ -9,6 +9,7 @@ void setup()
   // Initialize the debug serial port
   Serial.begin(9600);
   #if defined DEBUG1
+    // Initialize the character display
     CharDisplayInit();
     delay (200);
     CharDisplayPrintLine(1, "Looking for ");
@@ -21,19 +22,9 @@ void setup()
   //GDX.GoDirectBLE_Begin();//
   GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
   delay (1000);
+ 
   GDX.autoID();// this is the routine to get device info
   Serial.println ("Data Table:");
-  // Initialize the character display
- 
-}
- void loop()
-{
-  float channelReading =GDX.readSensor();
-  char strBuffer[64];
-  char units[18];
-
-  Serial.print("channelReading = ");
-  Serial.println(channelReading);
   //GDX.getChannelUnits(units, 18);//Jenny's method of getting a string
   //Serial.println(units);//"units returned Jenny's C way: ");
   Serial.print("RSSI ");
@@ -50,12 +41,25 @@ void setup()
   Serial.print("channelUnits: ");
   Serial.println(GDX.channelUnits());
   Serial.println();
+
+  GDX.Start();//
+  delay(10000);
+}
+ void loop()
+{
+  float channelReading =GDX.readSensor();
+  char strBuffer[64];
+  char units[18];
+
+  Serial.print("channelReading = ");
+  Serial.println(channelReading);
   #if defined DEBUG1
-    CharDisplayPrintLine(1, GDX.channelNameX());
+    sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+    //CharDisplayPrintLine(1, GDX.channelNameX());
     sprintf(strBuffer, "--- %s", units);
     CharDisplayPrintLine(2, strBuffer);
   #endif //DEBUG1
-
+                                                                                                                                            
   delay(1000);
 }
 

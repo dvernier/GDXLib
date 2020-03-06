@@ -20,7 +20,7 @@ class GDXLib
     
     void GoDirectBLE_Begin();
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
-    
+    void Start();
     float readSensor();//a public method
     char strBuffer[64]; //used in Read Sensor
     //static byte g_ReadBuffer[256];////used in Read Sensor

@@ -254,7 +254,7 @@ float GDXLib::readSensor()
   char strBuffer[64];
   if (!BLE.connected())
       GoDirectBLE_Start();//note this works without the "GDXLib."
-  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))//'g_ReadBuffer' was not declared in this scope
+  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 1000, g_measurement))//'g_ReadBuffer' was not declared in this scope
     GoDirectBLE_Start();
  channelReading=g_measurement;
   return channelReading;
@@ -1126,34 +1126,50 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   //Serial.print("***D2PIO_GetChannelInfoAll()");
   if (!D2PIO_GetChannelInfoAll())
     GoDirectBLE_Start();
+    
   if (g_autoConnect)
   {
     if (!D2PIO_Autoset())
       GoDirectBLE_Start();
   }//end if
+  
  // GoDirectBLE_GetStatus(strFW1, strFW2, batteryPercent);//!!!!DLV HACK 2/11/2020
   //Serial.print("***D2PIO_GetChannelInfo(g_channelNumber");
+ 
   if (!D2PIO_GetChannelInfo(g_channelNumber, false))
     GoDirectBLE_Start();
 
   //Serial.print("***D2PIO_SetMeasurementPeriod");
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
     GoDirectBLE_Start();
+  if (!BLE.connected())
+       GoDirectBLE_Start();
+       
   if (!D2PIO_StartMeasurements(g_channelNumber))
-    GoDirectBLE_Start();
-
+       GoDirectBLE_Start();
+   
   g_MeasurementCounter = 0;
   g_measurement = 0.0;
 
-  ////Serial.print("*** strbuffer ");
-  ////Serial.println(strbuffer);
 
-  //Serial.print("***g_measurement2 "); // this is good!!!!
-  //Serial.println(g_measurement);
-  //Serial.print("***g_MeasurementCounter2");
-  //Serial.println(g_MeasurementCounter);
-  }//end else
-}
+  } //end else
+  }// end of open
+  //=============================================================================
+//Start() Function
+//=============================================================================
+void GDXLib::Start()
+  {
+
+  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
+       GoDirectBLE_Start();
+  //Serial.print("*** strbuffer ");
+  //Serial.println(strbuffer);
+
+  Serial.print("***g_measurement2 "); // this is good!!!!
+  Serial.println(g_measurement);
+  Serial.print("***g_MeasurementCounter2");
+  Serial.println(g_MeasurementCounter);
+  }//end Start
 
 //=============================================================================
 // GoDirectBLE_GetStatus() Function
