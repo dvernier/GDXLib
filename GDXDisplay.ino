@@ -44,9 +44,8 @@ void setup()
 
   GDX.Start();//
   delay(10000);
-}
- void loop()
-{
+  for(int i=0; i<10; i++)
+  {
   float channelReading =GDX.readSensor();
   char strBuffer[64];
   char units[18];
@@ -61,6 +60,27 @@ void setup()
   #endif //DEBUG1
                                                                                                                                             
   delay(1000);
+  }//end of for
+  GDX.GoDirectBLE_End();
+  }// end of setup
+  
+ void loop()
+{
+  /*float channelReading =GDX.readSensor();
+  char strBuffer[64];
+  char units[18];
+
+  Serial.print("channelReading = ");
+  Serial.println(channelReading);
+  #if defined DEBUG1
+    sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+    //CharDisplayPrintLine(1, GDX.channelNameX());
+    sprintf(strBuffer, "--- %s", units);
+    CharDisplayPrintLine(2, strBuffer);
+  #endif //DEBUG1
+                                                                                                                                            
+  delay(1000);
+  */
 }
 
 void CharDisplayPrintLine(int line, const char* strText)
