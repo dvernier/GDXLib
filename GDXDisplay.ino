@@ -19,14 +19,16 @@ void setup()
     delay(2000);
   #endif //DEBUG1
  
-  delay(10000);//HACK
+  delay(2000);//HACK
 
   //GDX.GoDirectBLE_Begin();//
   GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
   delay (1000);   
  #if defined DEBUG1
-    CharDisplayPrintLine(1, "Found ");
-    CharDisplayPrintLine(2,"GDX-TMP 0F1038J5");
+ 
+    CharDisplayPrintLine(1, "RSSI ");
+   // sprintf(strBuffer, "%ld",GDX.getRSSI());
+   // CharDisplayPrintLine(2, strBuffer););
     delay(2000);
   #endif //DEBUG1
   GDX.autoID();// this is the routine to get device info
@@ -41,7 +43,7 @@ void setup()
     //Serial.println(units);//"units returned Jenny's C way: ");
   #endif //DEBUG1
   Serial.print("RSSI ");
-  //Serial.println(GDX.getRSSI());
+  //Serial.println();
   Serial.print("battery percent: ");
   Serial.println(GDX.batteryPercent());
   Serial.print("chargeState: ");
@@ -58,11 +60,18 @@ void setup()
     CharDisplayPrintLine(1, GDX.channelNameX());
     CharDisplayPrintLine(2,GDX.channelUnits());
     delay(2000);
+    CharDisplayPrintLine(1, "Found ");
+    CharDisplayPrintLine(2,GDX.deviceName());
+    delay(2000);
   #endif //DEBUG1
   GDX.Start();//
   delay(1000);
   #if defined DEBUG1
-    CharDisplayPrintLine(1, "After ");
+    CharDisplayPrintLine(1, "should be #");
+    float x=1234.56;
+    char y[10]="hello";
+    sprintf(strBuffer, "%.2f", x);
+    //sprintf(strBuffer, "%.2f %s", x,y);
     CharDisplayPrintLine(2,"GDX.Start()");
     delay(2000);
   #endif //DEBUG1
@@ -75,6 +84,7 @@ void setup()
     delay(1000);
   #endif //DEBUG1
   //float channelReading =12345.678;
+
   float channelReading =GDX.readSensor();
   Serial.println("in loop ");
   #if defined DEBUG1
