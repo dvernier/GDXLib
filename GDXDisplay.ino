@@ -22,8 +22,14 @@ void setup()
   //GDX.GoDirectBLE_Begin();//
   GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
   delay (1000);
+  CharDisplayPrintLine(1, "Found ");
+  CharDisplayPrintLine(2,"GDX-TMP 0F1038J5");
+  delay(2000);
  
   GDX.autoID();// this is the routine to get device info
+  CharDisplayPrintLine(1, "Doing ");
+  CharDisplayPrintLine(2,"AutoID");
+  delay(2000);
   Serial.println ("Data Table:");
   //GDX.getChannelUnits(units, 18);//Jenny's method of getting a string
   //Serial.println(units);//"units returned Jenny's C way: ");
@@ -41,15 +47,21 @@ void setup()
   Serial.print("channelUnits: ");
   Serial.println(GDX.channelUnits());
   Serial.println();
+  CharDisplayPrintLine(1, GDX.channelNameX());
+  CharDisplayPrintLine(2,GDX.channelUnits());
+  delay(2000);
 
   GDX.Start();//
-  delay(10000);
+  CharDisplayPrintLine(1, "After ");
+  CharDisplayPrintLine(2,"GDX.Start()");
+  delay(2000);
   for(int i=0; i<10; i++)
   {
   float channelReading =GDX.readSensor();
-  char strBuffer[64];
+  char strBuffer[32];
   char units[18];
-
+  CharDisplayPrintLine(1, "In ");
+  CharDisplayPrintLine(2,"loop");
   Serial.print("channelReading = ");
   Serial.println(channelReading);
   #if defined DEBUG1
