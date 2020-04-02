@@ -1,7 +1,7 @@
-//0402 9:06a
+//0402 9:12a
 #include <ArduinoBLE.h>
 #include "GDXLib.h"
-//#define DEBUG1//ADD FOR DISPLAY
+#define DEBUG1//ADD FOR DISPLAY
 GDXLib GDX;
 
 void setup()
@@ -80,7 +80,7 @@ void setup()
   {
       Serial.println("top of for ");
       #if defined DEBUG1
-        CharDisplayPrintLine(1,"top of  for ");
+        CharDisplayPrintLine(1,"top of for ");
         CharDisplayPrintLine(2,"            ");
         delay(500);
       #endif //DEBUG1

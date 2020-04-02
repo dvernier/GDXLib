@@ -251,13 +251,19 @@ void GDXLib::autoID()
 //=============================================================================!@
 float GDXLib::readSensor() 
 {
-  char strBuffer[64];
+  //char strBuffer[64];22
   if (!BLE.connected())
-      GoDirectBLE_Start();//note this works without the "GDXLib."
-  //if (!D2PIO_ReadMeasurement(g_ReadBuffer, 1000, g_measurement))//'g_ReadBuffer' was not declared in this scope
-  //  GoDirectBLE_Start();
- channelReading=g_measurement;
-  return channelReading;
+      {    
+        Serial.println("*** BLE.connected()failed!");
+        GoDirectBLE_Start();//note this works without the "GDXLib."
+      }
+  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 100, g_measurement))//'g_ReadBuffer' was not declared in this scope
+        {    
+        Serial.println("*** readMeasurement()failed!");
+        GoDirectBLE_Start();//note this works without the "GDXLib."
+        }
+    channelReading=g_measurement;
+    return channelReading;
   }
 
 // note that the begin methods are way below, but they should be set up
@@ -878,8 +884,8 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
   if (verbose)
   {
     Serial.print("***Channel[");
-    Serial.println(channelNumber);
-    //Serial.println("***] info:");
+    Serial.print(channelNumber);
+    Serial.println("***] info:");
     //Serial.print("***  Description: ");
     //Serial.println(pResponse->sensorDescription); 
     //strcpy(channelName, pResponse->sensorDescription);//!!!note this works, but is it the right channel?
