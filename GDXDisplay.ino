@@ -1,16 +1,15 @@
+//0402 9:06a
 #include <ArduinoBLE.h>
 #include "GDXLib.h"
-#define DEBUG1//ADD FOR DISPLAY
-
+//#define DEBUG1//ADD FOR DISPLAY
 GDXLib GDX;
 
 void setup()
 {
-  // Initialize the debug serial port
   Serial.begin(9600);
   char strBuffer[64];
   char units[18];
-  #if defined DEBUG1
+  #if defined DEBUG1 // Initialize the debug serial port
     // Initialize the character display
     CharDisplayInit();
     delay (200);
@@ -18,26 +17,17 @@ void setup()
     CharDisplayPrintLine(2, "GDX Sensor");
     delay(2000);
   #endif //DEBUG1
- 
-  delay(2000);//HACK
-
   //GDX.GoDirectBLE_Begin();//
-  GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
+  GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 100);
+  Serial.print(" Looking for GDX Sensor");  
   delay (1000);   
- #if defined DEBUG1
- 
+  #if defined DEBUG1
     CharDisplayPrintLine(1, "RSSI ");
     //sprintf(strBuffer, "%.ld", GDX.getRSSI());
     //CharDisplayPrintLine(2, strBuffer);
     delay(2000);
   #endif //DEBUG1
   GDX.autoID();// this is the routine to get device info
-  #if defined DEBUG1
-    CharDisplayPrintLine(1, "Doing ");
-    CharDisplayPrintLine(2,"AutoID");
-    delay(2000);  
-  #endif //DEBUG1
-  Serial.println ("Data Table:");
   #if defined DEBUG1
     //GDX.getChannelUnits(units, 18);//Jenny's method of getting a string
     //Serial.println(units);//"units returned Jenny's C way: ");
@@ -64,6 +54,7 @@ void setup()
     CharDisplayPrintLine(2,GDX.deviceName());
     delay(2000);
   #endif //DEBUG1
+  delay(2000);
   GDX.Start();//
   #if defined DEBUG1
     CharDisplayPrintLine(1, "float");
@@ -83,64 +74,53 @@ void setup()
     sprintf(strBuffer, "%.ld %s", xx,y);//this worked to display an int and a string
     Serial.println(strBuffer);
     CharDisplayPrintLine(2,strBuffer);
-    delay(2000);
+    delay(1000);
   #endif //DEBUG1
-  for(int i=0; i<10; i++)
+  for(int i=0; i<5; i++)
   {
-  Serial.println("top of  for ");
-  #if defined DEBUG1
-    CharDisplayPrintLine(1, "top of  for ");
-    CharDisplayPrintLine(2,"");
-    delay(1000);
-  #endif //DEBUG1
-  //float channelReading =12345.678;
-
-  float channelReading =GDX.readSensor();
-  Serial.println("in loop ");
-  #if defined DEBUG1
-    CharDisplayPrintLine(1, "In ");
-    //sprintf(strBuffer, "%.ld %s", channelReading," units");//this worked to display an int and a string
-    Serial.println(strBuffer);
-    delay(1000);
-  #endif //DEBUG1
-
-  Serial.print("channelReading = ");
-  Serial.println(channelReading);
-  #if defined DEBUG1
-    //sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
-    //CharDisplayPrintLine(1, GDX.channelNameX());
-    //sprintf(strBuffer, "--- %s", channelReading);
-    //sprintf(strBuffer, "--- %s", units);
-    //CharDisplayPrintLine(2, strBuffer);
-    delay(1000);
-  #endif //DEBUG1
+      Serial.println("top of for ");
+      #if defined DEBUG1
+        CharDisplayPrintLine(1,"top of  for ");
+        CharDisplayPrintLine(2,"            ");
+        delay(500);
+      #endif //DEBUG1
+      Serial.println("calling readSensor");
+      float channelReading =GDX.readSensor();
+      Serial.println("after calling readSensor");;
+      Serial.print("channelReading = ");
+      Serial.println(channelReading);
+      //sprintf(strBuffer, "%.ld %s", channelReading," units");
+      sprintf(strBuffer, "%.ld", channelReading);
+      Serial.print("strBuffer=");
+      Serial.println(strBuffer);
+      #if defined DEBUG1
+        CharDisplayPrintLine(1, "Sensor Reading");
+        CharDisplayPrintLine(2,strBuffer);
+        delay(1000);
+      #endif //DEBUG1
+      Serial.print("channelReading (again)= ");
+      Serial.println(channelReading);
+      delay(1000);
   }//end of for
   GDX.GoDirectBLE_End();
+  Serial.println ("Data Table:");
   }// end of setup
   
  void loop()
 {
-  #if defined DEBUG1
-   
-    //CharDisplayPrintLine(1, "in")
-    //CharDisplayPrintLine(2, "      loop");
-    delay(4000);
-  #endif //DEBUG1
-    /*float channelReading =GDX.readSensor();
+  Serial.println("top of loop ");  
   char strBuffer[64];
-  char units[18];
-
-  Serial.print("channelReading = ");
-  Serial.println(channelReading);
+  float channelReading =GDX.readSensor();
+  sprintf(strBuffer, "%.ld %s", channelReading," units");//this worked to display a float and a string
+  Serial.print(strBuffer);
+  Serial.print(" ");  
+  Serial.println(GDX.channelUnits());
   #if defined DEBUG1
-    sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+    //CharDisplayPrintLine(1, "Sensor Reading:);
     //CharDisplayPrintLine(1, GDX.channelNameX());
-    sprintf(strBuffer, "--- %s", units);
-    CharDisplayPrintLine(2, strBuffer);
+    //CharDisplayPrintLine(2, strBuffer);
   #endif //DEBUG1
-                                                                                                                                            
   delay(1000);
-  */
 }
 
 void CharDisplayPrintLine(int line, const char* strText)
