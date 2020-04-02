@@ -254,8 +254,8 @@ float GDXLib::readSensor()
   char strBuffer[64];
   if (!BLE.connected())
       GoDirectBLE_Start();//note this works without the "GDXLib."
-  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 1000, g_measurement))//'g_ReadBuffer' was not declared in this scope
-    GoDirectBLE_Start();
+  //if (!D2PIO_ReadMeasurement(g_ReadBuffer, 1000, g_measurement))//'g_ReadBuffer' was not declared in this scope
+  //  GoDirectBLE_Start();
  channelReading=g_measurement;
   return channelReading;
   }

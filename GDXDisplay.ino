@@ -8,7 +8,7 @@ void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  char strBuffer[32];
+  char strBuffer[64];
   char units[18];
   #if defined DEBUG1
     // Initialize the character display
@@ -27,8 +27,8 @@ void setup()
  #if defined DEBUG1
  
     CharDisplayPrintLine(1, "RSSI ");
-   // sprintf(strBuffer, "%ld",GDX.getRSSI());
-   // CharDisplayPrintLine(2, strBuffer););
+    //sprintf(strBuffer, "%.ld", GDX.getRSSI());
+    //CharDisplayPrintLine(2, strBuffer);
     delay(2000);
   #endif //DEBUG1
   GDX.autoID();// this is the routine to get device info
@@ -43,7 +43,7 @@ void setup()
     //Serial.println(units);//"units returned Jenny's C way: ");
   #endif //DEBUG1
   Serial.print("RSSI ");
-  //Serial.println();
+  //Serial.println(GDX.getRSSI());
   Serial.print("battery percent: ");
   Serial.println(GDX.batteryPercent());
   Serial.print("chargeState: ");
@@ -66,9 +66,6 @@ void setup()
   #endif //DEBUG1
   GDX.Start();//
   #if defined DEBUG1
-    CharDisplayPrintLine(1, "after ");
-    CharDisplayPrintLine(2,"GDX.Start()");
-    delay(1000);
     CharDisplayPrintLine(1, "float");
     float x=1234.56;
     char y[10]="hello";
@@ -83,7 +80,7 @@ void setup()
     int xx=1234;
     Serial.println(xx);
     //sprintf(strBuffer, "%.ld", xx);//this worked to display an int
-    sprintf(strBuffer, "%.ld %s", xx,y);/this worked to display an int and a string
+    sprintf(strBuffer, "%.ld %s", xx,y);//this worked to display an int and a string
     Serial.println(strBuffer);
     CharDisplayPrintLine(2,strBuffer);
     delay(2000);
@@ -102,7 +99,8 @@ void setup()
   Serial.println("in loop ");
   #if defined DEBUG1
     CharDisplayPrintLine(1, "In ");
-    CharDisplayPrintLine(2,"for");
+    //sprintf(strBuffer, "%.ld %s", channelReading," units");//this worked to display an int and a string
+    Serial.println(strBuffer);
     delay(1000);
   #endif //DEBUG1
 
