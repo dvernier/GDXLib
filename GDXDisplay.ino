@@ -18,8 +18,8 @@ void setup()
   #endif //DEBUG1
   
   //GDX.GoDirectBLE_Begin();//
-  GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
-  //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 4, 1000);
+  //GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
+  GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   
   delay (1000);
   GDX.autoID();// this is the routine to get device info

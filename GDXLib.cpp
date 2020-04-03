@@ -882,12 +882,7 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
     Serial.println("***] info:");
     Serial.print("***  Description: ");
     Serial.println(pResponse->sensorDescription); 
-    //DLV Hack for MD and SND !!!
-    if (deviceName.startsWith="GDX-MOT"):
-      g_channelNumber = 5  //Motion Detectors use channel 5 for distance
-    if  (deviceName.startsWith="GDX-SND")::
-      g_channelNumber = 2  //GDX-SND devices use channel 2 for Sound Level
-    strcpy(channelName, pResponse->sensorDescription);//!!!note this works, but is it the right channel?
+
     //Serial.print("***  ID: ");
     //Serial.println(pResponse->sensorId);
     //Serial.print("***  Measurement type: ");
