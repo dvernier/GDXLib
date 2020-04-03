@@ -1,43 +1,36 @@
+//0403 10a
 #include <ArduinoBLE.h>
 #include "GDXLib.h"
 #define DEBUG1//ADD FOR DISPLAY
-
 GDXLib GDX;
 
 void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
+  char strBuffer[64];
+  char units[18];
   #if defined DEBUG1
     CharDisplayInit();
     delay (200);
     CharDisplayPrintLine(1, "Looking for ");
     CharDisplayPrintLine(2, "GDX Sensor");
-    delay(2000);
   #endif //DEBUG1
- 
-  delay(10000);//HACK
-
+  
   //GDX.GoDirectBLE_Begin();//
   GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
+  //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 4, 1000);
+  
   delay (1000);
   GDX.autoID();// this is the routine to get device info
-  Serial.println ("Data Table:");
-  // Initialize the character display
- 
-}
- void loop()
-{
-  float channelReading =GDX.readSensor();
-  char strBuffer[64];
-  char units[18];
-
-  Serial.print("channelReading = ");
-  Serial.println(channelReading);
+  #if defined DEBUG1
+    CharDisplayPrintLine(1, "Found ");
+    CharDisplayPrintLine(2, GDX.deviceName());
+    delay(2000);
   //GDX.getChannelUnits(units, 18);//Jenny's method of getting a string
   //Serial.println(units);//"units returned Jenny's C way: ");
   Serial.print("RSSI ");
-  //Serial.println(GDX.getRSSI());
+  //Serial.println(GDX.getRSSI());//why does this fail????????????
   Serial.print("battery percent: ");
   Serial.println(GDX.batteryPercent());
   Serial.print("chargeState: ");
@@ -48,15 +41,49 @@ void setup()
   Serial.print("deviceName: ");
   Serial.println(GDX.deviceName());
   Serial.print("channelUnits: ");
-  Serial.println(GDX.channelUnits());
-  Serial.println();
+  strcpy(units,GDX.channelUnits());
+  Serial.print(units);
+  Serial.println(atoi(units));
+  if (atoi(units)<1)
+    strcpy(units,"degrees");
+  /*CharDisplayPrintLine(1, "float");
+  float x=1234.56;
+  char y[10]="hello";
+  Serial.println(x);
+  Serial.println(y);
+  //sprintf(strBuffer, "%.2f", x);//this worked to display a float
+  sprintf(strBuffer, "%.2f %s", x,y);//this worked to display a float and string
+  Serial.println(strBuffer);
+  CharDisplayPrintLine(2,strBuffer);
+  delay(2000);
+  CharDisplayPrintLine(1, "integer");
+  int xx=1234;
+  Serial.println(xx);
+  //sprintf(strBuffer, "%.ld", xx);//this worked to display an int
+  sprintf(strBuffer, "%.ld %s", xx,y);//this worked to display an int and a string
+  Serial.println(strBuffer);
+  CharDisplayPrintLine(2,strBuffer);
+  delay(1000);
+  */
+  #endif //DEBUG1
+  Serial.println ("Data Table:");
+}
+ void loop()
+{
+  float channelReading =GDX.readSensor();
+  char strBuffer[64];
+  char units[18];
+  Serial.print("channelReading = ");
+  Serial.println(channelReading);
   #if defined DEBUG1
     CharDisplayPrintLine(1, GDX.channelNameX());
-    sprintf(strBuffer, "--- %s", units);
-    CharDisplayPrintLine(2, strBuffer);
+    sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
+    Serial.println(strBuffer);
+    CharDisplayPrintLine(2,strBuffer);
+    delay(2000);
   #endif //DEBUG1
-
   delay(1000);
+  //GDX.GoDirectBLE_End();//sometime!!!!!!!!
 }
 
 void CharDisplayPrintLine(int line, const char* strText)
