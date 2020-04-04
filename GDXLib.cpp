@@ -531,7 +531,8 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
 {
   byte offset = 0;
   int timeoutCounter = 0;
-
+  Serial.print("***g_d2pioResponse =");//HACK!!!!!!!!!!
+  Serial.println(g_d2pioResponse);  
   // Return immediately if there is nothing to do.
   if (!g_d2pioResponse.valueUpdated()) return false;
 

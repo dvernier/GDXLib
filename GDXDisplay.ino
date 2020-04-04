@@ -1,4 +1,4 @@
-//0403 10a
+//0403 2p
 #include <ArduinoBLE.h>
 #include "GDXLib.h"
 #define DEBUG1//ADD FOR DISPLAY
@@ -18,8 +18,8 @@ void setup()
   #endif //DEBUG1
   
   //GDX.GoDirectBLE_Begin();//
-  //GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
-  GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
+  GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
+  //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   
   delay (1000);
   GDX.autoID();// this is the routine to get device info
@@ -77,6 +77,7 @@ void setup()
   Serial.println(channelReading);
   #if defined DEBUG1
     CharDisplayPrintLine(1, GDX.channelNameX());
+    //strcpy(units,"degrees C");////hack !!!!!!!
     sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
     Serial.println(strBuffer);
     CharDisplayPrintLine(2,strBuffer);
