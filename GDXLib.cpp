@@ -251,13 +251,13 @@ void GDXLib::autoID()
 //=============================================================================!@
 float GDXLib::readSensor() 
 {
-  //char strBuffer[64];//this is not in Kevin's code
-  if (!BLE.connected())
-      GoDirectBLE_Start();
-  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
-    GoDirectBLE_Start();
-  channelReading=g_measurement;
-  return channelReading;
+  //char strBuffer[64];//this is not in Kevin's code//1
+  if (!BLE.connected())//2
+      GoDirectBLE_Start();//3
+  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))//4
+    GoDirectBLE_Start();//5
+  channelReading=g_measurement;//6
+  return channelReading;//7
   }
 
 // note that the begin methods are way below, but they should be set up
@@ -275,13 +275,13 @@ bool GDXLib::DumpGatttService(BLEDevice peripheral, char* uuid)
   // Discover peripheral attributes
   delay(2000);
   //Serial.println("***Discovering service attributes ...");
-  if (!peripheral.discoverService(uuid))
-  {
-    Serial.println("***Service attribute discovery failed!");
-    return false;
+  if (!peripheral.discoverService(uuid))//1
+  {//2
+    Serial.println("***Service attribute discovery failed!");//3
+    return false;//4
   }
 
-  int totalServices = peripheral.serviceCount();
+  int totalServices = peripheral.serviceCount();//5
   if (totalServices < 1) return false;
 
   Serial.print("**Found ");
@@ -385,11 +385,11 @@ bool GDXLib::GDXLib::D2PIO_DiscoverService(BLEDevice peripheral)
   // --------------------------------------------
   // Discover the D2PIO service
   // --------------------------------------------
-  //Serial.println("***Discovering D2PIO service attributes ...");
-  if (!peripheral.discoverService(uuidService))
-  {
-    Serial.println("***ERROR: D2PIO service attribute discovery failed!");
-    return false;
+  //Serial.println("***Discovering D2PIO service attributes ...");//2
+  if (!peripheral.discoverService(uuidService))//2
+  {//3
+    Serial.println("***ERROR: D2PIO service attribute discovery failed!");//4
+    return false;//5//
   }
   //Serial.print("***Found D2PIO service ");
   //Serial.println(peripheral.service(uuidService).uuid());
@@ -472,22 +472,20 @@ bool GDXLib::D2PIO_Write(const byte buffer[])
   byte lengthChunk;
   byte offset = 0;
 
-  while (lengthRemaining > 0)
-  {
-    lengthChunk = lengthRemaining;
-    //if (lengthChunk > 20) lengthChunk = 20;
+  while (lengthRemaining > 0)//1
+  { //2
+    lengthChunk = lengthRemaining;//3
+    //if (lengthChunk > 20) lengthChunk = 20;//4
+    if (!g_d2pioCommand.writeValue(&buffer[offset], lengthChunk))//5
+    {//6
+      Serial.println("***ERROR: D2PIO_Init write failed");//7
+      return false;//8
+    }//9
+    lengthRemaining = lengthRemaining - lengthChunk;//10
+    offset = offset + lengthChunk;//11
+  }//12
 
-    if (!g_d2pioCommand.writeValue(&buffer[offset], lengthChunk))
-    {
-      Serial.println("***ERROR: D2PIO_Init write failed");
-      return false;
-    }
-
-    lengthRemaining = lengthRemaining - lengthChunk;
-    offset = offset + lengthChunk;
-  }
-
-  return true;
+  return true;//7
 }
 
 //=============================================================================
@@ -1065,9 +1063,9 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   BLE.begin();
   //Serial.print("***BLE reset");
   // Cleanup any old connections //Kevin's reset
-  if (BLE.connected())
-    BLE.disconnect();
-  //start scanning:
+  if (BLE.connected())//1
+    BLE.disconnect();//2
+  //start scanning://3
   if (g_autoConnect)
     BLE.scan(true);
   else

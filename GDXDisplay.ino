@@ -2,6 +2,7 @@
 #include <ArduinoBLE.h>
 #include "GDXLib.h"
 #define DEBUG1//ADD FOR DISPLAY
+//#define DEBUG2//C and F temperature
 GDXLib GDX;
 
 void setup()
@@ -13,14 +14,21 @@ void setup()
   #if defined DEBUG1
     CharDisplayInit();
     delay (200);
+  #endif //DEBUG1
+  #if defined DEBUG2
+    Serial.print  ("special version  ");
+    Serial.println("C and F temp only");
+    CharDisplayPrintLine(1, "special version ");
+    CharDisplayPrintLine(2, "C & F temp only ");
+    delay (3000);
+  #endif //DEBUG2
+  #if defined DEBUG1
     CharDisplayPrintLine(1, "Looking for ");
     CharDisplayPrintLine(2, "GDX Sensor");
   #endif //DEBUG1
-  
   //GDX.GoDirectBLE_Begin();//
-  GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
-  //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
-  
+  //GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
+  GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   delay (1000);
   GDX.autoID();// this is the routine to get device info
   #if defined DEBUG1
@@ -77,12 +85,24 @@ void setup()
   Serial.println(channelReading);
   #if defined DEBUG1
     CharDisplayPrintLine(1, GDX.channelNameX());
-    //strcpy(units,"degrees C");////hack !!!!!!!
     sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
+    #if defined DEBUG2
+      strcpy(units,"degrees C");////hack !!!!!!!
+      sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
+    #endif //DEBUG2
     Serial.println(strBuffer);
     CharDisplayPrintLine(2,strBuffer);
     delay(2000);
+    #if defined DEBUG2
+      float tempF= channelReading*1.8+32;//convert C to F degrees  HACK
+      strcpy(units,"degrees F");////hack !!!!!!!
+      sprintf(strBuffer, "%.2f %s", tempF,units);//this worked to display a float and string
+      Serial.println(strBuffer);
+      CharDisplayPrintLine(2,strBuffer);
+      delay(2000);
+    #endif //DEBUG2
   #endif //DEBUG1
+  
   delay(1000);
   //GDX.GoDirectBLE_End();//sometime!!!!!!!!
 }
