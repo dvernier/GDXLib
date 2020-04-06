@@ -1,8 +1,15 @@
-//0403 2p
-#include <ArduinoBLE.h>
+//0405 CURIE SUPPORTED VERSION
+//#define DEBUG3//FOR USING CURIE BOARD Arduino 101
+#if defined DEBUG3
+ //!!!!!!! #include <CurieBLE.h>
+#else
+  #include "ArduinoBLE.h"
+#endif
 #include "GDXLib.h"
 #define DEBUG1//ADD FOR DISPLAY
 //#define DEBUG2//C and F temperature
+//#define DEBUG3//to support Arduino 101, instead of Arduino BLE
+//#define DEBUG4//to display battery status and other info
 GDXLib GDX;
 
 void setup()
@@ -27,24 +34,25 @@ void setup()
     CharDisplayPrintLine(2, "GDX Sensor");
   #endif //DEBUG1
   //GDX.GoDirectBLE_Begin();//
-  //GDX.GoDirectBLE_Begin("GDX-TMP 0F1038J5", 1, 1000);
-  GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
+  GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 1000);
+  //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   delay (1000);
   GDX.autoID();// this is the routine to get device info
+  Serial.print("Found: ");
+  Serial.println(GDX.deviceName());
   #if defined DEBUG1
     CharDisplayPrintLine(1, "Found ");
     CharDisplayPrintLine(2, GDX.deviceName());
     delay(2000);
-  //GDX.getChannelUnits(units, 18);//Jenny's method of getting a string
-  //Serial.println(units);//"units returned Jenny's C way: ");
+  #endif //DEBUG2
   Serial.print("RSSI ");
-  //Serial.println(GDX.getRSSI());//why does this fail????????????
+  Serial.println(GDX.RSSI());
   Serial.print("battery percent: ");
   Serial.println(GDX.batteryPercent());
   Serial.print("chargeState: ");
   Serial.print(GDX.chargeState());
   Serial.println(" 0 =idle, 1= charging, 2= complete, 3= error");
-  Serial.print("channelName: ");
+  Serial.print("ChannelName: ");
   Serial.println(GDX.channelNameX());
   Serial.print("deviceName: ");
   Serial.println(GDX.deviceName());
@@ -54,26 +62,18 @@ void setup()
   Serial.println(atoi(units));
   if (atoi(units)<1)
     strcpy(units,"degrees");
-  /*CharDisplayPrintLine(1, "float");
-  float x=1234.56;
-  char y[10]="hello";
-  Serial.println(x);
-  Serial.println(y);
-  //sprintf(strBuffer, "%.2f", x);//this worked to display a float
-  sprintf(strBuffer, "%.2f %s", x,y);//this worked to display a float and string
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(2,strBuffer);
-  delay(2000);
-  CharDisplayPrintLine(1, "integer");
-  int xx=1234;
-  Serial.println(xx);
-  //sprintf(strBuffer, "%.ld", xx);//this worked to display an int
-  sprintf(strBuffer, "%.ld %s", xx,y);//this worked to display an int and a string
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(2,strBuffer);
-  delay(1000);
-  */
-  #endif //DEBUG1
+  #if defined DEBUG1
+    CharDisplayPrintLine(1, "battery percent:");
+    sprintf(strBuffer, "%.d", GDX.batteryPercent());
+    CharDisplayPrintLine(2, strBuffer);
+    delay(1000);
+    CharDisplayPrintLine(1, "chargeState: ");
+    sprintf(strBuffer, "%.d", GDX.chargeState());
+    CharDisplayPrintLine(2, strBuffer);
+    delay(2000);
+    CharDisplayPrintLine(1, "ChannelName: ");
+    CharDisplayPrintLine(2, GDX.channelNameX());
+   #endif //DEBUG1
   Serial.println ("Data Table:");
 }
  void loop()

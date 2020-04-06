@@ -69,13 +69,13 @@ class GDXLib
     const char* GoDirectBLE_GetChannelUnits();
     uint8_t GoDirectBLE_GetBatteryStatus();
     uint8_t GoDirectBLE_GetChargeStatus();
+    byte GoDirectBLE_GetRSSI();
+    //byte GoDirectBLE_GetScanRSSI();
     bool GoDirectBLE_DisplayChannelAsInteger();
     char* GoDirectBLE_GetChannelName();
     float GoDirectBLE_GetMeasurement();
     void GoDirectBLE_End();
-    void GoDirectBLE_Test();
-    void GoDirectBLE_Test2();
-    void GoDirectBLE_Test3();
+
     //uint8_t getBatteryStatus();//cannot be overloaded
 };
 #endif
