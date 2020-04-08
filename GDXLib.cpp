@@ -484,32 +484,31 @@ void GDXLib::D2PIO_Dump(const char* strPrefix, const byte buffer[])
 //=============================================================================
 // D2PIO_Write() Function
 //=============================================================================
-bool GDXLib::D2PIO_Write(const byte buffer[])
+bool D2PIO_Write(const byte buffer[])
 {
-  D2PIO_Dump("D2PIO >> ", buffer);
+    D2PIO_Dump("D2PIO >> ", buffer);
 
-  byte lengthRemaining = buffer[1];
-  byte lengthChunk;
-  byte offset = 0;
-
- while (lengthRemaining > 0)
-  {
-    lengthChunk = lengthRemaining;
-    //if (lengthChunk > 20) lengthChunk = 20;
-
-    if (!g_d2pioCommand.writeValue(&buffer[offset], lengthChunk))
+    byte lengthRemaining = buffer[1];    
+    byte lengthChunk;
+    byte offset = 0;
+    
+    while (lengthRemaining > 0)
     {
-      Serial.println("***ERROR: D2PIO_Init write failed");
-      return false;
+      lengthChunk = lengthRemaining;
+      //if (lengthChunk > 20) lengthChunk = 20;
+    
+      if (!g_d2pioCommand.writeValue(&buffer[offset], lengthChunk))
+      {
+        Serial.println("ERROR: D2PIO_Init write failed");
+        return false;
+      }
+
+      lengthRemaining = lengthRemaining - lengthChunk;
+      offset = offset + lengthChunk;
     }
-
-    lengthRemaining = lengthRemaining - lengthChunk;
-    offset = offset + lengthChunk;
-  }
-
-  return true;
+    
+    return true;
 }
-
 
 //=============================================================================
 // D2PIO_ReadBlocking() Function

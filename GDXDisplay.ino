@@ -1,16 +1,13 @@
-//0405 CURIE SUPPORTED VERSION
-//#define DEBUG3//FOR USING CURIE BOARD Arduino 101
-#if defined DEBUG3
- //!!!!!!! #include <CurieBLE.h>
-#else
-  #include "ArduinoBLE.h"
-#endif
+//04082020
+
 #include "GDXLib.h"
+GDXLib GDX;
+#include "ArduinoBLE.h"
 #define DEBUG1//ADD FOR DISPLAY
 //#define DEBUG2//C and F temperature
-//#define DEBUG3//to support Arduino 101, instead of Arduino BLE
-//#define DEBUG4//to display battery status and other info
-GDXLib GDX;
+//#define DEBUG3//to support Arduino 101, instead of Arduino BLE, also search for ###
+#define DEBUG4//to display battery status, RSSI, and other info
+
 
 void setup()
 {
@@ -32,9 +29,10 @@ void setup()
   #if defined DEBUG1
     CharDisplayPrintLine(1, "Looking for ");
     CharDisplayPrintLine(2, "GDX Sensor");
-  #endif //DEBUG1
-  //GDX.GoDirectBLE_Begin();//
-  GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 1000);
+    #endif //DEBUG1
+
+  GDX.GoDirectBLE_Begin();//
+  //GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 1000);
   //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   delay (1000);
   GDX.autoID();// this is the routine to get device info
@@ -62,7 +60,7 @@ void setup()
   Serial.println(atoi(units));
   if (atoi(units)<1)
     strcpy(units,"degrees");
-  #if defined DEBUG1
+  #if defined DEBUG4
     CharDisplayPrintLine(1, "battery percent:");
     sprintf(strBuffer, "%.d", GDX.batteryPercent());
     CharDisplayPrintLine(2, strBuffer);
@@ -71,9 +69,13 @@ void setup()
     sprintf(strBuffer, "%.d", GDX.chargeState());
     CharDisplayPrintLine(2, strBuffer);
     delay(2000);
+    CharDisplayPrintLine(1, "RSSI ");
+    sprintf(strBuffer, "%.d",(GDX.RSSI()));
+    CharDisplayPrintLine(2, strBuffer);
+    delay(2000);
     CharDisplayPrintLine(1, "ChannelName: ");
     CharDisplayPrintLine(2, GDX.channelNameX());
-   #endif //DEBUG1
+   #endif //DEBUG4
   Serial.println ("Data Table:");
 }
  void loop()
