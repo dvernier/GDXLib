@@ -1,10 +1,10 @@
 //04092020 8a
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-#define TWO-LINE DISPLAY//ADD FOR DISPLAY
-//#define C&F VERSION//C and F temperature
-//#define CURIE VERSION//to support Arduino 101, instead of Arduino BLE, also search for ###
-#define DISPLAY STATUS//to display battery status, RSSI, and other info
+#define TWO-LINE_DISPLAY//ADD FOR DISPLAY
+//#define C&F_VERSION//C and F temperature
+//#define CURIE_VERSION//to support Arduino 101, instead of Arduino BLE, also search for ###
+#define STATUS//to display battery status, RSSI, and other info
 GDXLib GDX;
 
 void setup()
@@ -13,21 +13,21 @@ void setup()
   Serial.begin(9600);
   char strBuffer[65];//I changed to 65 in despiration
   char units[18];
-  #if defined TWO-LINE DISPLAY
+  #if defined TWO-LINE_DISPLAY
     CharDisplayInit();
     delay (200);
-  #endif //TWO-LINE DISPLAY
-  #if defined C&F VERSION
+  #endif //TWO-LINE_DISPLAY
+  #if defined C&F_VERSION
     Serial.print  ("special version  ");
     Serial.println("C and F temp only");
     CharDisplayPrintLine(1, "special version ");
     CharDisplayPrintLine(2, "C & F temp only ");
     delay (3000);
-  #endif //C&F VERSION
-  #if defined TWO-LINE DISPLAY
+  #endif //C&F_VERSION
+  #if defined TWO-LINE_DISPLAY
     CharDisplayPrintLine(1, "Looking for ");
     CharDisplayPrintLine(2, "GDX Sensor");
-    #endif //TWO-LINE DISPLAY
+    #endif //TWO-LINE_DISPLAY
   //GDX.GoDirectBLE_Begin();//
   GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 1000);
   //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
@@ -35,18 +35,18 @@ void setup()
   GDX.autoID();// this is the routine to get device info
   Serial.print("Found: ");
   Serial.println(GDX.deviceName());
-  #if defined TWO-LINE DISPLAY
+  #if defined TWO-LINE_DISPLAY
     CharDisplayPrintLine(1, "Found ");
     CharDisplayPrintLine(2, GDX.deviceName());
     delay(2000);
-  #endif //C&F VERSION
+  #endif //C&F_VERSION
   Serial.print("RSSI ");
   Serial.println(GDX.RSSI());
   Serial.print("battery percent: ");
   Serial.println(GDX.batteryPercent());
   Serial.print("chargeState: ");
   Serial.print(GDX.chargeState());
-  Serial.println(" 0 =idle, 1= charging, 2= complete, 3= error");
+  Serial.println(" ( =idle, 1= charging, 2= complete, 3= error)");
   Serial.print("ChannelName: ");
   Serial.println(GDX.channelNameX());
   Serial.print("deviceName: ");
@@ -57,25 +57,25 @@ void setup()
   Serial.println(atoi(units));
   if (atoi(units)<1)
     strcpy(units,"degrees");
-  #if defined DISPLAY STATUS
+  #if defined STATUS
     CharDisplayPrintLine(1, "battery percent:");
     sprintf(strBuffer, "%.d", GDX.batteryPercent());
     CharDisplayPrintLine(2, strBuffer);
     delay(1000);
     #define D2PIO_CHARGER_STATE_IDLE     0 
-    switch(GDX.chargeState()
+    switch(GDX.chargeState())
     {
       case 0:
-        strBuffer="not connected"
+        strcpy(strBuffer,"not connected");
         break;
       case 1:
-        strBuffer="charging"
+        strcpy(strBuffer,"charging");
         break;
       case 2:
-        strBuffer="complete"
+        strcpy(strBuffer,"complete");
         break;
       case 3:
-        strBuffer="error"
+        strcpy(strBuffer,"error");
         break;
       }
     CharDisplayPrintLine(1, "chargeState: ");
@@ -97,25 +97,25 @@ void setup()
   char units[18];
   Serial.print("channelReading = ");
   Serial.println(channelReading);
-  #if defined TWO-LINE DISPLAY
+  #if defined TWO-LINE_DISPLAY
     CharDisplayPrintLine(1, GDX.channelNameX());
     sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
-    #if defined C&F VERSION
+    #if defined C&F_VERSION
       strcpy(units,"degrees C");////hack !!!!!!!
       sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
-    #endif //C&F VERSION
+    #endif //C&F_VERSION
     Serial.println(strBuffer);
     CharDisplayPrintLine(2,strBuffer);
     delay(2000);
-    #if defined C&F VERSION
+    #if defined C&F_VERSION
       float tempF= channelReading*1.8+32;//convert C to F degrees  HACK
       strcpy(units,"degrees F");////hack !!!!!!!
       sprintf(strBuffer, "%.2f %s", tempF,units);//this worked to display a float and string
       Serial.println(strBuffer);
       CharDisplayPrintLine(2,strBuffer);
       delay(2000);
-    #endif //C&F VERSION
-  #endif //TWO-LINE DISPLAY
+    #endif //C&F_VERSION
+  #endif //TWO-LINE_DISPLAY
   
   delay(1000);
   //GDX.GoDirectBLE_End();//sometime!!!!!!!!
