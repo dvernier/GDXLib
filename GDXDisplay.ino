@@ -1,10 +1,10 @@
 //04092020 8a
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-#define TWO-LINE_DISPLAY//ADD FOR DISPLAY
+//#define TWO-LINE_DISPLAY//ADD FOR DISPLAY
 //#define C&F_VERSION//C and F temperature
 //#define CURIE_VERSION//to support Arduino 101, instead of Arduino BLE, also search for ###
-#define STATUS//to display battery status, RSSI, and other info
+//#define STATUS//to display battery status, RSSI, and other info
 GDXLib GDX;
 
 void setup()
@@ -29,7 +29,8 @@ void setup()
     CharDisplayPrintLine(2, "GDX Sensor");
     #endif //TWO-LINE_DISPLAY
   //GDX.GoDirectBLE_Begin();//
-  GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 1000);
+  //GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 500);
+  GDX.GoDirectBLE_Begin("GDX-FOR 072001P5", 1, 500);
   //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   delay (1000);
   GDX.autoID();// this is the routine to get device info
@@ -42,18 +43,19 @@ void setup()
   #endif //C&F_VERSION
   Serial.print("RSSI ");
   Serial.println(GDX.RSSI());
-  Serial.print("battery percent: ");
-  Serial.println(GDX.batteryPercent());
-  Serial.print("chargeState: ");
+  Serial.print("battery: ");
+  Serial.print(GDX.batteryPercent());
+  Serial.println(" Percent");
+  Serial.print("ChargeState: ");
   Serial.print(GDX.chargeState());
-  Serial.println(" ( =idle, 1= charging, 2= complete, 3= error)");
+  Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
   Serial.print("ChannelName: ");
   Serial.println(GDX.channelNameX());
-  Serial.print("deviceName: ");
+  Serial.print("DeviceName: ");
   Serial.println(GDX.deviceName());
-  Serial.print("channelUnits: ");
+  Serial.print("ChannelUnits: ");
   strcpy(units,GDX.channelUnits());
-  Serial.print(units);
+  Serial.print(Units);
   Serial.println(atoi(units));
   if (atoi(units)<1)
     strcpy(units,"degrees");
