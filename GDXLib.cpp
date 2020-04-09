@@ -4,7 +4,7 @@ Version 0.1
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"
-//#define GDXLib_LIB_VERSION "0.1"//automatically displayed
+#define GDXLib_LIB_VERSION "0.1"//automatically displayed
 
 GDXLib::GDXLib()
 {}
