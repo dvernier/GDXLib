@@ -1,7 +1,7 @@
 //04092020 8a
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//#define TWO-LINE_DISPLAY//ADD FOR DISPLAY
+#define TWO-LINE_DISPLAY//ADD FOR DISPLAY
 //#define C&F_VERSION//C and F temperature
 //#define CURIE_VERSION//to support Arduino 101, instead of Arduino BLE, also search for ###
 //#define STATUS//to display battery status, RSSI, and other info
@@ -11,8 +11,8 @@ void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  char strBuffer[65];//I changed to 65 in despiration
-  char units[18];
+  char strBuffer[64];//I changed to 64 in despiration
+  static char units[16];
   #if defined TWO-LINE_DISPLAY
     CharDisplayInit();
     delay (200);
@@ -30,7 +30,7 @@ void setup()
     #endif //TWO-LINE_DISPLAY
   //GDX.GoDirectBLE_Begin();//
   //GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 500);
-  GDX.GoDirectBLE_Begin("GDX-FOR 072001P5", 1, 500);
+  GDX.GoDirectBLE_Begin("GDX-FOR 072001P5", 1, 500);//note less than loop time
   //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   delay (1000);
   GDX.autoID();// this is the routine to get device info
@@ -55,13 +55,13 @@ void setup()
   Serial.println(GDX.deviceName());
   Serial.print("ChannelUnits: ");
   strcpy(units,GDX.channelUnits());
-  Serial.print(Units);
+  Serial.print(units);
   Serial.println(atoi(units));
   if (atoi(units)<1)
     strcpy(units,"degrees");
   #if defined STATUS
     CharDisplayPrintLine(1, "battery percent:");
-    sprintf(strBuffer, "%.d", GDX.batteryPercent());
+    sprintf(strBuffer, "%.1d", GDX.batteryPercent());
     CharDisplayPrintLine(2, strBuffer);
     delay(1000);
     #define D2PIO_CHARGER_STATE_IDLE     0 
@@ -84,7 +84,7 @@ void setup()
     CharDisplayPrintLine(2, strBuffer);
     delay(2000);
     CharDisplayPrintLine(1, "RSSI ");
-    sprintf(strBuffer, "%.d",(GDX.RSSI()));
+    sprintf(strBuffer, "%.1d",(GDX.RSSI()));
     CharDisplayPrintLine(2, strBuffer);
     delay(2000);
     CharDisplayPrintLine(1, "ChannelName: ");
@@ -96,12 +96,13 @@ void setup()
 {
   float channelReading =GDX.readSensor();
   char strBuffer[64];
-  char units[18];
+  static char units[16];
   Serial.print("channelReading = ");
   Serial.println(channelReading);
   #if defined TWO-LINE_DISPLAY
     CharDisplayPrintLine(1, GDX.channelNameX());
     sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
+    sprintf(strBuffer, "%.2f %s", channelReading,units);
     #if defined C&F_VERSION
       strcpy(units,"degrees C");////hack !!!!!!!
       sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
