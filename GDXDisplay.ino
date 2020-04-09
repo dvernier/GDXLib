@@ -1,13 +1,11 @@
 //04082020
-
-#include "GDXLib.h"
-GDXLib GDX;
 #include "ArduinoBLE.h"
+#include "GDXLib.h"
 #define DEBUG1//ADD FOR DISPLAY
 //#define DEBUG2//C and F temperature
 //#define DEBUG3//to support Arduino 101, instead of Arduino BLE, also search for ###
 #define DEBUG4//to display battery status, RSSI, and other info
-
+GDXLib GDX;
 
 void setup()
 {

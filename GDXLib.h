@@ -20,8 +20,9 @@ class GDXLib
     
     void GoDirectBLE_Begin();
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
-    
+    void Start();
     float readSensor();//a public method
+    void GoDirectBLE_End();
     char strBuffer[64]; //used in Read Sensor
     //static byte g_ReadBuffer[256];////used in Read Sensor
     
@@ -69,13 +70,12 @@ class GDXLib
     const char* GoDirectBLE_GetChannelUnits();
     uint8_t GoDirectBLE_GetBatteryStatus();
     uint8_t GoDirectBLE_GetChargeStatus();
-    byte GoDirectBLE_GetRSSI();
-    //byte GoDirectBLE_GetScanRSSI();
     bool GoDirectBLE_DisplayChannelAsInteger();
     char* GoDirectBLE_GetChannelName();
     float GoDirectBLE_GetMeasurement();
-    void GoDirectBLE_End();
-
+    void GoDirectBLE_Test();
+    void GoDirectBLE_Test2();
+    void GoDirectBLE_Test3();
     //uint8_t getBatteryStatus();//cannot be overloaded
 };
 #endif
