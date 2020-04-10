@@ -1,51 +1,52 @@
 //04092020 8a
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-#define TWO-LINE_DISPLAY//ADD FOR DISPLAY
-//#define C&F_VERSION//C and F temperature
-//#define CURIE_VERSION//to support Arduino 101, instead of Arduino BLE, also search for ###
-//#define STATUS//to display battery status, RSSI, and other info
+#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
+//#define C_F_VERSION //C and F temperature on DISPLAY
+//#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ###
+//#define STATUS //to display battery status, RSSI, and other info
 GDXLib GDX;
+static char strUnits[16];
 
 void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
   char strBuffer[64];//I changed to 64 in despiration
-  static char units[16];
-  #if defined TWO-LINE_DISPLAY
+
+  #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
     delay (200);
-  #endif //TWO-LINE_DISPLAY
-  #if defined C&F_VERSION
+  #endif //TWO_LINE_DISPLAY
+  #if defined C_F_VERSION
     Serial.print  ("special version  ");
     Serial.println("C and F temp only");
     CharDisplayPrintLine(1, "special version ");
     CharDisplayPrintLine(2, "C & F temp only ");
     delay (3000);
-  #endif //C&F_VERSION
+  #endif //C_F_VERSION
   #if defined TWO-LINE_DISPLAY
     CharDisplayPrintLine(1, "Looking for ");
     CharDisplayPrintLine(2, "GDX Sensor");
-    #endif //TWO-LINE_DISPLAY
+    #endif //TWO_LINE_DISPLAY
   //GDX.GoDirectBLE_Begin();//
-  //GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 500);
-  GDX.GoDirectBLE_Begin("GDX-FOR 072001P5", 1, 500);//note less than loop time
+  GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 500);
+  //GDX.GoDirectBLE_Begin("GDX-FOR 072001P5", 1, 500);//note less than loop time
   //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   delay (1000);
   GDX.autoID();// this is the routine to get device info
   Serial.print("Found: ");
   Serial.println(GDX.deviceName());
-  #if defined TWO-LINE_DISPLAY
+  #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Found ");
     CharDisplayPrintLine(2, GDX.deviceName());
     delay(2000);
-  #endif //C&F_VERSION
+  #endif //TWO_LINE_DISPLAY
   Serial.print("RSSI ");
   Serial.println(GDX.RSSI());
   Serial.print("battery: ");
   Serial.print(GDX.batteryPercent());
-  Serial.println(" Percent");
+  Serial.println(" %");
   Serial.print("ChargeState: ");
   Serial.print(GDX.chargeState());
   Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
@@ -54,17 +55,20 @@ void setup()
   Serial.print("DeviceName: ");
   Serial.println(GDX.deviceName());
   Serial.print("ChannelUnits: ");
-  strcpy(units,GDX.channelUnits());
-  Serial.print(units);
-  Serial.println(atoi(units));
-  if (atoi(units)<1)
-    strcpy(units,"degrees");
+  // Cache the unit string and try to remap special UTF8
+  // characters to ones that we can display.
+  sprintf(strUnits, "%s", GDX.channelUnits());
+  ConvertUTF8ToASCII(strUnits);
+  Serial.print("strUnits ");
+  Serial.print(strUnits);
+  CharDisplayPrintLine(1, GDX.channelNameX());
+  sprintf(strBuffer, "--- %s", strUnits);
+  CharDisplayPrintLine(2, strBuffer);
   #if defined STATUS
     CharDisplayPrintLine(1, "battery percent:");
     sprintf(strBuffer, "%.1d", GDX.batteryPercent());
     CharDisplayPrintLine(2, strBuffer);
     delay(1000);
-    #define D2PIO_CHARGER_STATE_IDLE     0 
     switch(GDX.chargeState())
     {
       case 0:
@@ -96,32 +100,22 @@ void setup()
 {
   float channelReading =GDX.readSensor();
   char strBuffer[64];
-  static char units[16];
   Serial.print("channelReading = ");
-  Serial.println(channelReading);
-  #if defined TWO-LINE_DISPLAY
+  sprintf(strBuffer, "--- %s", strUnits);
+  sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
+  Serial.println(strBuffer);
+  #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, GDX.channelNameX());
-    sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
-    sprintf(strBuffer, "%.2f %s", channelReading,units);
-    #if defined C&F_VERSION
-      strcpy(units,"degrees C");////hack !!!!!!!
-      sprintf(strBuffer, "%.2f %s", channelReading,units);//this worked to display a float and string
-    #endif //C&F_VERSION
+    CharDisplayPrintLine(2,strBuffer);
+  #endif //TWO_LINE_DISPLAY
+  delay(1000);
+  #if defined C_F_VERSION
+    float tempF= channelReading*1.8+32;//convert C to F degrees  HACK
+    sprintf(strBuffer, "%.2f %s", tempF,"deg F");
     Serial.println(strBuffer);
     CharDisplayPrintLine(2,strBuffer);
-    delay(2000);
-    #if defined C&F_VERSION
-      float tempF= channelReading*1.8+32;//convert C to F degrees  HACK
-      strcpy(units,"degrees F");////hack !!!!!!!
-      sprintf(strBuffer, "%.2f %s", tempF,units);//this worked to display a float and string
-      Serial.println(strBuffer);
-      CharDisplayPrintLine(2,strBuffer);
-      delay(2000);
-    #endif //C&F_VERSION
-  #endif //TWO-LINE_DISPLAY
-  
-  delay(1000);
-  //GDX.GoDirectBLE_End();//sometime!!!!!!!!
+    delay(1000);//right now this would cause it to read half as often with this DEBUG on
+  #endif //C_F_VERSION
 }
 
 void CharDisplayPrintLine(int line, const char* strText)
