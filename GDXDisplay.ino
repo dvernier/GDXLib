@@ -1,8 +1,13 @@
-//04102020 8a
+//04102020 11A
+
+//TESTING STATUS, WORKS WITH 
+//ALL DEBUGS OFF YES
+//STATUS BUT NOT DISPLAY YES
+//DISPLAY BUT NOT STATUS LEADS TO CRASH AFTER A COUPLE READINGS. CRASHES
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 //#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
-//#define C_F_VERSION //C and F temperature and DISPLAY
+#define C_F_VERSION //C and F temperature and DISPLAY
 //#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ###
 #define STATUS //to display battery status, RSSI, and other info
 GDXLib GDX;
@@ -43,22 +48,11 @@ void setup()
   delay (1000);
   Serial.print("Found: ");
   Serial.println(GDX.deviceName());
+  //ONE OF THE THREE BELOW IS CAUSING A CRASH!!!!
+  //Serial.print("ChannelName: ");Serial.println(GDX.channelNameX());
+  //Serial.print("DeviceName: ");Serial.println(GDX.deviceName());
+  //Serial.print("ChannelUnits: ");Serial.println(GDX.channelUnits());
   
-  #if defined STATUS
-    Serial.print("battery: ");Serial.print(GDX.batteryPercent());Serial.println(" %");
-    Serial.print("RSSI ");Serial.println(GDX.RSSI()-256);//this is the way we are used to seeing it.!!!HACK
-    Serial.print("ChargeState: ");Serial.print(GDX.chargeState());
-    Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
-  
-    Serial.print("ChannelName: ");Serial.println(GDX.channelNameX());
-    Serial.print("DeviceName: ");Serial.println(GDX.deviceName());
-    Serial.print("ChannelUnits: ");Serial.println(GDX.channelUnits());
-  #endif STATUS
-  
-  #if defined TWO_LINE_DISPLAY
-    CharDisplayPrintLine(1, "Found ");
-    CharDisplayPrintLine(2, GDX.deviceName());
-    delay(2000);
   //strcpy(strUnits,GDX.channelUnits());
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
@@ -66,15 +60,36 @@ void setup()
   //ConvertUTF8ToASCII(strUnits);
   //Serial.print("strUnits ");
   //Serial.print(strUnits);
-  //CharDisplayPrintLine(1, GDX.channelNameX());
-  //sprintf(strBuffer, "--- %s", GDX.channelUnits());
-  //CharDisplayPrintLine(2, strBuffer);
+  
+  #if defined STATUS
+    Serial.print("battery: ");Serial.print(GDX.batteryPercent());Serial.println(" %");
+    Serial.print("RSSI ");Serial.println(GDX.RSSI()-256);//this is the way we are used to seeing it.!!!HACK
+    Serial.print("ChargeState: ");Serial.print(GDX.chargeState());
+    Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
+ 
+  #endif STATUS
+  
+  #if defined TWO_LINE_DISPLAY
+    CharDisplayPrintLine(1, "Found ");
+    CharDisplayPrintLine(2, GDX.deviceName());
+    delay(2000);
+    #if defined STATUS
+      strcpy(strUnits,GDX.channelUnits());
+      // Cache the unit string and try to remap special UTF8
+      // characters to ones that we can display.
+      //sprintf(strUnits, "%s", GDX.channelUnits());
+      //ConvertUTF8ToASCII(strUnits);
+      //Serial.print("strUnits ");
+      //Serial.print(strUnits);
+      //CharDisplayPrintLine(1, GDX.channelNameX());
+      //sprintf(strBuffer, "--- %s", GDX.channelUnits());
+      //CharDisplayPrintLine(2, strBuffer);
       CharDisplayPrintLine(1, "battery percent:");
       sprintf(strBuffer, "%.1d", GDX.batteryPercent());
       CharDisplayPrintLine(2, strBuffer);
       delay(1000);
       switch(GDX.chargeState())
-      {
+       {
         case 0:
           strcpy(strBuffer,"not connected");
           break;
@@ -88,16 +103,18 @@ void setup()
           strcpy(strBuffer,"error");
           break;
         }
-      CharDisplayPrintLine(1, "chargeState: ");
-      CharDisplayPrintLine(2, strBuffer);
-      delay(2000);
-      CharDisplayPrintLine(1, "RSSI ");
-      sprintf(strBuffer, "%.1d",(GDX.RSSI()-256));
-      CharDisplayPrintLine(2, strBuffer);
-      delay(2000);
-      CharDisplayPrintLine(1, "ChannelName: ");
-      CharDisplayPrintLine(2, GDX.channelNameX());
+        CharDisplayPrintLine(1, "chargeState: ");
+        CharDisplayPrintLine(2, strBuffer);
+        delay(2000);
+        CharDisplayPrintLine(1, "RSSI ");
+        sprintf(strBuffer, "%.1d",(GDX.RSSI()-256));
+        CharDisplayPrintLine(2, strBuffer);
+        delay(2000);
+        CharDisplayPrintLine(1, "ChannelName: ");
+        CharDisplayPrintLine(2, GDX.channelNameX());
+       #endif //STATUS
      #endif //TWO_LINE_DISPLAY
+       
   Serial.println ("Data Table:");
 }
  void loop()
@@ -106,7 +123,7 @@ void setup()
   char strBuffer[64];
   Serial.print("channelReading = ");
   sprintf(strBuffer, "--- %s", strUnits);
-  sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
+  sprintf(strBuffer, "%.2f %s", channelReading,GDX.channelUnits());
   Serial.println(strBuffer);
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, GDX.channelNameX());
