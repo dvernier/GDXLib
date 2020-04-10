@@ -205,7 +205,7 @@ byte getRSSI();
 //=============================================================================
 // autoID()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
-void GDXLib::autoID()
+void GDXLib::autoID() 
 {
   // Determine the sensor name:
   strcpy(_channelNameX, GoDirectBLE_GetChannelName());
@@ -345,13 +345,16 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
     rssiTestLevel = rssiTestLevel - 2;
   }
 
-  //Serial.print("***Found ");
-  //Serial.print(peripheral.localName());
-  //Serial.print("*** at ");
+  Serial.print("***Found ");
+  Serial.print(peripheral.localName());
+  Serial.print("*** at ");
   //Serial.print(peripheral.address());
   Serial.print("*** with RSSI ");
   Serial.print(peripheral.rssi());
   Serial.println();
+  Serial.print("***peripheral.rssi() ");
+  Serial.println(peripheral.rssi());
+  
 
   //  uint8_t mfgData[64];
   //  uint8_t mgfDataLen = 0;
@@ -1174,7 +1177,7 @@ void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareV
 //=============================================================================
 byte GDXLib::GDXLib::GoDirectBLE_GetScanRSSI()
 {
-  return g_RSSIStrength;
+  //return g_RSSIStrength;
 }
 
 //=============================================================================
