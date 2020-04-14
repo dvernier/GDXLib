@@ -1,4 +1,4 @@
-//04132020 9p
+//0414202011a
 // I am making a new branch called Master2
 //TESTING STATUS, WORKS WITH 
 //ALL DEBUGS OFF YES.
@@ -6,21 +6,21 @@
 //DISPLAY BUT NOT STATUS LEADS TO CRASH AFTER A COUPLE READINGS. CRASHES
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
-#define C_F_VERSION //C and F temperature 
+#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
+//#define C_F_VERSION //C and F temperature 
 //#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ###
 #define STATUS //to show battery status, RSSI, and other info
 GDXLib GDX;
 static char strUnits[16];
 static char D1[17]="                ";//char strings used to print on display
 static char D2[17]="                ";
-  
+int t=0; //loop counter
 
 void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  delay(2000);//this is important!
+  delay(1000);//this is important!
   char strBuffer[64];
 
   #if defined TWO_LINE_DISPLAY
@@ -37,8 +37,8 @@ void setup()
   strncpy(D1," Looking for ",16);
   strncpy(D2," GDX Sensor",16);
   Display(D1,D2); 
-  //GDX.GoDirectBLE_Begin();//
-  GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 500);
+  GDX.GoDirectBLE_Begin();//
+  //GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 500);
   //GDX.GoDirectBLE_Begin("GDX-FOR 072001P5", 1, 500);//note less than loop time
   //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   delay (1000);
@@ -49,28 +49,32 @@ void setup()
   strncpy(D1,"Found: ",16);
   strncpy(D2, GDX.deviceName(),16);
   Display(D1,D2); 
-  
-  //strcpy(strUnits,GDX.channelUnits());
-  // Cache the unit string and try to remap special UTF8
-  // characters to ones that we can display.
-  //sprintf(strUnits, "%s", GDX.channelUnits());
-  //ConvertUTF8ToASCII(strUnits);
-  //Serial.print("strUnits ");
 
   strncpy(D1,"ChannelName: ",16);
   strncpy(D2, GDX.channelNameX(),16);
   Display(D1,D2); 
+
+  // Cache the unit string and try to remap special UTF8
+  // characters to ones that we can display.
+  Serial.print("@@ GDX.channelUnits()");
+  Serial.println(GDX.channelUnits());
+  sprintf(strUnits, "%s", GDX.channelUnits());
+  Serial.print("strUnits before");
+  Serial.println(strUnits);
+  ConvertUTF8ToASCII(strUnits);
+  Serial.print("strUnits after");
+  Serial.println(strUnits);
   
   strncpy(D1,"ChannelUnits: ",16);
-  strncpy(D2, GDX.channelUnits(),16);
+  strncpy(D2, strUnits,16);
   Display(D1,D2); 
   
   #if defined STATUS
-      strncpy(D1,"RSSI ",16);
-      //this is a number strncpy(D2, GDX.RSSI()-256,16);
+      strncpy(D1,"RSSI: ",16);
+      sprintf(D2, "%.d %s", GDX.RSSI()-256,"percent");
       Display(D1,D2);   
       strncpy(D1,"battery: ",16);
-      strncpy(D2, GDX.channelUnits(),16);
+      sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
       Display(D1,D2); 
       switch(GDX.chargeState())
          {
@@ -89,6 +93,7 @@ void setup()
           }
       strncpy(D1,"charge status: ",16);
       strncpy(D2, strBuffer,16);
+      Display(D1,D2); 
    #endif STATUS
 
 }
@@ -96,33 +101,35 @@ void setup()
 {
   float channelReading =GDX.readSensor();
   char strBuffer[64];
-  strncpy(D1,"channelReading = ",16);
+  t++;
+  float t2=t/2.0;//used to determine every other time through the loop
+  strncpy(D1,GDX.channelNameX(),16);
   sprintf(D2, "%.2f %s", channelReading,"Deg C");
-  //strncpy(D2,"put a number here channelReading",16);
-  Display(D1,D2); 
-  delay(1000);
-  //sprintf(strBuffer, "--- %s", strUnits);
-  //sprintf(strBuffer, "%.2f %s", channelReading,GDX.channelUnits());
-  //Serial.println(strBuffer);
+
   #if defined C_F_VERSION
-    float tempF= channelReading*1.8+32;//convert C to F degrees  HACK
-    strncpy(D1,"channelReading = ",16);
-    strncpy(D2,"Fahrenheit",16);
-    Display(D1,D2);   //sprintf(strBuffer, "%.2f %s", tempF,"deg F");
-    delay(1000);//right now this would cause it to read half as often with this DEBUG on
+      if (t2==int(t/2))// every other time switch to F temperature
+          {
+            channelReading= channelReading*1.8+32;//convert C to F degrees  HACK
+            sprintf(D2, "%.2f %s", channelReading,"Deg F");// change number and units to F
+          }
   #endif //C_F_VERSION
+  Display(D1,D2); 
+  delay(1000);//right now this would cause it to read half as often with this DEBUG on
 }
 
 void Display(const char* displayChars1,const char* displayChars2)
 {
   Serial.println(displayChars1);
   Serial.println(displayChars2);
+
   #if defined TWO_LINE_DISPLAY
-    if (strlen(displayChars1<17))
-      CharDisplayPrintLine(1,displayChars1);
-    if (strlen(displayChars2<17))
-      CharDisplayPrintLine(2,DdisplayChars2);
-    delay(1000);
+    CharDisplayPrintLine(1,displayChars1);
+    CharDisplayPrintLine(2,displayChars2);
+   // if (strlen(displayChars1<18))
+   //   CharDisplayPrintLine(1,displayChars1);
+   // if (strlen(displayChars2<18))
+   //   CharDisplayPrintLine(2,DisplayChars2);
+    delay(2000);
   #endif //TWO_LINE_DISPLAY
 }
 
@@ -135,24 +142,9 @@ void CharDisplayPrintLine(int line, const char* strText)
   // Left justified with space padding on the right.
   char strBuffer[32];
   sprintf(strBuffer, "%-16.16s",  strText);
-
-  // For debug -- prints what goes to the display
-  //Serial.print("[");
-  //Serial.print(strBuffer);
-  //Serial.println("]");
-  
   Serial1.write((uint8_t)254); 
   Serial1.write(lineCode);  
   Serial1.write(strBuffer, 16);
-}
-
-void CharDisplayPrintBarGraph(int line, byte value)
-{
-  // For the 16x2 display with the A00 ROM code
-  // the 0xFF character is a full pixel block.
-  char strBuffer[32];
-  sprintf(strBuffer, "%.*s", value, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  CharDisplayPrintLine(line, strBuffer);
 }
 
 void CharDisplayInit()
