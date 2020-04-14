@@ -8,7 +8,7 @@ Version 0.1
 
 GDXLib::GDXLib()
 {}
-char channelNameX[64];//60 bytes
+char channelName[64];//60 bytes
 char deviceName[64];//60 bytes
 char channelUnits[36];// 32 bytes !!! I made these bigger to avoid problems
 int channelNumber;
@@ -208,11 +208,11 @@ byte getRSSI();
 void GDXLib::autoID() 
 {
   // Determine the sensor name:
-  strcpy(_channelNameX, GoDirectBLE_GetChannelName());
-  Serial.print("*** _channelNameX: ");
-  Serial.println(_channelNameX);
+  strcpy(_channelName, GoDirectBLE_GetChannelName());
+  Serial.print("*** _channelName: ");
+  Serial.println(_channelName);
   strcpy(_channelUnits, GDXLib::GoDirectBLE_GetChannelUnits());
-  strcpy(_channelNameX, GoDirectBLE_GetChannelName());
+  strcpy(_channelName, GoDirectBLE_GetChannelName());
   strcpy(_deviceName, GoDirectBLE_GetDeviceName());
   //strcpy(_channelName, GoDirectBLE_GetChannelName());
   _RSSI=GoDirectBLE_GetScanRSSI(); 
@@ -534,8 +534,6 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
 {
   byte offset = 0;
   int timeoutCounter = 0;
-  Serial.print("***g_d2pioResponse =");//HACK!!!!!!!!!!
-  Serial.println(g_d2pioResponse);  
   // Return immediately if there is nothing to do.
   if (!g_d2pioResponse.valueUpdated()) return false;
 

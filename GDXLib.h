@@ -11,7 +11,7 @@ class GDXLib
     
     void autoID();//this is the function for the autoID code
     // it returns calibration information
-    char* channelNameX()     { return _channelNameX ;};
+    char* channelName()     { return _channelName ;};
     char* deviceName()       { return _deviceName ;};
     char* channelUnits()     { return _channelUnits ;};
     uint8_t batteryPercent() { return _batteryPercent ;};
@@ -28,7 +28,7 @@ class GDXLib
     
  private:// also known as local  
     int  _channel;
-    char _channelNameX[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
+    char _channelName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
     char _deviceName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
     char _channelUnits[66];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 66
     byte _RSSI;
