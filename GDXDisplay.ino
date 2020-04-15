@@ -1,4 +1,4 @@
-//0414202011a
+//041420206p
 // I am making a new branch called Master2
 //TESTING STATUS, WORKS WITH 
 //ALL DEBUGS OFF YES.
@@ -6,7 +6,7 @@
 //DISPLAY BUT NOT STATUS LEADS TO CRASH AFTER A COUPLE READINGS. CRASHES
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
+#//define TWO_LINE_DISPLAY //ADD FOR DISPLAY
 //#define C_F_VERSION //C and F temperature 
 //#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ###
 #define STATUS //to show battery status, RSSI, and other info
@@ -49,7 +49,7 @@ void setup()
   strncpy(D1,"Found: ",16);
   strcpy(D2, GDX.deviceName());
   Display(D1,D2); 
-  
+  /*
   Serial.print("@@ D2: ");
   Serial.println(D2);
   Serial.print("@@ sizeof(D2): ");
@@ -64,11 +64,11 @@ void setup()
   Serial.println("use strncpy");
  //toCharArray(D2, GDX.deviceName(),10);
   Serial.print("@@ sizeof(D2): ");
-  Serial.println(sizeof(D2));
+ // if (sizeof(D2)<16) and sizeof(D2)<16));
  Serial.print("@@ length(D2): ");
  // Serial.println(length(D2));
 
-
+*/
   strncpy(D1,"ChannelName: ",16);
   strncpy(D2, GDX.channelName(),16);
   Display(D1,D2); 
@@ -123,10 +123,18 @@ void setup()
  void loop()
 {
   float channelReading =GDX.readSensor();
+  Serial.print("D1 at start of loop ");
+  Serial.println(D1);//it comes in with left over string
+ 
   strncpy(D1,GDX.channelName(),16);
-  //sprintf(D2, "%.2f %s", channelReading,GDX.channelUnits());// using strUnits or GDX.channelUnits() seems to be a problem
+  Serial.print("D1 after strncpy ");
+  Serial.println(D1);
+  Serial.print("sizeof(D1) after strncpy ");
+  Serial.println(sizeof(D1));
+ 
+  sprintf(D2, "%.2f %s", channelReading,GDX.channelUnits());// using strUnits or GDX.channelUnits() seems to be a problem
   sprintf(D2, "%.2f %s", channelReading,strUnits);// 
-  //sprintf(D2, "%.2f", channelReading);// using strUnits seems to be a problem
+  sprintf(D2, "%.2f", channelReading);// using strUnits seems to be a problem
       //strncpy(D1,"RSSI: ",16);
       //sprintf(D2, "%.d %s", GDX.RSSI()-256,"percent");
       //Display(D1,D2);   
@@ -137,12 +145,16 @@ void setup()
   
   #if defined C_F_VERSION
       t++;
-      float t2=t/2.0;//used to determine every other time through the loopif (t2==int(t/2))// every other time switch to F temperature
+     float t2=t/2.0;//used to determine every other time through the loopif (t2==int(t/2))// every other time switch to F temperature
         {
           channelReading= channelReading*1.8+32;//convert C to F degrees  HACK
           sprintf(D2, "%.2f %s", channelReading,"Deg F");// change number and units to F
         }
   #endif //C_F_VERSION
+  Serial.print("sizeof(D1 ");
+  Serial.println(sizeof(D1));
+  Serial.print("sizeof(D2 ");
+  Serial.println(sizeof(D2));
   Display(D1,D2); 
   delay(1000);//right now this would cause it to read half as often with this DEBUG on
 }
@@ -153,13 +165,11 @@ void Display(const char* displayChars1,const char* displayChars2)
   Serial.println(displayChars2);
 
   #if defined TWO_LINE_DISPLAY
+    {
     CharDisplayPrintLine(1,displayChars1);
     CharDisplayPrintLine(2,displayChars2);
-   // if (strlen(displayChars1<18))
-   //   CharDisplayPrintLine(1,displayChars1);
-   // if (strlen(displayChars2<18))
-   //   CharDisplayPrintLine(2,DisplayChars2);
     delay(2000);
+    }
   #endif //TWO_LINE_DISPLAY
 }
 
