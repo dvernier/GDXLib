@@ -1,164 +1,148 @@
-//041520207a
-// I am making a new branch called Master2
-
+//04152020 8p
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
-//#define C_F_VERSION //C and F temperature 
+#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
+//#define C_F_VERSION //C and F temperature on DISPLAY
 //#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ###
-#define STATUS //to show battery status, RSSI, and other info
+//#define STATUS //to display battery status, RSSI, and other info
 GDXLib GDX;
-static char strUnits[32];
-static char D1[16]="             ";//char strings used to print on display
-static char D2[16]="             ";
+static char strUnits[16];
 int t=0; //loop counter
 
 void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  delay(1000);//this may be important!
-  char strBuffer[64];
+  char strBuffer[64];//I changed to 64 in despiration
 
   #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
     delay (200);
   #endif //TWO_LINE_DISPLAY
-  
   #if defined C_F_VERSION
-    strcpy(D1,"special version");
-    strcpy(D2,"C & F temp only");
-    CharDisplayPrintLine(1,D1); 
-    CharDisplayPrintLine(2,D2); 
+    Serial.print  ("special version  ");
+    Serial.println("C and F temp only");
+    CharDisplayPrintLine(1, "special version ");
+    CharDisplayPrintLine(2, "C & F temp only ");
+    delay (3000);
   #endif //C_F_VERSION
-
-  strcpy(D1," Looking for ");
-  strcpy(D2," GDX Sensor");
-  CharDisplayPrintLine(1,D1); 
+  #if defined TWO-LINE_DISPLAY
+    CharDisplayPrintLine(1, "Looking for ");
+    // add code here to specify what you are looking for!!!
+    CharDisplayPrintLine(2, "GDX Sensor");
+    #endif //TWO_LINE_DISPLAY
   GDX.GoDirectBLE_Begin();//
   //GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 500);
   //GDX.GoDirectBLE_Begin("GDX-FOR 072001P5", 1, 500);//note less than loop time
   //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
   delay (1000);
- 
   GDX.autoID();// this is the routine to get device info
-  delay (1000);
-  
-  strcpy(D1,"Found: ");
-  strncpy(D2, GDX.deviceName(),15);
-  
-  CharDisplayPrintLine(1,D1); 
-  CharDisplayPrintLine(2,D2); 
-  
-  strncpy(D1,"ChannelName: ",15);
-  strncpy(D2, GDX.channelName(),15);
-  CharDisplayPrintLine(1,D1); 
-  CharDisplayPrintLine(2,D2); 
-
+  Serial.print("Found: ");
+  Serial.println(GDX.deviceName());
+  #if defined TWO_LINE_DISPLAY
+    CharDisplayPrintLine(1, "Found ");
+    CharDisplayPrintLine(2, GDX.deviceName());
+    delay(2000);
+    
+  #endif //TWO_LINE_DISPLAY
+  Serial.print("RSSI ");
+  Serial.println(GDX.RSSI());
+  Serial.print("battery: ");
+  Serial.print(GDX.batteryPercent());
+  Serial.println(" %");
+  Serial.print("ChargeState: ");
+  Serial.print(GDX.chargeState());
+  Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
+  Serial.print("ChannelName: ");
+  Serial.println(GDX.channelName());
+  Serial.print("ChannelUnits: ");
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
-  Serial.print("@@@ GDX.channelUnits()");
-  Serial.println(GDX.channelUnits());
-  strncpy(strUnits, GDX.channelUnits(),15);
-  //Serial.print("strUnits before");
-  //Serial.println(strUnits);
-  //ConvertUTF8ToASCII(strUnits);
-  Serial.print("@@@strUnits after");
-  Serial.println(strUnits);
-  
-  strcpy(D1,"ChannelUnits: ");
-  strncpy(D2, strUnits,15);
-  CharDisplayPrintLine(1,D1);
-  CharDisplayPrintLine(2,D2);  
-  
+  sprintf(strUnits, "%s", GDX.channelUnits());
+  ConvertUTF8ToASCII(strUnits);
+  Serial.print("strUnits ");
+  Serial.print(strUnits);
+  CharDisplayPrintLine(1, GDX.channelName());
+  sprintf(strBuffer, "--- %s", strUnits);
+  CharDisplayPrintLine(2, strBuffer);
   #if defined STATUS
-      strcpy(D1,"RSSI: ");
-      sprintf(D2, "%.d %s", GDX.RSSI()-256,"percent");
-      CharDisplayPrintLine(1,D1);
-      CharDisplayPrintLine(2,D2);    
-      strcpy(D1,"battery: ");
-      sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
-      CharDisplayPrintLine(1,D1);
-      CharDisplayPrintLine(2,D2); 
-      switch(GDX.chargeState())
-         {
-          case 0:
-            strcpy(strBuffer,"not connected");
-            break;
-          case 1:
-            strcpy(strBuffer,"charging");
-            break;
-          case 2:
-            strcpy(strBuffer,"complete");
-            break;
-          case 3:
-            strcpy(strBuffer,"error");
-            break;
-          }
-      strcpy(D1,"charge status: ");
-      strcpy(D2, strBuffer);
-      CharDisplayPrintLine(1,D1);
-      CharDisplayPrintLine(2,D2); 
-   #endif STATUS
+    CharDisplayPrintLine(1, "battery percent:");
+    sprintf(strBuffer, "%.1d", GDX.batteryPercent());
+    // does this crash?!!!     sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
+    CharDisplayPrintLine(2, strBuffer);
+    delay(1000);
+    switch(GDX.chargeState())
+    {
+      case 0:
+        strcpy(strBuffer,"not connected");
+        break;
+      case 1:
+        strcpy(strBuffer,"charging");
+        break;
+      case 2:
+        strcpy(strBuffer,"complete");
+        break;
+      case 3:
+        strcpy(strBuffer,"error");
+        break;
+      }
+    CharDisplayPrintLine(1, "chargeStatus: ");
+    CharDisplayPrintLine(2, strBuffer);
+    delay(2000);
+    CharDisplayPrintLine(1, "RSSI ");
+    sprintf(strBuffer, "%.1d",(GDX.RSSI()));
+    CharDisplayPrintLine(2, strBuffer);
+    delay(2000);
+    CharDisplayPrintLine(1, "ChannelName: ");
+    CharDisplayPrintLine(2, GDX.channelName());
+   #endif //DISPLAY STATUS
+  Serial.println ("Data Table:");
 }
-
  void loop()
 {
   float channelReading =GDX.readSensor();
-  Serial.print("@@@ D1 at start of loop: ");
-  Serial.println(D1);//it comes in with left over string
- 
-  strncpy(D1,GDX.channelName(),16);
-  Serial.print("@@@D1 after strcpy: ");
-  Serial.println(D1);
-  Serial.print("sizeof(D1) after strcpy: ");
-  Serial.println(sizeof(D1));
- 
-  sprintf(D2, "%.2f %s", channelReading,strUnits);// using strUnits or GDX.channelUnits() seems to be a problem
-  //sprintf(D2, "%.2f %s", channelReading,strUnits);// 
-  //sprintf(D2, "%.2f", channelReading);// using strUnits seems to be a problem
-      //strcpy(D1,"RSSI: ");
-      //sprintf(D2, "%.d %s", GDX.RSSI()-256,"percent");
-      //CharDisplayPrintLine(1,D1);   
-      //strcpy(D1,"battery: ");
-      //sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent"); //!!!!!even this causes crashes
-      //sprintf(D2, "%.d",GDX.batteryPercent()); //!!!!!even this causes crashes with no display
-      //sprintf(D2, "%.2f",channelReading); //!!!!!even this causes crashes with no display
-  
+  char strBuffer[64];
+  sprintf(strBuffer, "--- %s", strUnits);//?!!!!
+  sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
+  //sprintf(strBuffer, "%.2f %s", channelReading,strUnits);//crash??!!!!!
+
   #if defined C_F_VERSION
       t++;
-     float t2=t/2.0;//used to determine every other time through the loopif (t2==int(t/2))// every other time switch to F temperature
+     float t2=t/2.0;//used to determine every other time through the loop
+     if (t2==int(t/2))// every other time switch to F temperature
         {
           channelReading= channelReading*1.8+32;//convert C to F degrees  HACK
-          sprintf(D2, "%.2f %s", channelReading,"Deg F");// change number and units to F
+          sprintf(strBuffer, "%.2f %s", tempF,"deg F");\
+          CharDisplayPrintLine(2,strBuffer);   
         }
   #endif //C_F_VERSION
-  Serial.print("sizeof(D1) ");
-  Serial.println(sizeof(D1));
-  Serial.print("sizeof(D2) ");
-  Serial.println(sizeof(D2));
-  CharDisplayPrintLine(1,D1);
-  CharDisplayPrintLine(2,D2);
-  delay(1000);//right now this would cause it to read half as often with this DEBUG on
+  Serial.println(GDX.channelName());
+  Serial.println(strBuffer);
+  #if defined TWO_LINE_DISPLAY
+    CharDisplayPrintLine(1, GDX.channelName());
+    CharDisplayPrintLine(2,strBuffer);
+  #endif // TWO_LINE_DISPLAY
+  delay(1000);
 }
 
 void CharDisplayPrintLine(int line, const char* strText)
 {
-   Serial.println(strText);
-   Serial.print("sizeof(strText): ");
-   Serial.println(sizeof(strText));
-   #if defined TWO_LINE_DISPLAY
-     uint8_t lineCode = 128;
-     if (line == 2) lineCode = 192;
-     // Force a field width of 16.
-     // Left justified with space padding on the right.
-     char strBuffer[32];
-     sprintf(strBuffer, "%-16.16s",  strText);
-     Serial1.write((uint8_t)254); 
-     Serial1.write(lineCode);  
-     Serial1.write(strBuffer, 16);
-     delay(1000);
-   #endif //TWO_LINE_DISPLAY
+  uint8_t lineCode = 128;
+  if (line == 2) lineCode = 192;
+
+  // Force a field width of 16.
+  // Left justified with space padding on the right.
+  char strBuffer[32];
+  sprintf(strBuffer, "%-16.16s",  strText);
+
+  // For debug -- prints what goes to the display
+  //Serial.print("[");
+  //Serial.print(strBuffer);
+  //Serial.println("]");
+  
+  Serial1.write((uint8_t)254); 
+  Serial1.write(lineCode);  
+  Serial1.write(strBuffer, 16);
 }
 
 void CharDisplayInit()
@@ -185,38 +169,6 @@ void SegmentDisplayInit()
   Serial1.write("----", 4);  
 }
 
-void SegmentDisplayPrintFloat(float number)
-{
-    char tempString[16];
-  
-    uint8_t dot = 0x00;
-    signed long value;
-    signed long value100 = number * 100;
-    signed long value1000 = number * 1000;
-
-    if (number < 0)
-    {
-      if      (value100 > -1000)  dot = 0x2;    
-      else if (value100 > -10000) dot = 0x4;
-      value = value100;
-    }
-    else
-    {
-      if      (value1000 < 10000)   dot = 0x01;
-      else if (value1000 < 100000)  dot = 0x02;
-      else if (value1000 < 1000000) dot = 0x04;
-      value = value1000;
-    }
-      
-    sprintf(tempString, "%04ld", value); 
-    tempString[4] = 0;
-    
-    Serial1.write((uint8_t)0x79); // Ensure cursor position at first digit
-    Serial1.write((uint8_t)0x00);    
-    Serial1.write(tempString, 4); 
-    Serial1.write((uint8_t)0x77); // Set decimal place
-    Serial1.write(dot);    
-}
 //=============================================================================
 // ConvertUTF8ToASCII() Function
 // Very limited -- only supports a few translations
