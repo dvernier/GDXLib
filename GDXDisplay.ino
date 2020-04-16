@@ -1,11 +1,10 @@
-//04152020 8p
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//041420  crashes with all options (except Curie) on. the problem is in STATUS
+
 #define TWO_LINE_DISPLAY //ADD FOR DISPLAY
-#define C_F_VERSION //C and F temperature on DISPLAY
+//#define C_F_VERSION //C and F temperature on DISPLAY
 //#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ####
-//#define STATUS //to display battery status, RSSI, and other info
+#define STATUS //to display battery status, RSSI, and other info CRASHES INSTANTLY!!!
 GDXLib GDX;
 static char strUnits[16];
 int t=0; //loop counter
@@ -25,7 +24,7 @@ void setup()
     Serial.println("C and F temp only");
     CharDisplayPrintLine(1, "special version ");
     CharDisplayPrintLine(2, "C & F temp only ");
-    delay (3000);
+    delay (2000);
   #endif //C_F_VERSION
   #if defined TWO-LINE_DISPLAY
     CharDisplayPrintLine(1, "Looking for ");
@@ -43,17 +42,13 @@ void setup()
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Found ");
     CharDisplayPrintLine(2, GDX.deviceName());
-    delay(2000);
+    delay(1000);
   #endif //TWO_LINE_DISPLAY
 
-  Serial.print("RSSI ");
-  Serial.println(GDX.RSSI());//why is this 0 ??@!!!!!
   Serial.print("battery: ");
   Serial.print(GDX.batteryPercent());
   Serial.println(" %");
-  Serial.print("ChargeState: ");
-  Serial.print(GDX.chargeState());
-  Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
+
   Serial.print("ChannelName: ");
   Serial.println(GDX.channelName());
   Serial.print("ChannelUnits: ");
@@ -65,11 +60,12 @@ void setup()
   Serial.print(strUnits);
   
   #if defined STATUS
-    CharDisplayPrintLine(1, "battery level:");
+   /* CharDisplayPrintLine(1, "battery level:");
     //sprintf(strBuffer, "%.1d", GDX.batteryPercent());
     // does this crash?!!!     sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
     CharDisplayPrintLine(2, strBuffer);
     delay(1000);
+    */
     switch(GDX.chargeState())
     {
       case 0:
@@ -85,14 +81,14 @@ void setup()
         strcpy(strBuffer,"error");
         break;
       }
+    Serial.print ("strBuffer: ");
+    Serial.println (strBuffer);
     CharDisplayPrintLine(1, "chargeStatus: ");
     CharDisplayPrintLine(2, strBuffer);
     delay(2000);
-    CharDisplayPrintLine(1, "RSSI ");
-    sprintf(strBuffer, "%.1d",(GDX.RSSI()));
-    CharDisplayPrintLine(2, strBuffer);
-    delay(2000);
+
    #endif //DISPLAY STATUS
+ 
   Serial.println ("Data Table:");
 }
  void loop()
@@ -156,15 +152,6 @@ void CharDisplayInit()
   Serial1.write(128);  
 }
 
-void SegmentDisplayInit()
-{
-  // Initialze the display.
-  // It is on the dedicated hardware serial port on the Arduino101.
-  // This is the predefined Serial1 object.
-  Serial1.begin(9600);
-  Serial1.write(0x76); // Clear
-  Serial1.write("----", 4);  
-}
 
 //=============================================================================
 // ConvertUTF8ToASCII() Function

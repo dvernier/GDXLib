@@ -1,5 +1,6 @@
 /* This is a library to make using Vernier GDX sensors 
-Version 0.1
+Version 0.12
+//04162020 8a crashes with all options (except Curie) on. the problem is in STATUS
 */
 #include "ArduinoBLE.h"
 #include "Arduino.h"
@@ -209,8 +210,8 @@ void GDXLib::autoID()
 {
   // Determine the sensor name:
   strcpy(_channelName, GoDirectBLE_GetChannelName());
-  Serial.print("*** _channelName: ");
-  Serial.println(_channelName);
+  //Serial.print("*** _channelName: ");
+  //Serial.println(_channelName);
   strcpy(_channelUnits, GDXLib::GoDirectBLE_GetChannelUnits());
   strcpy(_channelName, GoDirectBLE_GetChannelName());
   strcpy(_deviceName, GoDirectBLE_GetDeviceName());
@@ -345,16 +346,16 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
     rssiTestLevel = rssiTestLevel - 2;
   }
 
-  Serial.print("***Found ");
+  /*Serial.print("***Found ");
   Serial.print(peripheral.localName());
   Serial.print("*** at ");
-  //Serial.print(peripheral.address());
+  Serial.print(peripheral.address());
   Serial.print("*** with RSSI ");
   Serial.print(peripheral.rssi());
   Serial.println();
   Serial.print("***peripheral.rssi() ");
   Serial.println(peripheral.rssi());
-  
+  */
 
   //  uint8_t mfgData[64];
   //  uint8_t mgfDataLen = 0;
@@ -425,7 +426,7 @@ bool GDXLib::GDXLib::D2PIO_DiscoverService(BLEDevice peripheral)
     Serial.println("***ERROR: Failed to subscribe to D2PIO esponse characteristic");
     return false;
   }
-  Serial.println("***Subscribed to D2PIO response notifications");
+  //Serial.println("***Subscribed to D2PIO response notifications");
   //d2pioResponse.setEventHandler(BLEValueUpdated, D2PIO_ResponseHandler);
 
   return true;
@@ -1085,9 +1086,11 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
        break;
       }
     if (scanResult == D2PIO_SCAN_RESULT_WEAK) //1
-      Serial.println("***D2PIO_SCAN_RESULT_WEAK");
-    if (scanResult == D2PIO_SCAN_RESULT_FLUSH) //2
-      Serial.println("D2PIO_SCAN_RESULT_FLUSH");
+      Serial.println(".");
+      //Serial.println("***D2PIO_SCAN_RESULT_WEAK");
+    if (scanResult == D2PIO_SCAN_RESULT_FLUSH) 
+      Serial.println("-");
+      //Serial.println("D2PIO_SCAN_RESULT_FLUSH");
   }//end while
   
   // Stop scanning
@@ -1121,7 +1124,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   if (!D2PIO_GetStatus())
     GoDirectBLE_Start();
 
-  Serial.print("***D2PIO_GetDeviceInfo()");
+  //Serial.print("***D2PIO_GetDeviceInfo()");
   if (!D2PIO_GetDeviceInfo()) //Kevin's Setup
     GoDirectBLE_Start();
     
@@ -1166,7 +1169,7 @@ void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareV
   sprintf(strFirmwareVersion2, "%d.%d", g_status.majorVersionSlaveCPU,  g_status.minorVersionSlaveCPU);
 
   batteryPercent = g_status.batteryLevelPercent;
-  Serial.print("***in GoDirectBLE_GetStatus: batteryPercent ");
+  Serial.print("*** batteryPercent: ");
   Serial.println(batteryPercent);//this is correct here in the library code
 }
 
