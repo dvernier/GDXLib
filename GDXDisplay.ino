@@ -1,9 +1,10 @@
 //04152020 8p
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
+//041420  crashes with all options (except Curie) on. the problem is in STATUS
 #define TWO_LINE_DISPLAY //ADD FOR DISPLAY
-//#define C_F_VERSION //C and F temperature on DISPLAY
-//#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ###
+#define C_F_VERSION //C and F temperature on DISPLAY
+//#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ####
 //#define STATUS //to display battery status, RSSI, and other info
 GDXLib GDX;
 static char strUnits[16];
@@ -43,10 +44,10 @@ void setup()
     CharDisplayPrintLine(1, "Found ");
     CharDisplayPrintLine(2, GDX.deviceName());
     delay(2000);
-    
   #endif //TWO_LINE_DISPLAY
+
   Serial.print("RSSI ");
-  Serial.println(GDX.RSSI());
+  Serial.println(GDX.RSSI());//why is this 0 ??@!!!!!
   Serial.print("battery: ");
   Serial.print(GDX.batteryPercent());
   Serial.println(" %");
@@ -62,12 +63,10 @@ void setup()
   ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
   Serial.print(strUnits);
-  CharDisplayPrintLine(1, GDX.channelName());
-  sprintf(strBuffer, "--- %s", strUnits);
-  CharDisplayPrintLine(2, strBuffer);
+  
   #if defined STATUS
-    CharDisplayPrintLine(1, "battery percent:");
-    sprintf(strBuffer, "%.1d", GDX.batteryPercent());
+    CharDisplayPrintLine(1, "battery level:");
+    //sprintf(strBuffer, "%.1d", GDX.batteryPercent());
     // does this crash?!!!     sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
     CharDisplayPrintLine(2, strBuffer);
     delay(1000);
@@ -93,8 +92,6 @@ void setup()
     sprintf(strBuffer, "%.1d",(GDX.RSSI()));
     CharDisplayPrintLine(2, strBuffer);
     delay(2000);
-    CharDisplayPrintLine(1, "ChannelName: ");
-    CharDisplayPrintLine(2, GDX.channelName());
    #endif //DISPLAY STATUS
   Serial.println ("Data Table:");
 }
@@ -112,8 +109,8 @@ void setup()
      if (t2==int(t/2))// every other time switch to F temperature
         {
           channelReading= channelReading*1.8+32;//convert C to F degrees  HACK
-          sprintf(strBuffer, "%.2f %s", tempF,"deg F");\
-          CharDisplayPrintLine(2,strBuffer);   
+          //sprintf(strBuffer, "%.2f %s", channelReading,"deg F");// causes crash
+          sprintf(strBuffer, "%.2f %s", channelReading,"deg F");   
         }
   #endif //C_F_VERSION
   Serial.println(GDX.channelName());
