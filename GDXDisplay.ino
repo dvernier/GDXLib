@@ -115,6 +115,8 @@ void setup()
         CharDisplayPrintLine(2,"  Stopped");
       #endif // TWO_LINE_DISPLAY
       GDX.GoDirectBLE_End();
+      delay(2000); //note because of the Arduino loop
+      //structure, it will not really stop.
      }
 }
 
