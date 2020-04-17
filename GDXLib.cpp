@@ -11,10 +11,10 @@ GDXLib::GDXLib()
 {}
 char channelName[64];//60 bytes
 char deviceName[64];//60 bytes
-char channelUnits[36];// 32 bytes !!! I made these bigger to avoid problems
+char channelUnits[32];// 32 bytes 
 int channelNumber;
 char sN[16];// 32 bytes this is an expermment
-uint8_t Percent;//HACK
+//uint8_t Percent;//HACK!!!
 uint8_t chargerStatus;
 int batteryPercent;
 byte scanRSSI;
@@ -307,7 +307,7 @@ bool GDXLib::DumpGatttService(BLEDevice peripheral, char* uuid)
 int D2PIO_Scan(bool useRssiThreshold, int threshold)
 {
   // Check if a peripheral has been discovered
-  ////Serial.print("***in D2PIO_Scan, useRssiThreshold= ");//!!!!
+  //Serial.print("***in D2PIO_Scan, useRssiThreshold= ");//!!!
   //Serial.print(useRssiThreshold);
   ////Serial.print("*** threshold= ");
   ////Serial.println(threshold);
@@ -962,10 +962,6 @@ bool GDXLib::D2PIO_Autoset()
 
   // Get the channel info
   if (!D2PIO_GetChannelInfo(g_channelNumber, false)) return false;
-  Serial.print("***channelNumber ");//this should be removed!!!!!!
-  Serial.print(channelNumber);
-  Serial.print(" ***g_channelNumber ");
-  Serial.print(g_channelNumber);
   // Set the sample rate according to the typical value for this sensor.
   // However we limit it to about 200ms for the sake of Arduino.
   // Not sure if this is actually slow enough!?
@@ -1007,7 +1003,7 @@ bool GDXLib::D2PIO_StartMeasurements(byte channelNumber)
   command[3] = D2PIO_CalculateChecksum(command);
 
   if (!D2PIO_Write(command)) return false;
-//  if (!D2PIO_ReadBlocking(g_ReadBuffer, 5000)) return false;  ///THIS BIZARRELY CAUSES AN ERROR!!!!!!
+//  if (!D2PIO_ReadBlocking(g_ReadBuffer, 5000)) return false; 
   return true;
 }
 
@@ -1104,7 +1100,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   else
   {
     Serial.println("SUCCESS");
-   delay(200);  // Kevin: seems okay without this delay//!!!!!!!!!!!!!!!!!
+   delay(200);  // Kevin: seems okay without this delay//!!!
   if (!D2PIO_DiscoverService(g_peripheral)) //Kevin's Discover 
     GoDirectBLE_Start();
   if (!D2PIO_Init())
@@ -1262,5 +1258,6 @@ float GDXLib::GoDirectBLE_GetMeasurement()
 //=============================================================================
 void GDXLib::GoDirectBLE_End()
 {
+  BLE.disconnect();
   BLE.end();
 }

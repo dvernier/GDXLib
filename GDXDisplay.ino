@@ -1,10 +1,8 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 
-#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
-//#define C_F_VERSION //C and F temperature on DISPLAY
-//#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ####
-//#define STATUS //to display battery status, RSSI, and other info CRASHES INSTANTLY!!!
+#define TWO_LINE_DISPLAY //ADD FOR DISPLAY, comment out for no display
+//#define C_F_VERSION //C and F temperature on DISPLAY, temperature probes only
 GDXLib GDX;
 static char strUnits[16];
 int t=0; //loop counter
@@ -33,7 +31,8 @@ void setup()
     CharDisplayPrintLine(1, "Looking for ");
   #endif //TWO_LINE_DISPLAY
   
-  char sensorName[64]="             ";
+  //choose one line of the type below:
+  char sensorName[64]="             ";//for detecting the nearest GDX sensor
   // char sensorName[64]="GDX-ST 0P1000S9";
   // char sensorName[64]="GDX-FOR 072001P5"
   //char sensorName[64]="GDX-ACC 0H101767";
@@ -75,55 +74,24 @@ void setup()
   ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
   Serial.println(strUnits);
+
+  Serial.print("battery: ");
+  Serial.print(GDX.batteryPercent());
+  Serial.println(" %");
   
-  #if defined STATUS//CRASHES EVERY TIME!!!!!
-    Serial.print("battery: ");
-    Serial.print(GDX.batteryPercent());
-    Serial.println(" %");
-    #if defined TWO_LINE_DISPLAY    
-     CharDisplayPrintLine(1, "battery level:");
-     //sprintf(strBuffer, "%.1d", GDX.batteryPercent());
-     // does this crash?!!!     sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
-     CharDisplayPrintLine(2, strBuffer);
-     delay(1000);
-    #endif //TWO_LINE_DISPLAY
-    
-    switch(GDX.chargeState())
-    {
-      case 0:
-        strcpy(strBuffer,"not connected");
-        break;
-      case 1:
-        strcpy(strBuffer,"charging");
-        break;
-      case 2:
-        strcpy(strBuffer,"complete");
-        break;
-      case 3:
-        strcpy(strBuffer,"error");
-        break;
-      }
-    Serial.print ("strBuffer: ");
-    Serial.println (strBuffer);
-    #if defined TWO_LINE_DISPLAY    
-      CharDisplayPrintLine(1, "chargeStatus: ");
-      CharDisplayPrintLine(2, strBuffer);
-      delay(2000);
-    #endif //TWO_LINE_DISPLAY
-   #endif //DISPLAY STATUS
- 
+  Serial.print ("chargeStatus: ");
+  Serial.println(" 0 =idle, 1= charging, 2= complete, 3= error");
+  Serial.println (GDX.chargeState());
   Serial.println ("Data Table:");
 }
  void loop()
 {
+  t++;//loop counter
   float channelReading =GDX.readSensor();
   char strBuffer[64];
-  sprintf(strBuffer, "--- %s", strUnits);//?!!!!
   sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
-  //sprintf(strBuffer, "%.2f %s", channelReading,strUnits);//crash??!!!!!
 
   #if defined C_F_VERSION
-      t++;
      float t2=t/2.0;//used to determine every other time through the loop
      if (t2==int(t/2))// every other time switch to F temperature
         {
@@ -139,6 +107,15 @@ void setup()
     CharDisplayPrintLine(2,strBuffer);
   #endif // TWO_LINE_DISPLAY
   delay(1000);
+  if (t>10)
+     {
+      Serial.println("Data Collection Stopped");
+      #if defined TWO_LINE_DISPLAY
+        CharDisplayPrintLine(1, "Data Collection");
+        CharDisplayPrintLine(2,"  Stopped");
+      #endif // TWO_LINE_DISPLAY
+      GDX.GoDirectBLE_End();
+     }
 }
 
 void CharDisplayPrintLine(int line, const char* strText)
