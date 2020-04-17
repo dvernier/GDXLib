@@ -4,7 +4,7 @@
 #define TWO_LINE_DISPLAY //ADD FOR DISPLAY
 //#define C_F_VERSION //C and F temperature on DISPLAY
 //#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ####
-#define STATUS //to display battery status, RSSI, and other info CRASHES INSTANTLY!!!
+//#define STATUS //to display battery status, RSSI, and other info CRASHES INSTANTLY!!!
 GDXLib GDX;
 static char strUnits[16];
 int t=0; //loop counter
@@ -17,8 +17,9 @@ void setup()
 
   #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
-    delay (200);
+    delay (2000);
   #endif //TWO_LINE_DISPLAY
+  
   #if defined C_F_VERSION
     Serial.print  ("special version  ");
     Serial.println("C and F temp only");
@@ -26,16 +27,36 @@ void setup()
     CharDisplayPrintLine(2, "C & F temp only ");
     delay (2000);
   #endif //C_F_VERSION
-  #if defined TWO-LINE_DISPLAY
+  
+  Serial.println(" Looking for"); 
+  #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Looking for ");
-    // add code here to specify what you are looking for!!!
-    CharDisplayPrintLine(2, "GDX Sensor");
+  #endif //TWO_LINE_DISPLAY
+  
+  char sensorName[64]="             ";
+  // char sensorName[64]="GDX-ST 0P1000S9";
+  // char sensorName[64]="GDX-FOR 072001P5"
+  //char sensorName[64]="GDX-ACC 0H101767";
+       
+  if (sensorName[5] == ' ') //if no specific sensor seleted
+  {
+    Serial.println("  any GDX sensor ");
+    #if defined TWO_LINE_DISPLAY
+      CharDisplayPrintLine(2, "any GDX sensor");
+      delay(2000);
     #endif //TWO_LINE_DISPLAY
-  GDX.GoDirectBLE_Begin();//
-  //GDX.GoDirectBLE_Begin("GDX-ST 0P1000S9", 1, 500);
-  //GDX.GoDirectBLE_Begin("GDX-FOR 072001P5", 1, 500);//note less than loop time
-  //GDX.GoDirectBLE_Begin("GDX-MD 0B1027S0", 5, 1000);
-  delay (1000);
+    GDX.GoDirectBLE_Begin();
+  }
+  else
+  {
+    Serial.println(sensorName);
+    #if defined TWO_LINE_DISPLAY
+      CharDisplayPrintLine(2, sensorName);
+      delay(2000);
+    #endif //TWO_LINE_DISPLAY
+    GDX.GoDirectBLE_Begin(sensorName,1, 1000);//specify channel and period here also
+  }
+  
   GDX.autoID();// this is the routine to get device info
   Serial.print("Found: ");
   Serial.println(GDX.deviceName());
@@ -45,10 +66,6 @@ void setup()
     delay(1000);
   #endif //TWO_LINE_DISPLAY
 
-  Serial.print("battery: ");
-  Serial.print(GDX.batteryPercent());
-  Serial.println(" %");
-
   Serial.print("ChannelName: ");
   Serial.println(GDX.channelName());
   Serial.print("ChannelUnits: ");
@@ -57,15 +74,20 @@ void setup()
   sprintf(strUnits, "%s", GDX.channelUnits());
   ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
-  Serial.print(strUnits);
+  Serial.println(strUnits);
   
-  #if defined STATUS
-   /* CharDisplayPrintLine(1, "battery level:");
-    //sprintf(strBuffer, "%.1d", GDX.batteryPercent());
-    // does this crash?!!!     sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
-    CharDisplayPrintLine(2, strBuffer);
-    delay(1000);
-    */
+  #if defined STATUS//CRASHES EVERY TIME!!!!!
+    Serial.print("battery: ");
+    Serial.print(GDX.batteryPercent());
+    Serial.println(" %");
+    #if defined TWO_LINE_DISPLAY    
+     CharDisplayPrintLine(1, "battery level:");
+     //sprintf(strBuffer, "%.1d", GDX.batteryPercent());
+     // does this crash?!!!     sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
+     CharDisplayPrintLine(2, strBuffer);
+     delay(1000);
+    #endif //TWO_LINE_DISPLAY
+    
     switch(GDX.chargeState())
     {
       case 0:
@@ -83,10 +105,11 @@ void setup()
       }
     Serial.print ("strBuffer: ");
     Serial.println (strBuffer);
-    CharDisplayPrintLine(1, "chargeStatus: ");
-    CharDisplayPrintLine(2, strBuffer);
-    delay(2000);
-
+    #if defined TWO_LINE_DISPLAY    
+      CharDisplayPrintLine(1, "chargeStatus: ");
+      CharDisplayPrintLine(2, strBuffer);
+      delay(2000);
+    #endif //TWO_LINE_DISPLAY
    #endif //DISPLAY STATUS
  
   Serial.println ("Data Table:");
