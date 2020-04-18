@@ -1,10 +1,9 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 
-#define TWO_LINE_DISPLAY //ADD FOR DISPLAY
-//#define C_F_VERSION //C and F temperature on DISPLAY
-//#define CURIE_VERSION //to support Arduino 101, instead of Arduino BLE, also search for ####
-//#define STATUS //to display battery status, RSSI, and other info CRASHES INSTANTLY!!!
+#define TWO_LINE_DISPLAY //comment out for no DISPLAY
+//#define C_F_VERSION //C and F temperature
+
 GDXLib GDX;
 static char strUnits[16];
 int t=0; //loop counter
@@ -13,7 +12,7 @@ void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  char strBuffer[64];//I changed to 64 in despiration
+  char strBuffer[64];//I changed to 64 
 
   #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
@@ -75,42 +74,6 @@ void setup()
   ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
   Serial.println(strUnits);
-  
-  #if defined STATUS//CRASHES EVERY TIME!!!!!
-    Serial.print("battery: ");
-    Serial.print(GDX.batteryPercent());
-    Serial.println(" %");
-    #if defined TWO_LINE_DISPLAY    
-     CharDisplayPrintLine(1, "battery level:");
-     //sprintf(strBuffer, "%.1d", GDX.batteryPercent());
-     // does this crash?!!!     sprintf(D2, "%.d %s",GDX.batteryPercent(),"percent");
-     CharDisplayPrintLine(2, strBuffer);
-     delay(1000);
-    #endif //TWO_LINE_DISPLAY
-    
-    switch(GDX.chargeState())
-    {
-      case 0:
-        strcpy(strBuffer,"not connected");
-        break;
-      case 1:
-        strcpy(strBuffer,"charging");
-        break;
-      case 2:
-        strcpy(strBuffer,"complete");
-        break;
-      case 3:
-        strcpy(strBuffer,"error");
-        break;
-      }
-    Serial.print ("strBuffer: ");
-    Serial.println (strBuffer);
-    #if defined TWO_LINE_DISPLAY    
-      CharDisplayPrintLine(1, "chargeStatus: ");
-      CharDisplayPrintLine(2, strBuffer);
-      delay(2000);
-    #endif //TWO_LINE_DISPLAY
-   #endif //DISPLAY STATUS
  
   Serial.println ("Data Table:");
 }
@@ -174,7 +137,6 @@ void CharDisplayInit()
   Serial1.write(254); 
   Serial1.write(128);  
 }
-
 
 //=============================================================================
 // ConvertUTF8ToASCII() Function

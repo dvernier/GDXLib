@@ -1,6 +1,6 @@
 /* This is a library to make using Vernier GDX sensors 
-Version 0.12
-//04162020 8a crashes with all options (except Curie) on. the problem is in STATUS
+Version 0.15
+//04182020 10a 
 */
 #include "ArduinoBLE.h"
 #include "Arduino.h"
