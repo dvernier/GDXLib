@@ -3,6 +3,7 @@
 
 #define TWO_LINE_DISPLAY //comment out for no DISPLAY
 //#define C_F_VERSION //C and F temperature
+#define LEDS //
 
 GDXLib GDX;
 static char strUnits[16];
@@ -13,7 +14,24 @@ void setup()
   // Initialize the debug serial port
   Serial.begin(9600);
   char strBuffer[64];//I changed to 64 
-
+ #if defined LEDS
+    //  Initialize the digital output lines
+    pinMode(2,OUTPUT);
+    pinMode(3,OUTPUT);
+    pinMode(4,OUTPUT);
+    pinMode(5,OUTPUT);
+    pinMode(6,OUTPUT);
+    pinMode(7,OUTPUT);
+    pinMode(8,OUTPUT);
+    pinMode(9,OUTPUT);
+    for (int i = 2; i < 10; i++) // cycle through the LEDs
+      {
+        digitalWrite(i, HIGH);
+        delay (200);
+        digitalWrite(i, LOW);
+        delay (200);
+      }          
+  #endif //LEDS
   #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
     delay (2000);
@@ -102,6 +120,60 @@ void setup()
     CharDisplayPrintLine(2,strBuffer);
   #endif // TWO_LINE_DISPLAY
   delay(1000);
+   #if defined LEDS
+    for (int i = 2; i < 10; i++) // turn off the LEDs
+      {
+        digitalWrite(i, LOW);
+      }   
+   float maxsignal =10;
+   for (int dPin = 2; dPin<10;dPin++)
+      {  //turn off all LEDs
+         digitalWrite(dPin, LOW);
+      }    
+    if (channelReading >maxsignal*1/20 )//Check to see if above threshold 2
+       {
+        digitalWrite(2, HIGH);
+       }
+    if (channelReading >maxsignal*2/20 )//Check to see if above threshold 4
+       {
+        digitalWrite(3, HIGH);
+       }
+    if (channelReading >maxsignal*3/20 )//Check to see if above threshold 6
+       {
+        digitalWrite(4, HIGH);
+       }
+    if (channelReading >maxsignal*4/20 )//Check to see if above threshold 8
+       {
+        digitalWrite(5, HIGH);
+       }
+    if (channelReading >maxsignal*5/20  )//Check to see if above threshold 10
+       {
+        digitalWrite(6, HIGH);
+       }
+    if (channelReading >maxsignal*6/20  )//Check to see if above threshold 12
+       {
+        digitalWrite(7, HIGH);
+       }
+    if (channelReading >maxsignal*7/20  )//Check to see if above threshold 12
+       {
+        digitalWrite(8, HIGH);
+       }
+    if (channelReading >maxsignal*8/20  )//Check to see if above threshold 12
+       {
+        digitalWrite(9, HIGH);
+       }
+    if (channelReading >maxsignal*9/20  )//Check to see if above threshold 14
+       {
+         for (int jj = 2; jj<7;jj++) // flash LEDs for max force
+           {
+            digitalWrite(9, HIGH);
+            delay (200);
+         digitalWrite(9, LOW);
+            delay (200);
+           }
+     delay(50);
+       }
+  #endif //LEDS
 }
 
 void CharDisplayPrintLine(int line, const char* strText)
