@@ -11,6 +11,8 @@ int t=0; //loop counter
 
 void setup()
 {
+  //this version will not run faster than 6.6 readings a second using GDX-ACC
+  // note the ao sample period for GDX-ACC=500ms
   // Initialize the debug serial port
   Serial.begin(9600);
   char strBuffer[64];//I changed to 64 
@@ -27,9 +29,9 @@ void setup()
     for (int i = 2; i < 10; i++) // cycle through the LEDs
       {
         digitalWrite(i, HIGH);
-        delay (200);
+        delay (100);
         digitalWrite(i, LOW);
-        delay (200);
+        delay (100);
       }          
   #endif //LEDS
   #if defined TWO_LINE_DISPLAY
@@ -50,10 +52,10 @@ void setup()
     CharDisplayPrintLine(1, "Looking for ");
   #endif //TWO_LINE_DISPLAY
   
-  char sensorName[64]="             ";
+  //char sensorName[64]="             ";
   // char sensorName[64]="GDX-ST 0P1000S9";
   // char sensorName[64]="GDX-FOR 072001P5"
-  //char sensorName[64]="GDX-ACC 0H101767";
+  char sensorName[64]="GDX-ACC 0H101767";
        
   if (sensorName[5] == ' ') //if no specific sensor seleted
   {
@@ -71,7 +73,7 @@ void setup()
       CharDisplayPrintLine(2, sensorName);
       delay(2000);
     #endif //TWO_LINE_DISPLAY
-    GDX.GoDirectBLE_Begin(sensorName,1, 1000);//specify channel and period here also
+    GDX.GoDirectBLE_Begin(sensorName,1, 150);//specify channel and period here also
   }
   
   GDX.autoID();// this is the routine to get device info
@@ -119,7 +121,7 @@ void setup()
     CharDisplayPrintLine(1, GDX.channelName());
     CharDisplayPrintLine(2,strBuffer);
   #endif // TWO_LINE_DISPLAY
-  delay(1000);
+  delay(150);
    #if defined LEDS
     for (int i = 2; i < 10; i++) // turn off the LEDs
       {
@@ -130,39 +132,40 @@ void setup()
       {  //turn off all LEDs
          digitalWrite(dPin, LOW);
       }    
-    if (channelReading >maxsignal*1/20 )//Check to see if above threshold 2
+    if (channelReading >maxsignal*1/10 )//Check to see if above threshold 2
        {
         digitalWrite(2, HIGH);
        }
-    if (channelReading >maxsignal*2/20 )//Check to see if above threshold 4
+    if (channelReading >maxsignal*2/10 )//Check to see if above threshold 4
        {
         digitalWrite(3, HIGH);
        }
-    if (channelReading >maxsignal*3/20 )//Check to see if above threshold 6
+    if (channelReading >maxsignal*3/10 )//Check to see if above threshold 6
        {
         digitalWrite(4, HIGH);
        }
-    if (channelReading >maxsignal*4/20 )//Check to see if above threshold 8
+    if (channelReading >maxsignal*4/10 )//Check to see if above threshold 8
        {
         digitalWrite(5, HIGH);
        }
-    if (channelReading >maxsignal*5/20  )//Check to see if above threshold 10
+    if (channelReading >maxsignal*5/10  )//Check to see if above threshold 10
        {
         digitalWrite(6, HIGH);
        }
-    if (channelReading >maxsignal*6/20  )//Check to see if above threshold 12
+    if (channelReading >maxsignal*6/10  )//Check to see if above threshold 12
        {
         digitalWrite(7, HIGH);
        }
-    if (channelReading >maxsignal*7/20  )//Check to see if above threshold 12
+    if (channelReading >maxsignal*7/10  )//Check to see if above threshold 12
        {
         digitalWrite(8, HIGH);
        }
-    if (channelReading >maxsignal*8/20  )//Check to see if above threshold 12
+    if (channelReading >maxsignal*8/10  )//Check to see if above threshold 12
        {
         digitalWrite(9, HIGH);
        }
-    if (channelReading >maxsignal*9/20  )//Check to see if above threshold 14
+   /*comment the lines below and see if a crash happens: 
+    if (channelReading >maxsignal*9/10  )//Check to see if above threshold 14
        {
          for (int jj = 2; jj<7;jj++) // flash LEDs for max force
            {
@@ -171,8 +174,10 @@ void setup()
          digitalWrite(9, LOW);
             delay (200);
            }
+
      delay(50);
        }
+    */
   #endif //LEDS
 }
 
