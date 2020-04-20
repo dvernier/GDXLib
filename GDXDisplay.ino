@@ -3,16 +3,20 @@
 
 #define TWO_LINE_DISPLAY //comment out for no DISPLAY
 //#define C_F_VERSION //C and F temperature
+//now here is the really wierd thing about this code:
+//set up for using GDX-ACC, channel 1
+//with the display on, it will run at period= 200ms, or for sure 250ms
+//with the display off, it will not run even at 250ms.
+// note the autosample period for GDX-ACC=500ms
 #define LEDS //
 
 GDXLib GDX;
 static char strUnits[16];
 int t=0; //loop counter
-
+int period = 1000; //time between readings in ms, default 1000ms
+int channel =1;//channel to be read, default is 1
 void setup()
 {
-  //this version will not run faster than 6.6 readings a second using GDX-ACC
-  // note the ao sample period for GDX-ACC=500ms
   // Initialize the debug serial port
   Serial.begin(9600);
   char strBuffer[64];//I changed to 64 
@@ -51,12 +55,14 @@ void setup()
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Looking for ");
   #endif //TWO_LINE_DISPLAY
-  
+
+  //set things up in the steps below
   //char sensorName[64]="             ";
   // char sensorName[64]="GDX-ST 0P1000S9";
   // char sensorName[64]="GDX-FOR 072001P5"
   char sensorName[64]="GDX-ACC 0H101767";
-       
+  int period = 500; //time between readings   
+    
   if (sensorName[5] == ' ') //if no specific sensor seleted
   {
     Serial.println("  any GDX sensor ");
@@ -73,7 +79,7 @@ void setup()
       CharDisplayPrintLine(2, sensorName);
       delay(2000);
     #endif //TWO_LINE_DISPLAY
-    GDX.GoDirectBLE_Begin(sensorName,1, 150);//specify channel and period here also
+    GDX.GoDirectBLE_Begin(sensorName,channel, period);//specify channel and period here also
   }
   
   GDX.autoID();// this is the routine to get device info
@@ -82,9 +88,8 @@ void setup()
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Found ");
     CharDisplayPrintLine(2, GDX.deviceName());
-    delay(1000);
   #endif //TWO_LINE_DISPLAY
-
+  delay(1000);
   Serial.print("ChannelName: ");
   Serial.println(GDX.channelName());
   Serial.print("ChannelUnits: ");
@@ -101,9 +106,7 @@ void setup()
 {
   float channelReading =GDX.readSensor();
   char strBuffer[64];
-  sprintf(strBuffer, "--- %s", strUnits);//?!!!!
   sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
-  //sprintf(strBuffer, "%.2f %s", channelReading,strUnits);//crash??!!!!!
 
   #if defined C_F_VERSION
       t++;
@@ -115,13 +118,14 @@ void setup()
           sprintf(strBuffer, "%.2f %s", channelReading,"deg F");   
         }
   #endif //C_F_VERSION
+  
   Serial.println(GDX.channelName());
   Serial.println(strBuffer);
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, GDX.channelName());
     CharDisplayPrintLine(2,strBuffer);
   #endif // TWO_LINE_DISPLAY
-  delay(150);
+  delay(period);
    #if defined LEDS
     for (int i = 2; i < 10; i++) // turn off the LEDs
       {
@@ -164,7 +168,6 @@ void setup()
        {
         digitalWrite(9, HIGH);
        }
-   /*comment the lines below and see if a crash happens: 
     if (channelReading >maxsignal*9/10  )//Check to see if above threshold 14
        {
          for (int jj = 2; jj<7;jj++) // flash LEDs for max force
@@ -177,7 +180,7 @@ void setup()
 
      delay(50);
        }
-    */
+    
   #endif //LEDS
 }
 

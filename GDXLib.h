@@ -58,6 +58,7 @@ class GDXLib
     
     
     void GoDirectBLE_Measure();  //
+    void GoDirectBLE_Error();
     void GoDirectBLE_Start();
     void GoDirectBLE_Scan();
     void GoDirectBLE_Reset();  //

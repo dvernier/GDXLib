@@ -1,6 +1,6 @@
 /* This is a library to make using Vernier GDX sensors 
-Version 0.15
-//04182020 10a 
+Version 0.2 with lots of feedback on errors
+//04202020 8a 
 */
 #include "ArduinoBLE.h"
 #include "Arduino.h"
@@ -9,11 +9,11 @@ Version 0.15
 
 GDXLib::GDXLib()
 {}
-char channelName[64];//60 bytes
-char deviceName[64];//60 bytes
-char channelUnits[36];// 32 bytes !!! I made these bigger to avoid problems
+char channelName[60];//60 bytes
+char deviceName[60];//60 bytes
+char channelUnits[32];// 32 bytes !!! I made these bigger to avoid problems
 int channelNumber;
-char sN[16];// 32 bytes this is an expermment
+char sN[32];// 32 bytes this is an expermment
 uint8_t Percent;//HACK
 uint8_t chargerStatus;
 int batteryPercent;
@@ -68,7 +68,7 @@ char sensorName[] = "GDX-ACC 0H010767"; // we will use this to display later
 #define D2PIO_CHARGER_STATE_COMPLETE 2
 #define D2PIO_CHARGER_STATE_ERROR    3
 
-#define D2PIO_MAX_ORDERCODE_LENGTH 16
+#define D2PIO_MAX_ORDERCODE_LENGTH 16//I should be using these!!!
 #define D2PIO_MAX_SERIALNUMBER_LENGTH 16
 #define D2PIO_BLE_ADDRESS_LENGTH 6
 #define D2PIO_MAX_DEVICENAME_LENGTH 32
@@ -198,6 +198,7 @@ static unsigned long                               g_RSSIAge;
 
 
  //below are mentions of functions to avoid the not found stuff!!!
+void GoDirectBLE_Error();
 void GoDirectBLE_Start();
 bool D2PIO_StartMeasurements(byte channelNumber);
 byte D2PIO_CalculateChecksum(const byte buffer[]);
@@ -209,7 +210,7 @@ byte getRSSI();
 void GDXLib::autoID() 
 {
   // Determine the sensor name:
-  strcpy(_channelName, GoDirectBLE_GetChannelName());
+  //!!!HACKstrcpy(_channelName, GoDirectBLE_GetChannelName());
   //Serial.print("*** _channelName: ");
   //Serial.println(_channelName);
   strcpy(_channelUnits, GDXLib::GoDirectBLE_GetChannelUnits());
@@ -254,9 +255,13 @@ float GDXLib::readSensor()
 {
   //char strBuffer[64];//this is not in Kevin's code
   if (!BLE.connected())
-      GoDirectBLE_Start();
+      GoDirectBLE_Error();
   if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
-    GoDirectBLE_Start();
+    {
+       Serial.println("Error in !D2PIO_ReadMeasurement: ");
+       delay (1000);
+       GoDirectBLE_Error();
+    }
   channelReading=g_measurement;
   return channelReading;
   }
@@ -536,7 +541,14 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
   byte offset = 0;
   int timeoutCounter = 0;
   // Return immediately if there is nothing to do.
-  if (!g_d2pioResponse.valueUpdated()) return false;
+  if (!g_d2pioResponse.valueUpdated()) 
+  {
+    {
+      Serial.print("***!g_d2pioResponse.valueUpdated() error, timeout= ");
+      Serial.println(timeout);
+      return false;
+    }
+  }
 
   while (true)
   {
@@ -1013,7 +1025,26 @@ bool GDXLib::D2PIO_StartMeasurements(byte channelNumber)
 
 //end of D2PIO functions
 //=============================================================================
-// GoDirectBLE_Start() Function// Note this is start, Not begin
+// GoDirectBLE_Error() Function// Just added 041920
+//=============================================================================
+void GDXLib::GoDirectBLE_Error()
+{
+  Serial.println("***Error, in the GoDirectBLE_Error Function");
+  delay(1000);
+  BLE.begin();
+  Serial.println("***BLE reset going on");
+  delay(1000);
+  // Cleanup any old connections //Kevin's reset
+  Serial.println("***trying to reconnect...");
+  if (BLE.connected())
+    BLE.disconnect();
+  delay(1000);
+  if (g_autoConnect)
+    BLE.scan(true);
+  else
+    BLE.scanForName(g_deviceName, true);
+}//=============================================================================
+// GoDirectBLE_Start() Function// Note this is start, IT IS NEVER USED!!!!
 //=============================================================================
 void GDXLib::GoDirectBLE_Start()
 {
@@ -1099,16 +1130,16 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   if (!g_peripheral.connect())
   {
     Serial.println("FAILED!");
-    GoDirectBLE_Start();
+    GoDirectBLE_Error();
   }//end if
   else
   {
     Serial.println("SUCCESS");
-   delay(200);  // Kevin: seems okay without this delay//!!!!!!!!!!!!!!!!!
+   delay(2000);  // Kevin: seems okay without this delay//!!!!!!!!!!!!!!!!!
   if (!D2PIO_DiscoverService(g_peripheral)) //Kevin's Discover 
-    GoDirectBLE_Start();
+    GoDirectBLE_Error();
   if (!D2PIO_Init())
-    GoDirectBLE_Start();
+    GoDirectBLE_Error();
 
   // Wait for connection interval to finish negotiating
   delay(1000);
@@ -1122,34 +1153,34 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
 
   //Serial.print("***D2PIO_GetStatus()");
   if (!D2PIO_GetStatus())
-    GoDirectBLE_Start();
+    GoDirectBLE_Error();
 
   //Serial.print("***D2PIO_GetDeviceInfo()");
   if (!D2PIO_GetDeviceInfo()) //Kevin's Setup
-    GoDirectBLE_Start();
+    GoDirectBLE_Error();
     
   Serial.print("***D2PIO_GetChannelInfoAll()");
   if (!D2PIO_GetChannelInfoAll())
-    GoDirectBLE_Start();
+    GoDirectBLE_Error();
     
   if (g_autoConnect)
   {
     if (!D2PIO_Autoset())
-      GoDirectBLE_Start();
+      GoDirectBLE_Error();
   }//end if
   
   if (!D2PIO_GetChannelInfo(g_channelNumber, false))
-        GoDirectBLE_Start();
+        GoDirectBLE_Error();
 
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
-    GoDirectBLE_Start();
+    GoDirectBLE_Error();
 
   if (!D2PIO_StartMeasurements(g_channelNumber))
-    GoDirectBLE_Start();
-
+    GoDirectBLE_Error();
+  delay(1000);//HACK!!!
   g_MeasurementCounter = 0;
   g_measurement = 0.0;
-
+  
   ////Serial.print("*** strbuffer ");
   ////Serial.println(strbuffer);
 
