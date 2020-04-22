@@ -1,8 +1,9 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-#define TWO_LINE_DISPLAY //comment out for no DISPLAY
+//#define TWO_LINE_DISPLAY //comment out for no DISPLAY
 //#define STATUS //to display battery status, RSSI, and other info
-//#define C_F_VERSION //C and F temperature
+#define C_F_VERSION //C and F temperature
+//#define LEDS
 #define SENSORS //Use Built-in Arduino Nano33 BLE sensors
 
 #if defined SENSORS
@@ -26,7 +27,8 @@ void setup()
   Serial.begin(9600);
   char strBuffer[64];//I changed to 64 
   delay(1000);
- #if defined LEDS
+  
+  #if defined LEDS
     //  Initialize the digital output lines
     pinMode(2,OUTPUT);
     pinMode(3,OUTPUT);
@@ -76,11 +78,11 @@ void setup()
   char sensorName[64]="GDX-ST 0P1000S9";
   // char sensorName[64]="GDX-FOR 072001P5"
   //char sensorName[64]="GDX-ACC 0H1019K1";
-  int period = 500; //time between readings   
+  int period = 1000; //time between readings   
     
   if (sensorName[5] == ' ') //if no specific sensor seleted
   {
-    Serial.println("  any GDX sensor ");
+    Serial.println(" any GDX sensor ");
     #if defined TWO_LINE_DISPLAY
       CharDisplayPrintLine(2, "any GDX sensor");
       delay(2000);
@@ -90,12 +92,10 @@ void setup()
   else
   {
     Serial.println(sensorName);
-    
     #if defined TWO_LINE_DISPLAY
       CharDisplayPrintLine(2, sensorName);
       delay(2000);
     #endif //TWO_LINE_DISPLAY
-    
     GDX.GoDirectBLE_Begin(sensorName,channel, period);//specify channel and period here also
   }
   delay(1000);
@@ -113,13 +113,16 @@ void setup()
   Serial.print("ChannelUnits: ");
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
-  sprintf(strUnits, "%s", GDX.channelUnits());
-  ConvertUTF8ToASCII(strUnits);
+  //sprintf(strUnits, "%s", GDX.channelUnits());
+  //ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
   Serial.println(strUnits);
 
+
   #if defined STATUS //seems to cause crashes right now. !!!
-    Serial.print("RSSI ");
+   
+    Serial.print("THIS  CODE IS IN DEDFINED status!!!!!!!!!!!!!");
+     /*WHY DOES THE CODE BELOW RUN???????????????????
     Serial.println(GDX.RSSI());
     Serial.print("battery: ");
     Serial.print(GDX.batteryPercent());
@@ -144,7 +147,9 @@ void setup()
       }
     Serial.print("chargeState: ");
     Serial.println(strBuffer)
-  #endif //DISPLAY STATUS  
+      */
+  #endif //STATUS  
+
   #if defined TWO_LINE_DISPLAY
   /*  CharDisplayPrintLine(1, "RSSI ");
   //  CharDisplayPrintLine(2, GDX.RSSI());
@@ -155,24 +160,29 @@ void setup()
     CharDisplayPrintLine(1, "chargeState: ");
     CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
     delay(1000);
-    */// !!!!!!!!!!stuff ABOVE HAS BEEN PROBLEMATIC
+    */
   #endif //TWO_LINE_DISPLAY
-
-    Serial.print("RSSI ");
-    Serial.println(GDX.RSSI());
-    Serial.print("battery: ");
-    Serial.print(GDX.batteryPercent());
-    Serial.println(" %");Serial.print("ChannelName: ");
  
   Serial.println ("Data Table:");
 }
  void loop()
 {
+  Serial.print(t);
   float channelReading =GDX.readSensor();
   char strBuffer[64];
   sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
-
-  #if defined SENSORS
+  #if defined C_F_VERSION
+      t++;
+     float t2=t/2.0;//used to determine every other time through the loop
+     if (t2==int(t/2))// every other time switch to F temperature
+        {
+          channelReading= channelReading*1.8+32;//convert C to F degrees  HACK
+          //sprintf(strBuffer, "%.2f %s", channelReading,"deg F");// causes crash
+          sprintf(strBuffer, "%.2f %s", channelReading,"deg F");   
+        }
+   #endif //C_F_VERSION
+   
+   #if defined SENSORS
     float x, y, z;//accelerations
     if (IMU.accelerationAvailable()) 
     {
@@ -187,8 +197,10 @@ void setup()
         }
      }//end of if
   #endif //SENSORS
-   Serial.println(period);/////////);
-   Serial.println(GDX.channelName());
+  
+  //Serial.println(period);/////////);
+  //Serial.println(GDX.channelName());
+  Serial.print(" channelReading ");
   Serial.println(strBuffer);
   
   #if defined TWO_LINE_DISPLAY
@@ -197,7 +209,7 @@ void setup()
   #endif // TWO_LINE_DISPLAY
 
   delay(period);
-   #if defined LEDS
+  #if defined LEDS
     for (int i = 2; i < 10; i++) // turn off the LEDs
       {
         digitalWrite(i, LOW);

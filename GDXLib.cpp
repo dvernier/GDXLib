@@ -255,7 +255,10 @@ float GDXLib::readSensor()
 {
   //char strBuffer[64];//this is not in Kevin's code
   if (!BLE.connected())
-      GoDirectBLE_Error();
+  {
+     Serial.println("!BLE.connected()");
+     GoDirectBLE_Error();
+  }    
   if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
     {
        Serial.println("Error in !D2PIO_ReadMeasurement: ");
