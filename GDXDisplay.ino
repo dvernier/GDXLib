@@ -1,10 +1,10 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//#define TWO_LINE_DISPLAY //comment out for no DISPLAY
+#define TWO_LINE_DISPLAY //comment out for no DISPLAY
 //#define STATUS //to display battery status, RSSI, and other info
 #define C_F_VERSION //C and F temperature
-//#define LEDS
-#define SENSORS //Use Built-in Arduino Nano33 BLE sensors
+#define LEDS
+//#define SENSORS //Use Built-in Arduino Nano33 BLE sensors
 
 #if defined SENSORS
     #include <Arduino_LSM9DS1.h> //for reading sensors in Arduino Nano33 BLE
@@ -25,7 +25,7 @@ void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  char strBuffer[64];//I changed to 64 
+  char strBuffer[32];// 
   delay(1000);
   
   #if defined LEDS
@@ -58,14 +58,19 @@ void setup()
   #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
     delay (2000);
+    //DisplayTest();//!!!!!!!!!!!!
+    //DisplayTest4();//!!!!!!!!!!!!
   #endif //TWO_LINE_DISPLAY
-  
+ 
+
   #if defined C_F_VERSION
     Serial.print  ("special version  ");
     Serial.println("C and F temp only");
-    CharDisplayPrintLine(1, "special version ");
-    CharDisplayPrintLine(2, "C & F temp only ");
-    delay (2000);
+    #if defined TWO_LINE_DISPLAY
+      CharDisplayPrintLine(1, "special version");
+      CharDisplayPrintLine(2, "C & F temp only");
+      delay (2000);
+    #endif //TWO_LINE_DISPLAY
   #endif //C_F_VERSION
   
   Serial.println(" Looking for"); 
@@ -76,7 +81,7 @@ void setup()
   //set things up in the steps below
   //char sensorName[64]="             ";
   char sensorName[64]="GDX-ST 0P1000S9";
-  // char sensorName[64]="GDX-FOR 072001P5"
+  //char sensorName[64]="GDX-FOR 072001P5";
   //char sensorName[64]="GDX-ACC 0H1019K1";
   int period = 1000; //time between readings   
     
@@ -113,23 +118,21 @@ void setup()
   Serial.print("ChannelUnits: ");
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
-  //sprintf(strUnits, "%s", GDX.channelUnits());
+  //THIS SEEMS TO BE A PROBLEMsprintf(strUnits, "%s", GDX.channelUnits());
   //ConvertUTF8ToASCII(strUnits);
+  strcpy(strUnits,"deg C");//HACK
   Serial.print("strUnits ");
   Serial.println(strUnits);
 
-
-  #if defined STATUS //seems to cause crashes right now. !!!
-   
-    Serial.print("THIS  CODE IS IN DEDFINED status!!!!!!!!!!!!!");
-     /*WHY DOES THE CODE BELOW RUN???????????????????
+  #if defined STATUS //THERE ARE PROBLEMS LURKING HERE IN THE STATUS
+    Serial.println("RSSI: ");
     Serial.println(GDX.RSSI());
     Serial.print("battery: ");
     Serial.print(GDX.batteryPercent());
     Serial.println(" %");
     Serial.print("ChargeState: ");
     Serial.print(GDX.chargeState());
-    //Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
+    Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
     switch(GDX.chargeState())
     {
       case 0:
@@ -146,33 +149,37 @@ void setup()
         break;
       }
     Serial.print("chargeState: ");
-    Serial.println(strBuffer)
-      */
+    Serial.println(strBuffer);
+    
+    #if defined TWO_LINE_DISPLAY
+      CharDisplayPrintLine(1, "RSSI ");
+      Serial1.write(254); // cursor to beginning of second line
+      Serial1.write(192); 
+      Serial1.print(GDX.RSSI());
+      delay(2000);
+      CharDisplayPrintLine(1, "battery: %");
+      Serial1.write(254); // cursor to beginning of second line
+      Serial1.write(192); 
+      Serial1.print(GDX.batteryPercent());
+      Serial1.write(254);// cursor to the end of second line
+      Serial1.write(204);
+      Serial1.print("%");
+      delay(2000);
+      CharDisplayPrintLine(1, "ChargeState: ");
+      CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
+      delay(1000);
+    #endif //TWO_LINE_DISPLAY
   #endif //STATUS  
-
-  #if defined TWO_LINE_DISPLAY
-  /*  CharDisplayPrintLine(1, "RSSI ");
-  //  CharDisplayPrintLine(2, GDX.RSSI());
-    delay(1000);
-    CharDisplayPrintLine(1, "battery: %");
-   // CharDisplayPrintLine(2, GDX.batteryPercent());
-    delay(1000);
-    CharDisplayPrintLine(1, "chargeState: ");
-    CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
-    delay(1000);
-    */
-  #endif //TWO_LINE_DISPLAY
- 
   Serial.println ("Data Table:");
 }
  void loop()
 {
+  t++;
   Serial.print(t);
   float channelReading =GDX.readSensor();
-  char strBuffer[64];
+  char strBuffer[32];//!!!!!!!!!!
   sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
   #if defined C_F_VERSION
-      t++;
      float t2=t/2.0;//used to determine every other time through the loop
      if (t2==int(t/2))// every other time switch to F temperature
         {
@@ -214,12 +221,12 @@ void setup()
       {
         digitalWrite(i, LOW);
       }   
-   float maxsignal =10;
    for (int dPin = 2; dPin<10;dPin++)
       {  //turn off all LEDs
          digitalWrite(dPin, LOW);
       }    
-    if (channelReading >maxsignal*1/10 )//Check to see if above threshold 2
+       float maxsignal =80;
+       if (channelReading >(maxsignal*1/10 ))//Check to see if above threshold 2
        {
         digitalWrite(2, HIGH);
        }
@@ -294,14 +301,65 @@ void CharDisplayInit()
   delay(500);
   
   // Clear the screen
-  Serial1.write((uint8_t)254);
-  Serial1.write((uint8_t)1);
+  //Serial1.write((uint8_t)254);
+ // Serial1.write((uint8_t)1);
 
   // Move cursor to beginning of line1
   Serial1.write(254); 
   Serial1.write(128);  
 }
 
+void DisplayTest()
+{
+  for( int b=137;b<158;b=b+10)
+  {
+  //this code is for the older Sparkfun displays with the add on boards
+  //it seems to work with the new ones, also
+  //Serial1.write(254);//clear screen
+  //Serial1.write(1);
+  //delay(2000);
+  Serial1.write(124); // adjust backlight brightness of display
+  Serial1.write(b); //max=157, 150=73%, 130=40%,128=off
+  Serial1.write(254); // cursor to beginning of first line
+  Serial1.write(128);
+  Serial1.print("                ");
+  Serial1.write(254); // cursor to beginning of first line
+  Serial1.write(192);
+  Serial1.print("                ");
+  Serial1.write(254); // cursor to beginning of first line
+  Serial1.print("Brightness Level");
+  Serial1.write(254); // cursor to beginning of second line
+  Serial1.write(192); 
+  Serial1.print("b=");
+  Serial1.write(254);// cursor to the end of second line
+  Serial1.write(204);
+  Serial1.print(b);
+  delay(3000);
+    }
+  Serial1.write(124); // adjust backlight brightness of display
+  Serial1.write(150); //max=157, 150=73%, 130=40%,128=off
+  delay(2000);
+}
+void DisplayTest4()
+{
+  Serial1.write('|');
+  //Serial1.write(24);
+  //Serial1.write(contrast);
+  //Serial1.write('|');
+  //Serial1.write('-');
+  CharDisplayPrintLine(1, "               ");
+  CharDisplayPrintLine(2, "               ");
+  CharDisplayPrintLine(3, "               ");
+  CharDisplayPrintLine(4, "               ");
+  delay(2000);  
+  CharDisplayPrintLine(1, "      this     ");
+  CharDisplayPrintLine(2, "        is     ");
+  CharDisplayPrintLine(3, "          a    ");
+  CharDisplayPrintLine(4, "           test");
+  delay(2000);
+  Serial1.print("Hello ");
+  delay(2000);
+}
 //=============================================================================
 // ConvertUTF8ToASCII() Function
 // Very limited -- only supports a few translations

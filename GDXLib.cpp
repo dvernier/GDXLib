@@ -1,6 +1,46 @@
 /* This is a library to make using Vernier GDX sensors 
-Version 0.2 with lots of feedback on errors
-//04202020 8a 
+Version 0.3 with lots of feedback on errors
+//04222020 5p 
+/*
+doing a quick status test, running at 1000ms
+works with all off, adding DEBUGS below,individually, leads to:
+TWO_LINE_DISPLAY OK
+STATUS (sections tested separately, and no two line display)
+   RSSI does not crash, but reads 0
+   Battery OK
+   charge state (number) OK
+   charge state (switch) THIS SEEMS TO BE A PROBLEM DO NOT USE
+  Combining STATUS And Display working amazingly well
+  
+C_F_VERSION   OK
+LEDS .   OK
+SENSORS  OK
+
+adding in the degree sign conversions:
+seemed to lead to problems
+---  
+So here is the status after running with two-line display and status:
+after 2273 readings
+2274***!g_d2pioResponse.valueUpdated() error, timeout= 5000
+Error in !D2PIO_ReadMeasurement: 
+
+Testing with all features on 042220:
+1877 channelReading 22.56 deg C
+1878***!g_d2pioResponse.valueUpdated() error, timeout= 5000
+Error in !D2PIO_ReadMeasurement: 
+***Error, in the GoDirectBLE_Error Function
+***BLE reset going on
+***trying to reconnect...
+ channelReading 72.61 deg F
+1879***!g_d2pioResponse.valueUpdated() error, timeout= 5000
+Error in !D2PIO_ReadMeasurement: 
+***Error, in the GoDirectBLE_Error Function
+***BLE reset going on
+***trying to reconnect...
+ channelReading 22.56 deg C
+1880***!g_d2pioResponse.valueUpdated() error, timeout= 5000
+
+
 */
 #include "ArduinoBLE.h"
 #include "Arduino.h"
