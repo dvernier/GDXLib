@@ -1,11 +1,11 @@
 /* This is a library to make using Vernier GDX sensors 
 Version 0.31 with lots of feedback on errors
-//04242020 10A 
+//04242020 4PM 
 /*
 doing a quick status test, running at 1000ms
 Seems to work, with these exception:
 - the degree sign thing
-- the Status code (maybe on when combined with DISPLAY)
+- the Status code (when combined with DISPLAY)
 - it will not go fast
 ---  
 

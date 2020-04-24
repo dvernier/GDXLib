@@ -1,7 +1,7 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 #define TWO_LINE_DISPLAY //comment out for no DISPLAY
-//#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
+#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 #define C_F_VERSION //C and F temperature
 #define LEDS
 #define SENSORS //Use Built-in Arduino Nano33 BLE sensors
@@ -145,25 +145,29 @@ void setup()
       }
     Serial.print("chargeState: ");
     Serial.println(strBuffer);
-    
+  
+   /*
     #if defined TWO_LINE_DISPLAY
       CharDisplayPrintLine(1, "RSSI ");
-      Serial1.write(254); // cursor to beginning of second line
-      Serial1.write(192); 
-      Serial1.print(GDX.RSSI());//this is broken!!!
+      //Serial1.write(254); // cursor to beginning of second line
+      //Serial1.write(192); 
+      //Serial1.print(GDX.RSSI());//this is broken!!!
       delay(2000);
-      CharDisplayPrintLine(1, "battery: %");
-      Serial1.write(254); // cursor to beginning of second line
-      Serial1.write(192); 
-      Serial1.print(GDX.batteryPercent());
-      Serial1.write(254);// cursor to the end of second line
-      Serial1.write(204);
-      Serial1.print("PC");
+      CharDisplayPrintLine(1, "battery: PC");
+      //Serial1.write(254); // cursor to beginning of second line
+      //Serial1.write(192); 
+      //Serial1.print(GDX.batteryPercent());
+      //Serial1.write(254);// cursor to the end of second line
+      //Serial1.write(204);
+      //Serial1.print("ChargeState: ");
+      //Serial1.print("PC");
       delay(2000);
+    
       CharDisplayPrintLine(1, "ChargeState: ");
-      CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
-      delay(1000);
+      //CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
+      delay(2000);
     #endif //TWO_LINE_DISPLAY
+ */
   #endif //STATUS  
   
   Serial.println ("Data Table:");
