@@ -1,35 +1,30 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 #define TWO_LINE_DISPLAY //comment out for no DISPLAY
-//#define STATUS //to display battery status, RSSI, and other info
+//#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 #define C_F_VERSION //C and F temperature
 #define LEDS
-//#define SENSORS //Use Built-in Arduino Nano33 BLE sensors
+#define SENSORS //Use Built-in Arduino Nano33 BLE sensors
 
 #if defined SENSORS
-    #include <Arduino_LSM9DS1.h> //for reading sensors in Arduino Nano33 BLE
+  #include <Arduino_LSM9DS1.h> //for reading sensors in Arduino Nano33 BLE
 #endif //SENSORS
   
-//now here is the really wierd thing about this code:
-//set up for using GDX-ACC, channel 1
-//with the display on, it will run at period= 200ms, or for sure 250ms
-//with the display off, it will not run even at 250ms.
-// note the autosample period for GDX-ACC=500ms
 GDXLib GDX;
 static char strUnits[16];
 int t=0; //loop counter
-int period = 1000; //time between readings in ms, default 1000ms
+int period = 1000; //time between readings in ms, default 1000ms, change it, but do not go too fast!
 int channel =1;//channel to be read, default is 1
 
 void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
-  char strBuffer[32];// 
-  delay(1000);
+  char strBuffer[32];
+  delay(500);
   
   #if defined LEDS
-    //  Initialize the digital output lines
+    //  Initialize the digital output lines, if used
     pinMode(2,OUTPUT);
     pinMode(3,OUTPUT);
     pinMode(4,OUTPUT);
@@ -48,7 +43,7 @@ void setup()
   #endif //LEDS
   
   #if defined SENSORS
-    if (!IMU.begin()) //for built-in sensors
+    if (!IMU.begin()) //for built-in sensors in the Arduino Nano 33BLE
       {
         Serial.println("Failed to initialize IMU!");
         while (1);
@@ -58,8 +53,8 @@ void setup()
   #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
     delay (2000);
-    //DisplayTest();//!!!!!!!!!!!!
-    //DisplayTest4();//!!!!!!!!!!!!
+    //DisplayTest();//!!!to test 2-line display
+    //DisplayTest4();//!!!to test 4-line display (not set up)
   #endif //TWO_LINE_DISPLAY
  
 
@@ -80,12 +75,12 @@ void setup()
 
   //set things up in the steps below
   //char sensorName[64]="             ";
-  char sensorName[64]="GDX-ST 0P1000S9";
-  //char sensorName[64]="GDX-FOR 072001P5";
-  //char sensorName[64]="GDX-ACC 0H1019K1";
+  char sensorName[32]="GDX-ST 0P1000S9";
+  //char sensorName[32]="GDX-FOR 072001P5";
+  //char sensorName[32]="GDX-ACC 0H1019K1";
   int period = 1000; //time between readings   
     
-  if (sensorName[5] == ' ') //if no specific sensor seleted
+  if (sensorName[1] == ' ') //if no specific sensor seleted (I used 2nd character here)
   {
     Serial.println(" any GDX sensor ");
     #if defined TWO_LINE_DISPLAY
@@ -111,6 +106,7 @@ void setup()
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Found ");
     CharDisplayPrintLine(2, GDX.deviceName());
+    //strcpy(strUnits,"deg C");//HACK if you want degrees displayed !!!
   #endif //TWO_LINE_DISPLAY
   delay(1000);
   Serial.print("ChannelName: ");
@@ -120,7 +116,6 @@ void setup()
   // characters to ones that we can display.
   //THIS SEEMS TO BE A PROBLEMsprintf(strUnits, "%s", GDX.channelUnits());
   //ConvertUTF8ToASCII(strUnits);
-  strcpy(strUnits,"deg C");//HACK
   Serial.print("strUnits ");
   Serial.println(strUnits);
 
@@ -155,7 +150,7 @@ void setup()
       CharDisplayPrintLine(1, "RSSI ");
       Serial1.write(254); // cursor to beginning of second line
       Serial1.write(192); 
-      Serial1.print(GDX.RSSI());
+      Serial1.print(GDX.RSSI());//this is broken!!!
       delay(2000);
       CharDisplayPrintLine(1, "battery: %");
       Serial1.write(254); // cursor to beginning of second line
@@ -163,13 +158,14 @@ void setup()
       Serial1.print(GDX.batteryPercent());
       Serial1.write(254);// cursor to the end of second line
       Serial1.write(204);
-      Serial1.print("%");
+      Serial1.print("PC");
       delay(2000);
       CharDisplayPrintLine(1, "ChargeState: ");
       CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
       delay(1000);
     #endif //TWO_LINE_DISPLAY
   #endif //STATUS  
+  
   Serial.println ("Data Table:");
 }
  void loop()
@@ -205,9 +201,9 @@ void setup()
      }//end of if
   #endif //SENSORS
   
-  //Serial.println(period);/////////);
-  //Serial.println(GDX.channelName());
-  Serial.print(" channelReading ");
+  Serial.println(GDX.channelName());
+  //Serial.print(" channelReading ");
+  Serial.print(": ");
   Serial.println(strBuffer);
   
   #if defined TWO_LINE_DISPLAY
@@ -225,7 +221,9 @@ void setup()
       {  //turn off all LEDs
          digitalWrite(dPin, LOW);
       }    
-       float maxsignal =80;
+      
+       float maxsignal =100;//!!! CHANGE DEPENDING ON SENSOR
+       
        if (channelReading >(maxsignal*1/10 ))//Check to see if above threshold 2
        {
         digitalWrite(2, HIGH);

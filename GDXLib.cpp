@@ -1,45 +1,13 @@
 /* This is a library to make using Vernier GDX sensors 
-Version 0.3 with lots of feedback on errors
-//04222020 5p 
+Version 0.31 with lots of feedback on errors
+//04242020 10A 
 /*
 doing a quick status test, running at 1000ms
-works with all off, adding DEBUGS below,individually, leads to:
-TWO_LINE_DISPLAY OK
-STATUS (sections tested separately, and no two line display)
-   RSSI does not crash, but reads 0
-   Battery OK
-   charge state (number) OK
-   charge state (switch) THIS SEEMS TO BE A PROBLEM DO NOT USE
-  Combining STATUS And Display working amazingly well
-  
-C_F_VERSION   OK
-LEDS .   OK
-SENSORS  OK
-
-adding in the degree sign conversions:
-seemed to lead to problems
+Seems to work, with these exception:
+- the degree sign thing
+- the Status code (maybe on when combined with DISPLAY)
+- it will not go fast
 ---  
-So here is the status after running with two-line display and status:
-after 2273 readings
-2274***!g_d2pioResponse.valueUpdated() error, timeout= 5000
-Error in !D2PIO_ReadMeasurement: 
-
-Testing with all features on 042220:
-1877 channelReading 22.56 deg C
-1878***!g_d2pioResponse.valueUpdated() error, timeout= 5000
-Error in !D2PIO_ReadMeasurement: 
-***Error, in the GoDirectBLE_Error Function
-***BLE reset going on
-***trying to reconnect...
- channelReading 72.61 deg F
-1879***!g_d2pioResponse.valueUpdated() error, timeout= 5000
-Error in !D2PIO_ReadMeasurement: 
-***Error, in the GoDirectBLE_Error Function
-***BLE reset going on
-***trying to reconnect...
- channelReading 22.56 deg C
-1880***!g_d2pioResponse.valueUpdated() error, timeout= 5000
-
 
 */
 #include "ArduinoBLE.h"
@@ -49,16 +17,16 @@ Error in !D2PIO_ReadMeasurement:
 
 GDXLib::GDXLib()
 {}
-char channelName[60];//60 bytes
-char deviceName[60];//60 bytes
-char channelUnits[32];// 32 bytes !!! I made these bigger to avoid problems
+char channelName[32];//60 bytes, was 32, in Kevin's code
+char deviceName[32];//60 bytes!!!
+char channelUnits[16];// 32 bytes  was 16, in Kevin's code
 int channelNumber;
-char sN[32];// 32 bytes this is an expermment
+//!!! NOT USED . char sN[32];// 32 bytes this is an expermment
 uint8_t Percent;//HACK
 uint8_t chargerStatus;
 int batteryPercent;
 byte scanRSSI;
-char strBuffer[64];
+char strBuffer[32];
 char strFW1[16];
 char strFW2[16];
 float channelReading;
