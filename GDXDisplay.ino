@@ -1,7 +1,7 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 #define TWO_LINE_DISPLAY //comment out for no DISPLAY
-#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
+//#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 #define C_F_VERSION //C and F temperature
 #define LEDS
 #define BLE_SENSORS //Use Built-in Arduino Nano33 BLE sensors
@@ -22,7 +22,10 @@
 #endif //BLE_SENSE_P
 
 #if defined BLE_SENSE_APDS9960
-  #include <Arduino_LSM9DS1.h>
+  #include <Arduino_APDS9960.h>
+  int proximity = 0;//I think these are global variables
+  int r = 0, g = 0, b = 0;
+  unsigned long lastUpdate = 0;
 #endif //BLE_SENSE_APDS9960
 
 GDXLib GDX;
@@ -35,8 +38,8 @@ void setup()
 {
   // Initialize the debug serial port
   Serial.begin(9600);
+  while (!Serial); // Wait for serial monitor to open
   char strBuffer[32];
-  delay(500);
   
   #if defined LEDS
     //  Initialize the digital output lines, if used
@@ -56,7 +59,7 @@ void setup()
         delay (100);
       }          
   #endif //LEDS
-  
+
   #if defined BLE_SENSORS
     if (!IMU.begin()) //for built-in sensors in the Arduino Nano 33BLE
       {
@@ -67,9 +70,9 @@ void setup()
   
   #if defined BLE_SENSE_TH
    if (!HTS.begin()) {
-    Serial.println("Failed to initialize humidity temperature sensor!");
-    while (1);
-  }
+     Serial.println("Failed to initialize humidity temperature sensor!");
+     while (1);
+     }
  #endif //BLE_SENSE_TH
 
  #if defined BLE_SENSE_P
@@ -80,15 +83,13 @@ void setup()
  #endif //BLE_SENSE_P
  
  #if defined BLE_SENSE_APDS9960
-   if (!IMU.begin()) {
-      Serial.println("Failed to initialize IMU!");
-      while (1);
-   }
-    int proximity = 0;
-    int r = 0, g = 0, b = 0;
-    unsigned long lastUpdate = 0;
+  if (!APDS.begin()) {
+    Serial.println("Error initializing APDS9960 sensor.");
+    while (true); // Stop forever
+  }
+
  #endif //BLE_SENSE_APDS9960
- 
+
  #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
     delay (2000);
@@ -184,7 +185,7 @@ void setup()
     Serial.print("chargeState: ");
     Serial.println(strBuffer);
   
-   /*
+  
     #if defined TWO_LINE_DISPLAY
       CharDisplayPrintLine(1, "RSSI ");
       //Serial1.write(254); // cursor to beginning of second line
@@ -205,7 +206,7 @@ void setup()
       //CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
       delay(2000);
     #endif //TWO_LINE_DISPLAY
- */
+
  #endif //STATUS  
   
   Serial.println ("Data Table:");
@@ -213,7 +214,7 @@ void setup()
  void loop()
 {
   t++;
-  Serial.print(t);
+  //Serial.print(t);
   float channelReading =GDX.readSensor();
   char strBuffer[32];//!!!!!!!!!!
   sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
@@ -228,7 +229,7 @@ void setup()
         }//end of if
    #endif //C_F_VERSION
 
-   /*
+  
    #if defined BLE_SENSORS
     float x, y, z;//accelerations
     if (IMU.accelerationAvailable()) 
@@ -273,7 +274,7 @@ void setup()
         proximity = APDS.readProximity();
       }// if APDS
     
-      check if a gesture reading is available
+      //check if a gesture reading is available
       if (APDS.gestureAvailable()) {
         int gesture = APDS.readGesture();
         switch (gesture) {
@@ -308,8 +309,8 @@ void setup()
       //if (millis() - lastUpdate > 100) 
       //{
         lastUpdate = millis();
-        Serial.print("PR=");
-        Serial.print(proximity);
+        Serial.print("Proximity: ");
+        Serial.println(proximity);
         Serial.print(" rgb=");
         Serial.print(r);
         Serial.print(",");
@@ -318,7 +319,7 @@ void setup()
         Serial.println(b);
      // }
   #endif BLE_SENSE_APDS9960
-  */
+ 
   
   Serial.println(GDX.channelName());
   //Serial.print(" channelReading ");
@@ -339,39 +340,39 @@ void setup()
       
        float maxsignal =100;//!!! CHANGE DEPENDING ON SENSOR
        
-       if (channelReading >(maxsignal*1/10 ))//Check to see if above threshold 2
+       if (channelReading >(maxsignal*1/10 ))//Check to see if above threshold 1
        {
         digitalWrite(2, HIGH);
        }
-    if (channelReading >maxsignal*2/10 )//Check to see if above threshold 4
+    if (channelReading >maxsignal*2/10 )//Check to see if above threshold 2
        {
         digitalWrite(3, HIGH);
        }
-    if (channelReading >maxsignal*3/10 )//Check to see if above threshold 6
+    if (channelReading >maxsignal*3/10 )//Check to see if above threshold 3
        {
         digitalWrite(4, HIGH);
        }
-    if (channelReading >maxsignal*4/10 )//Check to see if above threshold 8
+    if (channelReading >maxsignal*4/10 )//Check to see if above threshold 4
        {
         digitalWrite(5, HIGH);
        }
-    if (channelReading >maxsignal*5/10  )//Check to see if above threshold 10
+    if (channelReading >maxsignal*5/10  )//Check to see if above threshold 5
        {
         digitalWrite(6, HIGH);
        }
-    if (channelReading >maxsignal*6/10  )//Check to see if above threshold 12
+    if (channelReading >maxsignal*6/10  )//Check to see if above threshold 6
        {
         digitalWrite(7, HIGH);
        }
-    if (channelReading >maxsignal*7/10  )//Check to see if above threshold 12
+    if (channelReading >maxsignal*7/10  )//Check to see if above threshold 7
        {
         digitalWrite(8, HIGH);
        }
-    if (channelReading >maxsignal*8/10  )//Check to see if above threshold 12
+    if (channelReading >maxsignal*8/10  )//Check to see if above threshold 8
        {
         digitalWrite(9, HIGH);
        }
-    if (channelReading >maxsignal*9/10  )//Check to see if above threshold 14
+    if (channelReading >maxsignal*9/10  )//Check to see if above threshold 9
        {
          for (int jj = 2; jj<7;jj++) // flash LEDs for max force
            {
@@ -379,9 +380,9 @@ void setup()
             delay (200);
          digitalWrite(9, LOW);
             delay (200);
-           }
-       // end of 9/10
-} 
+           }//end of for
+       } // end of 9/10
+
   #endif //LEDS
 
 }//end of loop
@@ -436,6 +437,12 @@ void DisplayTest()
   Serial1.print("                ");
   Serial1.write(254); // cursor to beginning of first line
   Serial1.write(192);
+
+
+
+
+
+  
   Serial1.print("                ");
   Serial1.write(254); // cursor to beginning of first line
   Serial1.print("Brightness Level");
