@@ -4,12 +4,27 @@
 #define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 #define C_F_VERSION //C and F temperature
 #define LEDS
-#define SENSORS //Use Built-in Arduino Nano33 BLE sensors
+#define BLE_SENSORS //Use Built-in Arduino Nano33 BLE sensors
+#define BLE_SENSE_TH
+#define BLE_SENSE_P
+#define BLE_SENSE_APDS9960
 
-#if defined SENSORS
+#if defined BLE_SENSORS
   #include <Arduino_LSM9DS1.h> //for reading sensors in Arduino Nano33 BLE
-#endif //SENSORS
-  
+#endif //BLE_SENSE
+
+#if defined BLE_SENSE_TH
+  #include <Arduino_HTS221.h>//for reading temp and humidity sensors in Arduino Nano33 Sense
+#endif //BLE_SENSE_TH
+
+#if defined BLE_SENSE_P
+  #include <Arduino_LPS22HB.h> //for reading pressure sensor in Arduino Nano33 Sense
+#endif //BLE_SENSE_P
+
+#if defined BLE_SENSE_APDS9960
+  #include <Arduino_LSM9DS1.h>
+#endif //BLE_SENSE_APDS9960
+
 GDXLib GDX;
 static char strUnits[16];
 int t=0; //loop counter
@@ -42,23 +57,46 @@ void setup()
       }          
   #endif //LEDS
   
-  #if defined SENSORS
+  #if defined BLE_SENSORS
     if (!IMU.begin()) //for built-in sensors in the Arduino Nano 33BLE
       {
         Serial.println("Failed to initialize IMU!");
         while (1);
       }
-  #endif //SENSORS
+  #endif //BLE_SENSORS
   
-  #if defined TWO_LINE_DISPLAY
+  #if defined BLE_SENSE_TH
+   if (!HTS.begin()) {
+    Serial.println("Failed to initialize humidity temperature sensor!");
+    while (1);
+  }
+ #endif //BLE_SENSE_TH
+
+ #if defined BLE_SENSE_P
+  if (!BARO.begin()) {
+    Serial.println("Failed to initialize pressure sensor!");
+    while (1);
+  }
+ #endif //BLE_SENSE_P
+ 
+ #if defined BLE_SENSE_APDS9960
+   if (!IMU.begin()) {
+      Serial.println("Failed to initialize IMU!");
+      while (1);
+   }
+    int proximity = 0;
+    int r = 0, g = 0, b = 0;
+    unsigned long lastUpdate = 0;
+ #endif //BLE_SENSE_APDS9960
+ 
+ #if defined TWO_LINE_DISPLAY
     CharDisplayInit();
     delay (2000);
     //DisplayTest();//!!!to test 2-line display
     //DisplayTest4();//!!!to test 4-line display (not set up)
-  #endif //TWO_LINE_DISPLAY
+ #endif //TWO_LINE_DISPLAY
  
-
-  #if defined C_F_VERSION
+ #if defined C_F_VERSION
     Serial.print  ("special version  ");
     Serial.println("C and F temp only");
     #if defined TWO_LINE_DISPLAY
@@ -142,7 +180,7 @@ void setup()
       case 3:
         strcpy(strBuffer,"error");
         break;
-      }
+    }
     Serial.print("chargeState: ");
     Serial.println(strBuffer);
   
@@ -168,7 +206,7 @@ void setup()
       delay(2000);
     #endif //TWO_LINE_DISPLAY
  */
-  #endif //STATUS  
+ #endif //STATUS  
   
   Serial.println ("Data Table:");
 }
@@ -179,6 +217,7 @@ void setup()
   float channelReading =GDX.readSensor();
   char strBuffer[32];//!!!!!!!!!!
   sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
+
   #if defined C_F_VERSION
      float t2=t/2.0;//used to determine every other time through the loop
      if (t2==int(t/2))// every other time switch to F temperature
@@ -186,10 +225,11 @@ void setup()
           channelReading= channelReading*1.8+32;//convert C to F degrees  HACK
           //sprintf(strBuffer, "%.2f %s", channelReading,"deg F");// causes crash
           sprintf(strBuffer, "%.2f %s", channelReading,"deg F");   
-        }
+        }//end of if
    #endif //C_F_VERSION
-   
-   #if defined SENSORS
+
+   /*
+   #if defined BLE_SENSORS
     float x, y, z;//accelerations
     if (IMU.accelerationAvailable()) 
     {
@@ -201,9 +241,84 @@ void setup()
           channelReading= channelReading*1.8+32;//convert C to F degrees  HACK
           //sprintf(strBuffer, "%.2f %s", channelReading,"deg F");// causes crash
           sprintf(strBuffer, "%.2f %s", channelReading,"deg F");  
+        }//end of if tilted
+     }//end of if IMU
+  #endif //BLE_SENSORS
+
+ #if defined BLE_SENSE_TH
+  // read all the sensor values
+  float temperature = HTS.readTemperature();
+  float humidity    = HTS.readHumidity();
+
+  // print each of the sensor values
+  Serial.print("Temperature = ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+
+  Serial.print("Humidity    = ");
+  Serial.print(humidity);
+  Serial.println(" %");
+ #endif BLE_SENSE_TH
+
+ #if defined BLE_SENSE_P
+    float pressure = BARO.readPressure();
+    Serial.print("Pressure = ");
+    Serial.print(pressure);
+    Serial.println(" kPa");
+ #endif BLE_SENSE_P
+
+ #if defined BLE_SENSE_APDS9960
+      // Check if a proximity reading is available.
+      if (APDS.proximityAvailable()) {
+        proximity = APDS.readProximity();
+      }// if APDS
+    
+      check if a gesture reading is available
+      if (APDS.gestureAvailable()) {
+        int gesture = APDS.readGesture();
+        switch (gesture) {
+          case GESTURE_UP:
+            Serial.println("Detected UP gesture");
+            break;
+    
+          case GESTURE_DOWN:
+            Serial.println("Detected DOWN gesture");
+            break;
+    
+          case GESTURE_LEFT:
+            Serial.println("Detected LEFT gesture");
+            break;
+    
+          case GESTURE_RIGHT:
+            Serial.println("Detected RIGHT gesture");
+            break;
+    
+          default:
+            // ignore
+            break;
         }
-     }//end of if
-  #endif //SENSORS
+      }
+ 
+      // check if a color reading is available
+      if (APDS.colorAvailable()) {
+        APDS.readColor(r, g, b);
+      }
+    
+      // Print updates every 100ms
+      //if (millis() - lastUpdate > 100) 
+      //{
+        lastUpdate = millis();
+        Serial.print("PR=");
+        Serial.print(proximity);
+        Serial.print(" rgb=");
+        Serial.print(r);
+        Serial.print(",");
+        Serial.print(g);
+        Serial.print(",");
+        Serial.println(b);
+     // }
+  #endif BLE_SENSE_APDS9960
+  */
   
   Serial.println(GDX.channelName());
   //Serial.print(" channelReading ");
@@ -217,10 +332,6 @@ void setup()
 
   delay(period);
   #if defined LEDS
-    for (int i = 2; i < 10; i++) // turn off the LEDs
-      {
-        digitalWrite(i, LOW);
-      }   
    for (int dPin = 2; dPin<10;dPin++)
       {  //turn off all LEDs
          digitalWrite(dPin, LOW);
@@ -269,10 +380,8 @@ void setup()
          digitalWrite(9, LOW);
             delay (200);
            }
-
-     delay(50);
-       }
-    
+       // end of 9/10
+} 
   #endif //LEDS
 
 }//end of loop
