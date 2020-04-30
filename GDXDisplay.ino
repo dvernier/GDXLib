@@ -1,13 +1,13 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-#define TWO_LINE_DISPLAY //comment out for no DISPLAY
+//#define TWO_LINE_DISPLAY //comment out for no DISPLAY
 //#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
-#define C_F_VERSION //C and F temperature
-#define LEDS
-#define BLE_SENSORS //Use Built-in Arduino Nano33 BLE sensors
-#define BLE_SENSE_TH
-#define BLE_SENSE_P
-#define BLE_SENSE_APDS9960
+//#define C_F_VERSION //C and F temperature
+//#define LEDS
+//#define BLE_SENSORS //Use Built-in Arduino Nano33 BLE sensors
+//#define BLE_SENSE_TH//Use Built-in Arduino Nano33 Sense (temp and humidity)
+//#define BLE_SENSE_P//Use Built-in Arduino Nano33 Sense (pressure)
+//#define BLE_SENSE_APDS9960//Use Built-in Arduino Nano33 Sense (RGB, IR, proximity, gestures,etc)
 
 #if defined BLE_SENSORS
   #include <Arduino_LSM9DS1.h> //for reading sensors in Arduino Nano33 BLE
