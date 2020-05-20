@@ -28,11 +28,13 @@
   unsigned long lastUpdate = 0;
 #endif //BLE_SENSE_APDS9960
 
+
 GDXLib GDX;
 static char strUnits[16];
 int t=0; //loop counter
 int period = 1000; //time between readings in ms, default 1000ms, change it, but do not go too fast!
 int channel =1;//channel to be read, default is 1
+
 
 void setup()
 {
@@ -138,9 +140,14 @@ void setup()
     GDX.GoDirectBLE_Begin(sensorName,channel, period);//specify channel and period here also
   }
   delay(1000);
+
+
+  
   GDX.autoID();// this is the routine to get device info
   Serial.print("Found: ");
   delay(1000);
+
+  
   Serial.println(GDX.deviceName());
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Found ");
@@ -208,8 +215,10 @@ void setup()
     #endif //TWO_LINE_DISPLAY
 
  #endif //STATUS  
-  
+  ////////////HACK
   Serial.println ("Data Table:");
+
+  
 }
  void loop()
 {
@@ -324,7 +333,8 @@ void setup()
   Serial.println(GDX.channelName());
   //Serial.print(" channelReading ");
   Serial.print(": ");
-  Serial.println(strBuffer);
+  Serial.print(strBuffer);
+ 
   
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, GDX.channelName());

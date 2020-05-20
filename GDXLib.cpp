@@ -217,6 +217,7 @@ byte getRSSI();
 //=============================================================================!@
 void GDXLib::autoID() 
 {
+  Serial.println("in AutoID");
   // Determine the sensor name:
   //!!!HACKstrcpy(_channelName, GoDirectBLE_GetChannelName());
   //Serial.print("*** _channelName: ");
@@ -261,6 +262,8 @@ void GDXLib::autoID()
 //=============================================================================!@
 float GDXLib::readSensor() 
 {
+  Serial.println("in readSensor");
+  delay(100);//HACK
   //char strBuffer[64];//this is not in Kevin's code
   if (!BLE.connected())
   {
@@ -549,17 +552,20 @@ bool GDXLib::D2PIO_ReadBlocking(byte buffer[], int timeout)
 //=============================================================================
 bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
 {
+  Serial.print("buffer: ");
+  //Serial.println(buffer);
+  Serial.print("timeout: ");
+  Serial.println(timeout);
+  /*Serial.println("in D2PIO_ReadMeasurement,");
+  Serial.print("measurement ");
+  Serial.println(measurement);
+  Serial.print("& measurement ");
+  //Serial.println(& measurement);
+  Serial.println(g_d2pioResponse.valueUpdated());*/
   byte offset = 0;
   int timeoutCounter = 0;
   // Return immediately if there is nothing to do.
-  if (!g_d2pioResponse.valueUpdated()) 
-  {
-    {
-      Serial.print("***!g_d2pioResponse.valueUpdated() error, timeout= ");
-      Serial.println(timeout);
-      return false;
-    }
-  }
+  if (!g_d2pioResponse.valueUpdated())return false;
 
   while (true)
   {
@@ -583,7 +589,7 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
       delay(1);
     }
   }
-
+  Serial.print("going to D2PIO_Dump ") ; 
   D2PIO_Dump("D2PIO << ", buffer);
 
   // Extract normal measurement packets -- NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32
@@ -591,9 +597,13 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
   // multiple to get stuffed into one packet but we just ignore the extras.
   if (buffer[4] == NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32)
   {
+    Serial.println("in NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32");
     float record;
     memcpy(&record, &buffer[9], 4);
     measurement = record;
+    Serial.print("***measurement: ");
+    Serial.println(measurement);
+
   }
   else if (buffer[4] == NGI_BLOB_MEAS_BLOB_SUB_TYPE_WIDE_REAL32)
   {
@@ -1185,20 +1195,29 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
 
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
     GoDirectBLE_Error();
-
+    
+  Serial.print("*** calling calling _StartMeasurements, channel: ");
+  Serial.println(g_channelNumber); 
   if (!D2PIO_StartMeasurements(g_channelNumber))
     GoDirectBLE_Error();
-  delay(1000);//HACK!!!
+    
+  delay(100);//HACK!!!
+  Serial.println("*** after calling _StartMeasurements ");
   g_MeasurementCounter = 0;
   g_measurement = 0.0;
+  Serial.print("***g_measurement "); // this is good!!!!
+  Serial.println(g_measurement);
+  Serial.print("***g_MeasurementCounter");
+  Serial.println(g_MeasurementCounter);
   
-  ////Serial.print("*** strbuffer ");
-  ////Serial.println(strbuffer);
 
-  //Serial.print("***g_measurement2 "); // this is good!!!!
-  //Serial.println(g_measurement);
-  //Serial.print("***g_MeasurementCounter2");
-  //Serial.println(g_MeasurementCounter);
+  //Serial.print("*** strbuffer ");
+  //Serial.println(strbuffer);
+  delay(1000);
+  Serial.print("***g_measurement2 "); // this is good!!!!
+  Serial.println(g_measurement);
+  Serial.print("***g_MeasurementCounter2");
+  Serial.println(g_MeasurementCounter);
   }//end else
 }
 
@@ -1296,6 +1315,8 @@ char* GDXLib::GoDirectBLE_GetChannelName()
 //=============================================================================
 float GDXLib::GoDirectBLE_GetMeasurement()
 {
+  Serial.print("g_measurement ");
+  Serial.println(g_measurement);
   return g_measurement;
 }
 

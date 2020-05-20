@@ -24,7 +24,9 @@ class GDXLib
     float readSensor();//a public method
     void GoDirectBLE_End();
     char strBuffer[64]; //used in Read Sensor
+    bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
     //static byte g_ReadBuffer[256];////used in Read Sensor
+    float GoDirectBLE_GetMeasurement();
     
  private:// also known as local  
     int  _channel;
@@ -44,7 +46,7 @@ class GDXLib
     void D2PIO_Dump(const char* strPrefix, const byte buffer[]);
     bool D2PIO_Write(const byte buffer[]);
     bool D2PIO_ReadBlocking(byte buffer[], int timeout);
-    bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
+
     bool D2PIO_Init();
     bool D2PIO_SetMeasurementPeriod(unsigned long measurementPeriodInMilliseconds);
     bool D2PIO_GetAvailableChannels(unsigned long& availableMask);
@@ -73,7 +75,7 @@ class GDXLib
     uint8_t GoDirectBLE_GetChargeStatus();
     bool GoDirectBLE_DisplayChannelAsInteger();
     char* GoDirectBLE_GetChannelName();
-    float GoDirectBLE_GetMeasurement();
+
     void GoDirectBLE_Test();
     void GoDirectBLE_Test2();
     void GoDirectBLE_Test3();
