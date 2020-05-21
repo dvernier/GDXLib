@@ -270,6 +270,7 @@ float GDXLib::readSensor()
      Serial.println("!BLE.connected()");
      GoDirectBLE_Error();
   }    
+  Serial.println("BLE.connected");
   if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
     {
        Serial.println("Error in !D2PIO_ReadMeasurement: ");
@@ -471,7 +472,7 @@ byte GDXLib::GDXLib::D2PIO_CalculateChecksum(const byte buffer[])
 void GDXLib::D2PIO_Dump(const char* strPrefix, const byte buffer[])
 {
   byte i;
-  //Serial.print(strPrefix);
+  Serial.print(strPrefix);
 
   for (i = 0; i < buffer[1]; i++)
   {
@@ -552,22 +553,25 @@ bool GDXLib::D2PIO_ReadBlocking(byte buffer[], int timeout)
 //=============================================================================
 bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
 {
-  Serial.print("buffer: ");
+  Serial.print("in D2PIO_ReadMeasurement ");
   //Serial.println(buffer);
   Serial.print("timeout: ");
   Serial.println(timeout);
-  /*Serial.println("in D2PIO_ReadMeasurement,");
+  Serial.println("in D2PIO_ReadMeasurement,");
   Serial.print("measurement ");
   Serial.println(measurement);
   Serial.print("& measurement ");
   //Serial.println(& measurement);
-  Serial.println(g_d2pioResponse.valueUpdated());*/
+  Serial.print("g_d2pioResponse.valueUpdated()= ");
+  Serial.println(g_d2pioResponse.valueUpdated());
   byte offset = 0;
   int timeoutCounter = 0;
   // Return immediately if there is nothing to do.
-  if (!g_d2pioResponse.valueUpdated())return false;
-
+  while (!g_d2pioResponse.valueUpdated()){
+    //Serial.print("#");
+  }
   while (true)
+  //while (g_d2pioResponse.valueUpdated())
   {
     // Copy the current chunk into the output buffer
     memcpy(&buffer[offset], g_d2pioResponse.value(), g_d2pioResponse.valueLength());
@@ -583,7 +587,7 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
       timeoutCounter++;
       if (timeoutCounter > timeout)
       {
-        Serial.println("***ERROR: D2PIO_ReadMeasurement timeout!");
+      //  Serial.println("***ERROR: D2PIO_ReadMeasurement timeout!");
         return false;
       }
       delay(1);
