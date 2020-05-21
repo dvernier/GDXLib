@@ -271,12 +271,14 @@ float GDXLib::readSensor()
      GoDirectBLE_Error();
   }    
   Serial.println("BLE.connected");
-  if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
-    {
-       Serial.println("Error in !D2PIO_ReadMeasurement: ");
-       delay (1000);
-       GoDirectBLE_Error();
-    }
+  for (int v=0;v<15;v++){
+    if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
+      {
+       Serial.println("D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement)");
+       Serial.println(D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement));
+       delay (100);     
+      }
+  }  
   channelReading=g_measurement;
   return channelReading;
   }
@@ -553,7 +555,7 @@ bool GDXLib::D2PIO_ReadBlocking(byte buffer[], int timeout)
 //=============================================================================
 bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
 {
-  Serial.print("in D2PIO_ReadMeasurement ");
+  /*Serial.print("in D2PIO_ReadMeasurement ");
   //Serial.println(buffer);
   Serial.print("timeout: ");
   Serial.println(timeout);
@@ -564,6 +566,7 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
   //Serial.println(& measurement);
   Serial.print("g_d2pioResponse.valueUpdated()= ");
   Serial.println(g_d2pioResponse.valueUpdated());
+  */
   byte offset = 0;
   int timeoutCounter = 0;
   // Return immediately if there is nothing to do.
@@ -578,7 +581,7 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
     offset = offset + g_d2pioResponse.valueLength();
 
     // Check if we have received the complete packet
-    if ((offset >= 1) && (offset == buffer[1])) break;
+    if ((offset >= 1) && (offset == buffer[1])) break;//does break do the job here????
 
     // Now that we have started received a measurement,
     // we must wait for all of it to arrive.
