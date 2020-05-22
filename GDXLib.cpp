@@ -262,23 +262,22 @@ void GDXLib::autoID()
 //=============================================================================!@
 float GDXLib::readSensor() 
 {
-  Serial.println("in readSensor");
+  //Serial.println("in readSensor");
   delay(100);//HACK
   //char strBuffer[64];//this is not in Kevin's code
   if (!BLE.connected())
   {
-     Serial.println("!BLE.connected()");
+     //Serial.println("!BLE.connected()");
      GoDirectBLE_Error();
   }    
-  Serial.println("BLE.connected");
-  for (int v=0;v<15;v++){
-    if (!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
-      {
-       Serial.println("D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement)");
-       Serial.println(D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement));
-       delay (100);     
+  //Serial.println("BLE.connected");
+  if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement)){
+        //why are the lines below never printed??????
+        delay (5); 
+        Serial.print("D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement) ");
+        Serial.println(D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement));     
       }
-  }  
+  
   channelReading=g_measurement;
   return channelReading;
   }
@@ -474,7 +473,7 @@ byte GDXLib::GDXLib::D2PIO_CalculateChecksum(const byte buffer[])
 void GDXLib::D2PIO_Dump(const char* strPrefix, const byte buffer[])
 {
   byte i;
-  Serial.print(strPrefix);
+  //Serial.print(strPrefix);
 
   for (i = 0; i < buffer[1]; i++)
   {
@@ -596,7 +595,7 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
       delay(1);
     }
   }
-  Serial.print("going to D2PIO_Dump ") ; 
+  //Serial.print("going to D2PIO_Dump ") ; 
   D2PIO_Dump("D2PIO << ", buffer);
 
   // Extract normal measurement packets -- NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32
@@ -604,12 +603,12 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
   // multiple to get stuffed into one packet but we just ignore the extras.
   if (buffer[4] == NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32)
   {
-    Serial.println("in NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32");
+    //Serial.println("in NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32");
     float record;
     memcpy(&record, &buffer[9], 4);
     measurement = record;
-    Serial.print("***measurement: ");
-    Serial.println(measurement);
+    //Serial.print("***measurement: ");
+    //Serial.println(measurement);
 
   }
   else if (buffer[4] == NGI_BLOB_MEAS_BLOB_SUB_TYPE_WIDE_REAL32)
