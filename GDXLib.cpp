@@ -274,11 +274,13 @@ float GDXLib::readSensor()
   if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement)){
         //why are the lines below never printed??????
         delay (5); 
-        Serial.print("D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement) ");
+        Serial.print("***** D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement) ");
         Serial.println(D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement));     
       }
   
   channelReading=g_measurement;
+  Serial.print("*** g_measurement back in readSensor: ");
+  Serial.println(g_measurement);
   return channelReading;
   }
 
@@ -477,8 +479,8 @@ void GDXLib::D2PIO_Dump(const char* strPrefix, const byte buffer[])
 
   for (i = 0; i < buffer[1]; i++)
   {
-    //Serial.print(buffer[i], HEX);
-    //Serial.print("*** ");
+    Serial.print(buffer[i], HEX);
+    Serial.print("** ");
   }
   //Serial.println();
 }
@@ -554,8 +556,8 @@ bool GDXLib::D2PIO_ReadBlocking(byte buffer[], int timeout)
 //=============================================================================
 bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
 {
-  /*Serial.print("in D2PIO_ReadMeasurement ");
-  //Serial.println(buffer);
+  Serial.print("in D2PIO_ReadMeasurement ");
+  /*Serial.println(buffer);
   Serial.print("timeout: ");
   Serial.println(timeout);
   Serial.println("in D2PIO_ReadMeasurement,");
@@ -570,7 +572,7 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
   int timeoutCounter = 0;
   // Return immediately if there is nothing to do.
   while (!g_d2pioResponse.valueUpdated()){
-    //Serial.print("#");
+    Serial.print("#");
   }
   while (true)
   //while (g_d2pioResponse.valueUpdated())
@@ -578,7 +580,13 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
     // Copy the current chunk into the output buffer
     memcpy(&buffer[offset], g_d2pioResponse.value(), g_d2pioResponse.valueLength());
     offset = offset + g_d2pioResponse.valueLength();
-
+    Serial.print("buffer: ");
+  for (int i = 0; i < buffer[1]; i++)
+  {
+    Serial.print(buffer[i], HEX);
+    Serial.print("** ");
+  }
+    Serial.println("end of buffer");
     // Check if we have received the complete packet
     if ((offset >= 1) && (offset == buffer[1])) break;//does break do the job here????
 
@@ -607,8 +615,8 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
     float record;
     memcpy(&record, &buffer[9], 4);
     measurement = record;
-    //Serial.print("***measurement: ");
-    //Serial.println(measurement);
+    Serial.print("***measurement in readMeasurement: ");
+    Serial.println(measurement);
 
   }
   else if (buffer[4] == NGI_BLOB_MEAS_BLOB_SUB_TYPE_WIDE_REAL32)
@@ -616,6 +624,8 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
     float record;
     memcpy(&record, &buffer[11], 4);
     measurement = record;
+    Serial.print("***measurement in NGI_BLOB_MEAS_BLOB_SUB_TYPE_WIDE_REAL32: ");
+    Serial.println(measurement);
   }
   else if (buffer[4] == NGI_BLOB_MEAS_BLOB_SUB_TYPE_SINGLE_CHANNEL_INT32)
   {
