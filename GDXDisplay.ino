@@ -1,6 +1,7 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 //#define TWO_LINE_DISPLAY //comment out for no DISPLAY
+#define TWO_LINE_DISPLAY_DIG2 //comment out for no DISPLAY on Digital 2 Shield connector
 //#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 //#define C_F_VERSION //C and F temperature
 //#define LEDS
@@ -27,6 +28,11 @@
   int r = 0, g = 0, b = 0;
   unsigned long lastUpdate = 0;
 #endif //BLE_SENSE_APDS9960
+
+#if defined TWO_LINE_DISPLAY_DIG2
+ #include <SoftwareSerial.h> //library used in printing to display
+ SoftwareSerial mySerial(3,9); //for display, pin 9 = TX, pin 3 = RX (unused)
+#endif //TWO_LINE_DISPLAY_DIG2
 
 GDXLib GDX;
 static char strUnits[16];
@@ -112,6 +118,17 @@ void setup()
     CharDisplayPrintLine(1, "Looking for ");
   #endif //TWO_LINE_DISPLAY
 
+  #if defined TWO_LINE_DISPLAY_DIG2
+    mySerial.begin(9600); // for sending characters to display
+    delay(500); // wait for display to boot up
+    mySerial.write(124); // adjust backlight brightness of display
+    mySerial.write(150); //max=157, 150=73%, 130=40%,128=off
+    delay(500); // wait for display to start
+    mySerial.write(254); // command character
+    mySerial.write(128); // move to line 1, position 0,
+    mySerial.print("Looking for ");
+  #endif //TWO_LINE_DISPLAY_DIG2
+  
   //set things up in the steps below
   //char sensorName[64]="             ";
   char sensorName[32]="GDX-ST 0P1000S9";
@@ -122,10 +139,18 @@ void setup()
   if (sensorName[1] == ' ') //if no specific sensor seleted (I used 2nd character here)
   {
     Serial.println(" any GDX sensor ");
+    
     #if defined TWO_LINE_DISPLAY
       CharDisplayPrintLine(2, "any GDX sensor");
-      delay(2000);
     #endif //TWO_LINE_DISPLAY
+
+    #if defined TWO_LINE_DISPLAY_DIG2
+      mySerial.write(254); // cursor to start of bottom line
+      mySerial.write(192);
+      mySerial.print( "any GDX sensor");
+    #endif //TWO_LINE_DISPLAY_DIG2
+    delay(2000);
+    
     GDX.GoDirectBLE_Begin();
   }
   else
@@ -135,6 +160,14 @@ void setup()
       CharDisplayPrintLine(2, sensorName);
       delay(2000);
     #endif //TWO_LINE_DISPLAY
+    
+    #if defined TWO_LINE_DISPLAY_DIG2
+      mySerial.write(254); // command character
+      mySerial.write(192); // move to line 2, position 0,
+      mySerial.print(sensorName);
+      delay(2000);
+    #endif //TWO_LINE_DISPLAY_DIG2
+    
     GDX.GoDirectBLE_Begin(sensorName,channel, period);//specify channel and period here also
   }
   delay(1000);
@@ -143,9 +176,14 @@ void setup()
   delay(1000);
   Serial.println(GDX.deviceName());
   #if defined TWO_LINE_DISPLAY
-    CharDisplayPrintLine(1, "Found ");
-    CharDisplayPrintLine(2, GDX.deviceName());
+    CharDisplayPrintLine(1, "Found           ");
+    //CharDisplayPrintLine(2, GDX.deviceName());
     //strcpy(strUnits,"deg C");//HACK if you want degrees displayed !!!
+  #endif //TWO_LINE_DISPLAY
+  #if defined TWO_LINE_DISPLAY_DIG2
+    mySerial.write(254); // command character
+    mySerial.write(128); // move to line 2, position 0,
+    mySerial.print("Found           ");
   #endif //TWO_LINE_DISPLAY
   delay(1000);
   Serial.print("ChannelName: ");
@@ -329,6 +367,14 @@ void setup()
     CharDisplayPrintLine(1, GDX.channelName());
     CharDisplayPrintLine(2,strBuffer);
   #endif // TWO_LINE_DISPLAY
+
+  #if defined TWO_LINE_DISPLAY_DIG2
+   mySerial.write(254);
+   mySerial.write(1); //clear display
+   mySerial.write(254); // command character
+   mySerial.write(192); // move to line 2, position 0,
+   mySerial.print(channelReading);
+  #endif // TWO_LINE_DISPLAY_DIG2
 
   delay(period);
   #if defined LEDS
