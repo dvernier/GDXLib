@@ -1,7 +1,8 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 //#define TWO_LINE_DISPLAY //comment out for no DISPLAY
-#define TWO_LINE_DISPLAY_DIG2 //comment out for no DISPLAY on Digital 2 Shield connector
+//#define TWO_LINE_DISPLAY_DIG2 //comment out for no DISPLAY on Digital 2 Shield connector
+#define FOUR_CHARACTER_DISPLAY_DIG1 //comment out for no DISPLAY on Digital 1 Shield connector
 //#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 //#define C_F_VERSION //C and F temperature
 //#define LEDS
@@ -30,9 +31,18 @@
 #endif //BLE_SENSE_APDS9960
 
 #if defined TWO_LINE_DISPLAY_DIG2
- #include <SoftwareSerial.h> //library used in printing to display
- SoftwareSerial mySerial(3,9); //for display, pin 9 = TX, pin 3 = RX (unused)
+  #include <SoftwareSerial.h> //library used in printing to display
+  SoftwareSerial mySerial(3,9); //for display, pin 9 = TX, pin 3 = RX (unused)
 #endif //TWO_LINE_DISPLAY_DIG2
+
+#if defined FOUR_CHARACTER_DISPLAY_DIG1
+  #include <SoftwareSerial.h> //library used in printing to display
+  // These are the Arduino pins required to create a software serial
+  //  instance. We'll actually only use the TX pin.
+  const int softwareTx = 5;//note that this is now set for the DIG 1 port
+  const int softwareRx = 3;
+  SoftwareSerial s7s(softwareRx, softwareTx);
+#endif //FOUR_CHARACTER_DISPLAY_DIG1
 
 GDXLib GDX;
 static char strUnits[16];
@@ -102,6 +112,7 @@ void setup()
     //DisplayTest();//!!!to test 2-line display
     //DisplayTest4();//!!!to test 4-line display (not set up)
  #endif //TWO_LINE_DISPLAY
+
  
  #if defined C_F_VERSION
     Serial.print  ("special version  ");
@@ -128,6 +139,22 @@ void setup()
     mySerial.write(128); // move to line 1, position 0,
     mySerial.print("Looking for ");
   #endif //TWO_LINE_DISPLAY_DIG2
+
+  #if defined FOUR_CHARACTER_DISPLAY_DIG1
+      s7s.begin(9600);
+      // Clear the display, and then turn on all segments and decimals
+      clearDisplay();  // Clears display, resets cursor
+      setDecimals(0b000000);  // Turn on all decimals, colon, apos
+      s7s.print("DEG.");  // Displays Deg and then Cels on display
+      delay (2000);
+      s7s.print("CELS"); 
+      setBrightness(127);  // Medium brightness
+      delay(1500);
+      setBrightness(255);  // High brightness
+      delay(1500);
+      // Clear the display before jumping into loop
+      clearDisplay();  
+  #endif //FOUR_CHARACTER_DISPLAY_DIG1
   
   //set things up in the steps below
   //char sensorName[64]="             ";
@@ -184,14 +211,14 @@ void setup()
     mySerial.write(254); // command character
     mySerial.write(128); // move to line 2, position 0,
     mySerial.print("Found           ");
-  #endif //TWO_LINE_DISPLAY
+  #endif //TWO_LINE_DISPLAY_DIG2
   delay(1000);
   Serial.print("ChannelName: ");
   Serial.println(GDX.channelName());
   Serial.print("ChannelUnits: ");
   // Cache the unit string and try to remap special UTF8
   // characters to ones that we can display.
-  //THIS SEEMS TO BE A PROBLEMsprintf(strUnits, "%s", GDX.channelUnits());
+  //THIS SEEMS TO BE A PROBLEM sprintf(strUnits, "%s", GDX.channelUnits());
   //ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
   Serial.println(strUnits);
@@ -372,17 +399,31 @@ void setup()
    mySerial.write(254);
    mySerial.write(1); //clear display
    mySerial.write(254); // command character
+   mySerial.write(128); // move to line 1, position 0,
+   mySerial.print(GDX.channelName());
+   mySerial.write(254); // command character
    mySerial.write(192); // move to line 2, position 0,
    mySerial.print(channelReading);
   #endif // TWO_LINE_DISPLAY_DIG2
+  
+   #if defined FOUR_CHARACTER_DISPLAY_DIG1
+      // Magical sprintf creates a string for us to send to the s7s.
+      //  The %4d option creates a 4-digit integer.
+      sprintf(strBuffer, "%4d", channelReading);
+      // This will output the tempString to the S7S
+      s7s.print(strBuffer);
+      setDecimals(0b0000010);  // Sets digit 3 decimal on
+      Serial.print("strBuffer");
+      Serial.println(strBuffer);
+  #endif // FOUR_CHARACTER_DISPLAY_DIG1
 
   delay(period);
+  delay(2000);
   #if defined LEDS
    for (int dPin = 2; dPin<10;dPin++)
       {  //turn off all LEDs
          digitalWrite(dPin, LOW);
       }    
-      
        float maxsignal =100;//!!! CHANGE DEPENDING ON SENSOR
        
        if (channelReading >(maxsignal*1/10 ))//Check to see if above threshold 1
@@ -543,4 +584,29 @@ void ConvertUTF8ToASCII(char* s)
     k++;
   }
   s[k] = 0;
+}
+void clearDisplay()
+{
+  s7s.write(0x76);  // Clear display command
+}
+
+// Set the displays brightness. Should receive byte with the value
+//  to set the brightness to
+//  dimmest------------->brightest
+//     0--------127--------255
+
+void setBrightness(byte value)
+{
+  s7s.write(0x7A);  // Set brightness command byte
+  s7s.write(value);  // brightness data byte
+}
+
+// Turn on any, none, or all of the decimals.
+//  The six lowest bits in the decimals parameter sets a decimal 
+//  (or colon, or apostrophe) on or off. A 1 indicates on, 0 off.
+//  [MSB] (X)(X)(Apos)(Colon)(Digit 4)(Digit 3)(Digit2)(Digit1)
+void setDecimals(byte decimals)
+{
+  s7s.write(0x77);
+  s7s.write(decimals);
 }
