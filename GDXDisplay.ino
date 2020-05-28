@@ -1,8 +1,8 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//#define TWO_LINE_DISPLAY //comment out for no DISPLAY
+#define TWO_LINE_DISPLAY //comment out for no DISPLAY
 //#define TWO_LINE_DISPLAY_DIG2 //comment out for no DISPLAY on Digital 2 Shield connector
-#define FOUR_CHARACTER_DISPLAY_DIG1 //comment out for no DISPLAY on Digital 1 Shield connector
+//#define FOUR_CHARACTER_DISPLAY_DIG1 //comment out for no DISPLAY on Digital 1 Shield connector
 //#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 //#define C_F_VERSION //C and F temperature
 //#define LEDS
@@ -124,7 +124,7 @@ void setup()
     #endif //TWO_LINE_DISPLAY
   #endif //C_F_VERSION
   
-  Serial.println(" Looking for"); 
+  Serial.print("Looking for "); 
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Looking for ");
   #endif //TWO_LINE_DISPLAY
@@ -158,14 +158,15 @@ void setup()
   
   //set things up in the steps below
   //char sensorName[64]="             ";
-  char sensorName[32]="GDX-ST 0P1000S9";
+  //char sensorName[32]="GDX-ST 0P1000S9";
+  char sensorName[32]="GDX-TMP 0F1001A4";
   //char sensorName[32]="GDX-FOR 072001P5";
   //char sensorName[32]="GDX-ACC 0H1019K1";
   int period = 1000; //time between readings   
     
   if (sensorName[1] == ' ') //if no specific sensor seleted (I used 2nd character here)
   {
-    Serial.println(" any GDX sensor ");
+    Serial.println("any GDX sensor ");
     
     #if defined TWO_LINE_DISPLAY
       CharDisplayPrintLine(2, "any GDX sensor");
@@ -221,7 +222,7 @@ void setup()
   //THIS SEEMS TO BE A PROBLEM sprintf(strUnits, "%s", GDX.channelUnits());
   //ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
-  Serial.println(strUnits);
+  Serial.println(GDX.channelUnits());
 
   #if defined STATUS //THERE ARE PROBLEMS LURKING HERE IN THE STATUS
     Serial.println("RSSI: ");
@@ -279,7 +280,6 @@ void setup()
  void loop()
 {
   t++;
-  //Serial.print(t);
   float channelReading =GDX.readSensor();
   char strBuffer[32];//!!!!!!!!!!
   sprintf(strBuffer, "%.2f %s", channelReading,strUnits);
@@ -317,7 +317,7 @@ void setup()
   float humidity    = HTS.readHumidity();
 
   // print each of the sensor values
-  Serial.print("Temperature = ");
+  Serial.print("Readings from Nano 33 Sense: Temperature = ");
   Serial.print(temperature);
   Serial.println(" °C");
 
@@ -385,10 +385,12 @@ void setup()
      // }
   #endif BLE_SENSE_APDS9960
   
-  Serial.println(GDX.channelName());
-  //Serial.print(" channelReading ");
+  Serial.print(GDX.channelName());
+  Serial.print(" channelReading ");
   Serial.print(": ");
-  Serial.println(strBuffer);
+  Serial.print(strBuffer);
+  Serial.print(" ");
+  Serial.println(channelReading);
   
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, GDX.channelName());
@@ -418,7 +420,6 @@ void setup()
   #endif // FOUR_CHARACTER_DISPLAY_DIG1
 
   delay(period);
-  delay(2000);
   #if defined LEDS
    for (int dPin = 2; dPin<10;dPin++)
       {  //turn off all LEDs
@@ -585,6 +586,8 @@ void ConvertUTF8ToASCII(char* s)
   }
   s[k] = 0;
 }
+
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 void clearDisplay()
 {
   s7s.write(0x76);  // Clear display command
@@ -610,3 +613,4 @@ void setDecimals(byte decimals)
   s7s.write(0x77);
   s7s.write(decimals);
 }
+*/
