@@ -10,7 +10,7 @@ Seems to work, with these exception:
 ---  
 
 */
-#define TRACE_D2PIO_PACKETS //NOTE THIS PRINTS OUT DECODING STUFF!!!
+//#define TRACE_D2PIO_PACKETS //NOTE THIS PRINTS OUT DECODING STUFF!!!
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"
@@ -232,6 +232,8 @@ void GDXLib::autoID()
   _RSSI=GoDirectBLE_GetScanRSSI(); 
   _batteryPercent=GoDirectBLE_GetBatteryStatus();
   _chargeState   =GoDirectBLE_GetChargeStatus();
+  Serial.print("**at end of AutoID,  samplePeriodInMilliseconds) ");//
+  Serial.println(g_samplePeriodInMilliseconds);
 
   }// end of AutoID function
 /*=============================================================================
@@ -266,9 +268,11 @@ void GDXLib::autoID()
 float GDXLib::readSensor() 
 {
   #if defined TRACE_D2PIO_PACKETS
-        Serial.println("**in readSensor");
+        Serial.print("**in readSensor,  samplePeriodInMilliseconds) ");
+        Serial.println(g_samplePeriodInMilliseconds);
+        
   #endif
-  delay(100);//HACK
+  //delay(100);//HACK removed 5/31/20
   //char strBuffer[64];//this is not in Kevin's code
   if (!BLE.connected())
   {
@@ -339,11 +343,13 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
 {
   // Check if a peripheral has been discovered
   #if defined TRACE_D2PIO_PACKETS
-     Serial.print("***in D2PIO_Scan, useRssiThreshold= ");//!!!!
+     Serial.print("^");
+     /*Serial.print("***in D2PIO_Scan, useRssiThreshold= ");//!!!!
      Serial.print(useRssiThreshold);
      Serial.print("*** threshold= ");
      Serial.println(threshold);
      Serial.println("***+");
+     */
   #endif
   BLEDevice peripheral = BLE.available();
   if (!peripheral)
@@ -1065,7 +1071,7 @@ bool GDXLib::D2PIO_StartMeasurements(byte channelNumber)
   command[3] = D2PIO_CalculateChecksum(command);
 
   if (!D2PIO_Write(command)) return false;
-//  if (!D2PIO_ReadBlocking(g_ReadBuffer, 5000)) return false;  ///THIS BIZARRELY CAUSES AN ERROR!!!!!!
+  if (!D2PIO_ReadBlocking(g_ReadBuffer, 5000)) return false;  ///just put back in 5/31/20!!!!!
   return true;
 }
 
@@ -1195,7 +1201,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   else
   {
     Serial.println("SUCCESS");
-   delay(1000);  // Kevin: seems okay without this delay//!!!!!!!!!!!!!!!!!
+   delay(100);  // Kevin: seems okay without this delay//!!!!!!!!!!!!!!!!!
   if (!D2PIO_DiscoverService(g_peripheral)) //Kevin's Discover 
     GoDirectBLE_Error();
   if (!D2PIO_Init())
