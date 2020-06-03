@@ -202,8 +202,9 @@ void setup()
   }
   delay(1000);
   GDX.autoID();// this is the routine to get device info
-  Serial.print("Found: ");
+  Serial.println("Found: ");
   delay(1000);
+  Serial.print("deviceName ");
   Serial.println(GDX.deviceName());
   #if defined TWO_LINE_DISPLAY
     CharDisplayPrintLine(1, "Found           ");
@@ -225,6 +226,13 @@ void setup()
   //ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
   Serial.println(GDX.channelUnits());
+  
+  Serial.print("batteryPercent ");
+  Serial.println(GDX.batteryPercent());
+  Serial.print("chargeState ");
+  Serial.println(GDX.chargeState());
+  Serial.print("RSSI ");
+  Serial.println(GDX.RSSI());
 
   #if defined STATUS //THERE ARE PROBLEMS LURKING HERE IN THE STATUS
     Serial.println("RSSI: ");

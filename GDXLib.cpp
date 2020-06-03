@@ -1,7 +1,7 @@
 /* This is a library to make using Vernier GDX sensors 
 Version 0.41 with lots of feedback on errors
 //05280 9AM 
-/*
+
 doing a quick status test, running at 1000ms
 Seems to work, with these exception:
 - the degree sign thing
@@ -18,14 +18,24 @@ Seems to work, with these exception:
 
 GDXLib::GDXLib()
 {}
-char channelName[32];//60 bytes, was 32, in Kevin's code
-char deviceName[32];//60 bytes!!!
-char channelUnits[16];// 32 bytes  was 16, in Kevin's code
+//are these even used???????;
+//char _channelName[32];//60 bytes, was 32, in Kevin's code
+//char _deviceName[32];//60 bytes!!!
+//char _channelUnits[16];// 32 bytes  was 16, in Kevin's code
+
 int channelNumber;
+
+char _channelName[32]="              ";//60 bytes I AM CHANGING THIS FROM 32 TO TO 66  !!!!!!!!!!
+char _deviceName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
+char _channelUnits[66];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 66
+uint8_t _batteryPercent=77;
+uint8_t _chargeState;
+byte _RSSI;
+    
 //!!! NOT USED . char sN[32];// 32 bytes this is an expermment
 uint8_t Percent;//HACK
 uint8_t chargerStatus;
-int batteryPercent;
+//int batteryPercent;
 byte scanRSSI;
 char strBuffer[32];
 char strFW1[16];
@@ -1279,9 +1289,9 @@ void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareV
   sprintf(strFirmwareVersion1, "%d.%d", g_status.majorVersionMasterCPU, g_status.minorVersionMasterCPU);
   sprintf(strFirmwareVersion2, "%d.%d", g_status.majorVersionSlaveCPU,  g_status.minorVersionSlaveCPU);
 
-  batteryPercent = g_status.batteryLevelPercent;
+  _batteryPercent = g_status.batteryLevelPercent;
   Serial.print("*** batteryPercent: ");
-  Serial.println(batteryPercent);//this is correct here in the library code
+  Serial.println(_batteryPercent);//this is correct here in the library code
 }
 
 //=============================================================================

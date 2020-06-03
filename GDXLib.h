@@ -1,8 +1,8 @@
-#ifndef GDXLib_h
-#define GDXLib_h
-//define GDXLIB_LIB_VERSION "0.1" // displayed automatically
-// This is a library to make using GDX sensors easy
-#include "ArduinoBLE.h"
+  #ifndef GDXLib_h  
+  #define GDXLib_h
+  //define GDXLIB_LIB_VERSION "0.1" // displayed automatically
+  // This is a library to make using GDX sensors easy
+  #include "ArduinoBLE.h"
 
 class GDXLib 
 {
@@ -29,15 +29,16 @@ class GDXLib
     float GoDirectBLE_GetMeasurement();
     
  private:// also known as local  
-    int  _channel;
-    char _channelName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
+
+    char _channelName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66  !!!!!!!!!!
     char _deviceName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
     char _channelUnits[66];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 66
-    byte _RSSI;
     uint8_t _batteryPercent;
     uint8_t _chargeState;
-    unsigned long _samplePeriodInMilliseconds;// used in begin
+    byte _RSSI;
     
+    unsigned long _samplePeriodInMilliseconds;// used in begin
+    int  _channel;
     char _strBuffer[64]; //used in Read Sensor
     
     bool DumpGatttService(BLEDevice peripheral, char* uuid);
