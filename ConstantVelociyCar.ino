@@ -30,10 +30,11 @@ int MotorTime; //time in seconds
 float MotorCurrent;
 int Step=0;
 const int red = 2; //LEDs to indicate mode
-const int Green = 6;
-const int Blue = 4;
-const int buzzer = 5;//buzzer
-const int ShieldLED=13; //LED on shield 
+const int yellow =3;
+const int blue = 4;
+const int green = 5;
+const int buzzer = 6;//buzzer
+const int shieldLED=13; //LED on shield 
 float distanceLimit=-1;//default to 1 meter
 float startingPosition=0;
 float t =0;
@@ -45,6 +46,12 @@ int stepsToSecond=0;
 bool endOfRun=0;//set this to 1 when the run is over
    
 void setup(){
+  pinMode(buzzer, OUTPUT); // buzzer 
+  pinMode(red, OUTPUT); // Set LED lines for output
+  pinMode(Green, OUTPUT); // Set LED lines for output
+  pinMode(Blue, OUTPUT); 
+  pinMode(Blue, OUTPUT); 
+  pinMode(buzzer, INPUT); // sound on/off switch
   //all very indented lines here are used for TWO_LINE_DISPLAY via I2C
       Wire.begin(); //Join the bus as master
       delay(200);
@@ -74,10 +81,15 @@ void setup(){
   //buzzer and LED test:
   digitalWrite(buzzer, HIGH);//buzzer on
   digitalWrite(red, HIGH);  //LED on
-  delay (200);
+  digitalWrite(green, HIGH);  //LED on
+  digitalWrite(blue, HIGH);  //LED on
+  digitalWrite(yellow, HIGH);  //LED on
+  delay (500);
   digitalWrite(buzzer, LOW);//buzzer off,
-  digitalWrite(red, LOW); //LED off
-      
+  digitalWrite(red, LOW); 
+  digitalWrite(green, LOW); 
+  digitalWrite(blue, LOW);  
+  digitalWrite(yellow, LOW);   
   analogWrite(PWMPin,0); 
   digitalWrite(Brake,1); //brake on
   #if defined WITHCART
@@ -92,13 +104,8 @@ void setup(){
     Serial.println(GDX.channelName());
     Serial.println(GDX.channelUnits());
   #endif //WITHCART
-  pinMode(ShieldLED, OUTPUT); // timing LED
-  pinMode(5, OUTPUT); // buzzer 
-  pinMode(red, OUTPUT); // Set LED lines for output
-  //pinMode(Green, OUTPUT); // Set LED lines for output
-  pinMode(Blue, OUTPUT); 
-  
-  pinMode(buzzer, INPUT); // sound on/off switch
+
+
   analogWrite(PWMPin, 0); //motor off
 
   i2cSendValue(Blue);  
@@ -109,42 +116,63 @@ void setup(){
      //void MoveTo (10, float distanceLimit, 110, 0);// move back
      //void MoveTo (10, float distanceLimit, 90, 10);//accellerate forward
      //void MoveTo (float timeLimit, float distanceLimit, int MotorSpeedStart, bool Direction,int deltaMotorSpeed)
-   
-   MoveTo(10, 0.3, 130, 0,0);// move forward
-   //(float timeLimit, float distanceLimit, int MotorSpeedStart, bool Direction,int deltaMotorSpeed)
+
+  digitalWrite(red, HIGH);  //LED on
+  MoveTo(10, 0.3, 130, 0,0);// move forward
+  //(float timeLimit, float distanceLimit, int MotorSpeedStart, bool Direction,int deltaMotorSpeed)
    /*this code will drive the cart forward at MotorSpeed from the start for for distanceLimit meters OR timeLimit seconds.
    It also flashes an LED every second (timing may be a bit off, but consistant).
     */
+   digitalWrite(red, LOW);  //LED on
    delay(1000);
+   digitalWrite(green, HIGH);  //LED on
    MoveTo(10, 0.3, 220, 0,0);// move forward
    //(float timeLimit, float distanceLimit, int MotorSpeedStart, bool Direction,int deltaMotorSpeed)
    /*this code will drive the cart forward at MotorSpeed from the start for for distanceLimit meters OR timeLimit seconds.
    It also flashes an LED every second (timing may be a bit off, but consistant).
     */
-   delay(1000);
-   MoveTo(10, 0.3, 130, 1,0);// move backward
+    digitalWrite(green, LOW); 
+    delay(1000);
+    digitalWrite(blue, HIGH);  //LED on
+    MoveTo(10, 0.3, 130, 1,0);// move backward
    //(float timeLimit, float distanceLimit, int MotorSpeedStart, bool Direction,int deltaMotorSpeed)
    /*this code will drive the cart backward at MotorSpeed from the start for for distanceLimit meters OR timeLimit seconds.
    It also flashes an LED every second (timing may be a bit off, but consistant).
     */
-   delay(1000);
-   MoveTo(10, 0.3, 220, 1,0);// move backward
+    digitalWrite(blue, LOW);
+
+     delay(1000);
+     digitalWrite(red, HIGH);  //LED on
+     digitalWrite(green, HIGH);  //LED on
+     MoveTo(10, 0.3, 220, 1,0);// move backward
    //(float timeLimit, float distanceLimit, int MotorSpeedStart, bool Direction,int deltaMotorSpeed)
    /*this code will drive the cart backward at MotorSpeed from the start for for distanceLimit meters OR timeLimit seconds.
    It also flashes an LED every second (timing may be a bit off, but consistant).
     */
-   delay(1000);
-   MoveTo(10, 0.6, 90, 0,5);// move forward with acceleration
+     digitalWrite(red, LOW);  //LED ondigitalWrite(red, LOW); 
+     digitalWrite(green, LOW);  //LED ondigitalWrite(red, LOW); 
+     delay(1000);
+     digitalWrite(red, HIGH);  //LED on
+     digitalWrite(blue, HIGH);  //LED on
+     MoveTo(10, 0.6, 90, 0,5);// move forward with acceleration
    //(float timeLimit, float distanceLimit, int MotorSpeedStart, bool Direction,int deltaMotorSpeed)
    /*this code will drive the cart backward at MotorSpeed from the star for for distanceLimit OR timeLimit seconds.
    It also flashes an LED every second (timing may be a bit off, but consistant).
     */
+   digitalWrite(red, LOW);  //LED on
+   digitalWrite(blue, LOW);  //LED on
    delay(1000);
+   digitalWrite(red, HIGH);  //LED on
+   digitalWrite(green, HIGH);  //LED on
+   digitalWrite(blue, HIGH);  //LED on
    MoveTo(10, 0.6, 90, 1,5);// move backward with acceleration
    //(float timeLimit, float distanceLimit, int MotorSpeedStart, bool Direction,int deltaMotorSpeed)
    /*this code will drive the cart backward at MotorSpeed from the start for for distanceLimit OR timeLimit seconds.
    It also flashes an LED every second (timing may be a bit off, but consistant).
     */ 
+    digitalWrite(red, LOW);  //LED on
+    digitalWrite(green, LOW);  //LED on
+    digitalWrite(blue, LOW);  //LED on
 }//end of setup
 
 void loop(){
