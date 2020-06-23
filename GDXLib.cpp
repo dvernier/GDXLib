@@ -28,7 +28,7 @@ int channelNumber;
 char _channelName[32]="              ";//60 bytes I AM CHANGING THIS FROM 32 TO TO 66  !!!!!!!!!!
 char _deviceName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
 char _channelUnits[66];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 66
-uint8_t _batteryPercent=77;
+uint8_t _batteryPercent;
 uint8_t _chargeState;
 byte _RSSI;
     
@@ -175,7 +175,7 @@ struct D2PIOGetDeviceInfoCmdResponse
 } __attribute__ ((packed));
 
 
-#define GDX_BLE_AUTO_CONNECT_RSSI_THRESHOLD -44
+#define GDX_BLE_AUTO_CONNECT_RSSI_THRESHOLD -44// note this is where you change threshold!!!
 
 #define GDX_BLE_STATE_RESET      0
 #define GDX_BLE_STATE_SCAN_IDLE  1
@@ -222,7 +222,7 @@ void GoDirectBLE_Start();
 bool D2PIO_StartMeasurements(byte channelNumber);
 byte D2PIO_CalculateChecksum(const byte buffer[]);
 bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
-byte getRSSI();
+//byte getRSSI();//JUNK 6/4/20
 //=============================================================================
 // autoID()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
@@ -238,37 +238,45 @@ void GDXLib::autoID()
   strcpy(_channelUnits, GDXLib::GoDirectBLE_GetChannelUnits());
   strcpy(_channelName, GoDirectBLE_GetChannelName());
   strcpy(_deviceName, GoDirectBLE_GetDeviceName());
-  //strcpy(_channelName, GoDirectBLE_GetChannelName());
-  _RSSI=GoDirectBLE_GetScanRSSI(); 
-  _batteryPercent=GoDirectBLE_GetBatteryStatus();
-  _chargeState   =GoDirectBLE_GetChargeStatus();
-  Serial.print("**at end of AutoID,  samplePeriodInMilliseconds) ");//
-  Serial.println(g_samplePeriodInMilliseconds);
+  _batteryPercent=GoDirectBLE_GetBatteryStatus();//returns g_status.batteryLevelPercent
+  _chargeState   =GoDirectBLE_GetChargeStatus();//g_status.chargerState;
+    Serial.print("***_RSSI LINE 243 before call ");
+  Serial.println(_RSSI);
+      Serial.print("*** g_RSSIStrength 245");//HACK 
+    Serial.println(g_RSSIStrength);
+  _RSSI=GoDirectBLE_GetScanRSSI();//returns g_RSSIStrength 
+  Serial.print("***_RSSI LINE 246 ");
+  Serial.println(_RSSI);
+  //Serial.print("**at end of AutoID,  samplePeriodInMilliseconds) ");//
+  //Serial.println(g_samplePeriodInMilliseconds);
 
   }// end of AutoID function
 /*=============================================================================
-// getRSSI()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// getScanRSSI()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
   byte GDXLib::getRSSI()
  {
  byte number=GoDirectBLE_GetScanRSSI(); //this works!
+ Serial.print("**number in function 256 ");//
+ Serial.println(number);
  return number;
+ 
  }
 
-/*=============================================================================
+//=============================================================================
 // getChannelUnits()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
  void GDXLib::getChannelUnits(char *units, int len)
  {
  strncpy(units,GoDirectBLE_GetChannelUnits(), len);
  }
-
-//=============================================================================
-// getBatteryStatus()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+*/
+/*=============================================================================
+//getBatteryStatus()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //=============================================================================!@
- uint8_t GDXLib::getBatteryStatus()
+ uint8_t GDXLib::GetBatteryStatus()
  {
- batteryPercent=GoDirectBLE_GetBatteryStatus();
+ _batteryPercent=GoDirectBLE_GetBatteryStatus();
  return batteryPercent;
  }
 */
@@ -382,6 +390,7 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
   if ((peripheral.localName()[0] != 'G') ||
       (peripheral.localName()[1] != 'D') ||
       (peripheral.localName()[2] != 'X'))
+      //to specify a particular type of sensor, add more characters in this way.
     return D2PIO_SCAN_RESULT_NONE;
 
   // Create a relative strength reading from 0 to 16
@@ -394,12 +403,23 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
     if (peripheral.rssi() > rssiTestLevel) break;
     rssiTestLevel = rssiTestLevel - 2;
   }
+    Serial.print("*** peripheral.rssi()");//HACK 6/3/20//THIS IS CORRECT and negative
+    Serial.println(peripheral.rssi());
+    //_RSSI=peripheral.rssi();//HACK 6/3/20  
+    g_RSSIStrength= peripheral.rssi();//HACK STORE IN GLOBAL VARIABLE
+    Serial.print("*** _RSSI  LINE 408 ");//HACK 6/3/20 CORRECT
+    Serial.println(_RSSI);
+    Serial.print("*** g_RSSIStrength 410 ");//HACK 
+    Serial.println(g_RSSIStrength);
+    
+    
+
 #if defined TRACE_D2PIO_PACKETS
     Serial.print("***Found ");
     Serial.print(peripheral.localName());
     Serial.print("*** at ");
     Serial.print(peripheral.address());
-    Serial.print("*** with RSSI ");
+    Serial.print("*** with RSSI at 421 ");//this is correct and negative
     Serial.print(peripheral.rssi());
     Serial.println();
     Serial.print("***peripheral.rssi() ");
@@ -424,6 +444,8 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
   if (useRssiThreshold && (peripheral.rssi() < threshold)) return D2PIO_SCAN_RESULT_WEAK;
 
   g_peripheral = peripheral;
+  Serial.print("*** g_RSSIStrength 446 ");//HACK 
+  Serial.println(g_RSSIStrength);
   return D2PIO_SCAN_RESULT_SUCCESS;
 }
 
@@ -1219,6 +1241,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
 
   // Wait for connection interval to finish negotiating
   delay(1000);
+
   #if defined TRACE_D2PIO_PACKETS//none of the below stuff works!!!!!!!!!!!!!!!!!!!!!!!
      Serial.println("BLE connection parameters:");
      //Serial.print(  "  Interval: ");
@@ -1233,7 +1256,8 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
      
   if (!D2PIO_GetStatus())
     GoDirectBLE_Error();
-
+  Serial.print("**_RSSI  on line 1258!!! ");// READS 0 because not global
+  Serial.println(_RSSI);
   //Serial.print("***D2PIO_GetDeviceInfo()");
   if (!D2PIO_GetDeviceInfo()) //Kevin's Setup
     GoDirectBLE_Error();
@@ -1281,7 +1305,8 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   }//end else
 }
 
-//=============================================================================
+/*I COMMENTED THIS OUT 6/3/20, SINCE I DO NOT THINK WE ARE USING.
+ * =============================================================================
 // GoDirectBLE_GetStatus() Function
 //=============================================================================
 void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2, byte& batteryPercent)
@@ -1293,13 +1318,13 @@ void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareV
   Serial.print("*** batteryPercent: ");
   Serial.println(_batteryPercent);//this is correct here in the library code
 }
-
+*/
 //=============================================================================
 // GoDirectBLE_GetScanRSSI() Function
 //=============================================================================
 byte GDXLib::GDXLib::GoDirectBLE_GetScanRSSI()
 {
-  //return g_RSSIStrength;
+  return g_RSSIStrength;
 }
 
 //=============================================================================

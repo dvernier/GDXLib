@@ -1,6 +1,6 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//#define TWO_LINE_DISPLAY //comment out for no DISPLAY on Arduino Nano 33 BLE
+#define TWO_LINE_DISPLAY //comment out for no DISPLAY on Arduino Nano 33 BLE
 //#define TWO_LINE_DISPLAY_DIG2 //comment out for no DISPLAY on Digital 2 Shield connector
 //#define FOUR_CHARACTER_DISPLAY_DIG1 //comment out for no DISPLAY on Digital 1 Shield connector
 //#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
@@ -157,11 +157,11 @@ void setup()
   #endif //FOUR_CHARACTER_DISPLAY_DIG1
   
   //set things up in the steps below
-  //char sensorName[64]="             ";//for proximity pairing
+  char sensorName[64]="             ";//for proximity pairing
   //char sensorName[32]="GDX-ST 0P1000S9";
   //char sensorName[32]="GDX-TMP 0F1038J5";
   //char sensorName[32]="GDX-FOR 072001P5";
-  char sensorName[32]="GDX-ACC 0H1019K1";//&&
+  //char sensorName[32]="GDX-ACC 0H1019K1";//&&
   int period = 1000; //time between readings   
   if (period<400)
         period = 400; //do not allow faster sampling
@@ -232,7 +232,7 @@ void setup()
   Serial.print("chargeState ");
   Serial.println(GDX.chargeState());
   Serial.print("RSSI ");
-  Serial.println(GDX.RSSI());
+  Serial.println(GDX.RSSI()-256);//I DO NOT UNDERSTAND WHY I HAVE TO DO THE SUBTRACTION
 
   #if defined STATUS //THERE ARE PROBLEMS LURKING HERE IN THE STATUS
     Serial.println("RSSI: ");

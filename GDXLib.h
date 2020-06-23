@@ -16,7 +16,7 @@ class GDXLib
     char* channelUnits()     { return _channelUnits ;};
     uint8_t batteryPercent() { return _batteryPercent ;};
     uint8_t chargeState()    { return _chargeState ;};
-    byte RSSI()              { return _RSSI ;};
+    byte RSSI()               { return _RSSI ;};
     
     void GoDirectBLE_Begin();
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
@@ -74,6 +74,7 @@ class GDXLib
     const char* GoDirectBLE_GetChannelUnits();
     uint8_t GoDirectBLE_GetBatteryStatus();
     uint8_t GoDirectBLE_GetChargeStatus();
+    byte    GoDirectBLE_GetRSSI();
     bool GoDirectBLE_DisplayChannelAsInteger();
     char* GoDirectBLE_GetChannelName();
 
