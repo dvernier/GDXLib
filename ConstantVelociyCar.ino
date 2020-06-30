@@ -13,7 +13,7 @@ deltaMotorSpeed)
 //#define TESTING
 #if defined WITHCART
    #include "GDXLib.h"
-   GDXLib GDX;
+ //  GDXLib GDX;
 #endif //
 #include "ArduinoBLE.h"
    #include <Wire.h>
