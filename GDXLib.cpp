@@ -17,7 +17,6 @@ char channelName[32];
 char deviceName[32];
 char channelUnits[16];
 int channelNumber;
-uint8_t Percent;//HACK
 uint8_t chargerStatus;
 int batteryPercent;
 char strBuffer[32];
@@ -197,14 +196,14 @@ static unsigned long                               g_RSSIAge;
 
 
 
- //below are mentions of functions to avoid the not found stuff!!!
+ //below are mentions of functions to avoid the not found stuff. Are they needed?!!!
 void GoDirectBLE_Error();
 bool D2PIO_StartMeasurements(byte channelNumber);
 byte D2PIO_CalculateChecksum(const byte buffer[]);
 bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
 byte getRSSI();
 //=============================================================================
-// autoID()Function !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// autoID()Function 
 //=============================================================================!@
 void GDXLib::autoID() 
 {
@@ -224,9 +223,9 @@ void GDXLib::autoID()
   }// end of AutoID function
 
  //=============================================================================
-// readSensor() Function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// readSensor() Function
 //=============================================================================!@
-float GDXLib::readSensor() //this code is never used!!!!!!!!!!!!!!!!!!!!!!!!!!!
+float GDXLib::readSensor() 
 {
   #if defined DEBUG
         Serial.print("**in readSensor,  samplePeriodInMilliseconds) ");
@@ -300,7 +299,7 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
   // Check if a peripheral has been discovered
   #if defined DEBUG
      Serial.print("^");
-     Serial.print("***in D2PIO_Scan, useRssiThreshold= ");//!!!!
+     Serial.print("***in D2PIO_Scan, useRssiThreshold= ");
      Serial.print(useRssiThreshold);
      Serial.print("*** threshold= ");
      Serial.println(threshold);
@@ -833,7 +832,7 @@ bool GDXLib::D2PIO_GetDeviceInfo()
   Serial.println(pResponse->SerialNumber);
   Serial.print("***  Device name: ");
   Serial.println(pResponse->DeviceName);
-  strcpy(deviceNam, pResponse->DeviceName);!!!
+  strcpy(deviceNam, pResponse->DeviceName);
   Serial.print("***  Mfg ID: ");
   Serial.println(pResponse->manufacturerId);
   Serial.print("***  Mfg Date: ");
@@ -1147,7 +1146,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   else
   {
     Serial.println("SUCCESS");
-   delay(100);  // Kevin: seems okay without this delay//!!!!!!!!!!!!!!!!!
+   delay(10);  // Kevin: seems okay without this delay//!!!
   if (!D2PIO_DiscoverService(g_peripheral)) //Kevin's Discover 
     GoDirectBLE_Error();
   if (!D2PIO_Init())
@@ -1155,7 +1154,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
 
   // Wait for connection interval to finish negotiating
   delay(1000);
-  #if defined DEBUG//none of the below stuff works!!!!!!!!!!!!!!!!!!!!!!!
+  #if defined DEBUG//none of the below stuff works!!!
      Serial.println("BLE connection parameters:");
      Serial.print(  "  Interval: ");
      Serial.println(g_peripheral.getConnectionInterval());
@@ -1194,11 +1193,11 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   if (!D2PIO_StartMeasurements(g_channelNumber))
     GoDirectBLE_Error();
     
-  //delay(10);//HACK!!! I think we do not need this
+  //delay(10);//!!! I think we do not need this
   g_MeasurementCounter = 0;
   g_measurement = 0.0;
   #if defined DEBUG
-    Serial.print("***g_measurement "); // this is good!!!!
+    Serial.print("***g_measurement "); 
     Serial.println(g_measurement);
     Serial.print("***g_MeasurementCounter");
     Serial.println(g_MeasurementCounter);
@@ -1206,7 +1205,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
     //Serial.print("*** strbuffer ");
     //Serial.println(strbuffer);
     delay(100);
-    Serial.print("***g_measurement2 "); // this is good!!!!
+    Serial.print("***g_measurement2 "); 
     Serial.println(g_measurement);
     Serial.print("***g_MeasurementCounter2");
     Serial.println(g_MeasurementCounter);
