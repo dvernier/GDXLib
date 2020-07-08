@@ -1,11 +1,11 @@
 /* This is a library to make using Vernier GDX sensors 
  easy using an Arduino which supports the Arduino BLE library
  
-Version 0.7 with lots of feedback on errors if you turn on DEBUG
-
+Version 0.71 with lots of feedback on errors if you turn on DEBUG
+and this version runs with DEBUG on.
 ---  
 */
-//#define DEBUG //NOTE THIS PRINTS OUT DECODING STUFF!!!
+#define DEBUG //NOTE THIS PRINTS OUT DECODING STUFF!!!
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"
@@ -354,9 +354,9 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
       uint8_t mfgData[64];
       uint8_t mgfDataLen = 0;
       Serial.print("***MfgData=");
-      Serial.print(peripheral.hasManufacturerData());
+     //!!! Serial.print(peripheral.hasManufacturerData());
       Serial.print("*** ");
-      peripheral.getManufacturerData(mfgData, mgfDataLen);
+     //!!! peripheral.getManufacturerData(mfgData, mgfDataLen);
       for (int i = 0; i < mgfDataLen; i++)
       {
         Serial.print(mfgData[i], HEX);
@@ -792,10 +792,10 @@ bool GDXLib::D2PIO_GetStatus()
     Serial.print("***.");
     Serial.println(pResponse->buildNumSlaveCPU);
     Serial.print("*** in D2PIO_GetStatus Battery percent: ");
-    batteryPercent=(pResponse->batteryLevelPercent);WHAT IS THIS????????
+   //!!! batteryPercent=(pResponse->batteryLevelPercent);WHAT IS THIS????????
     Serial.println(pResponse->batteryLevelPercent);
     Serial.print("***  batteryLevelPercent: ");
-    Serial.println(batteryLevelPercent);
+   //!!! Serial.println(batteryLevelPercent);
 
     Serial.print("***  Charger state: ");
     Serial.println(pResponse->chargerState);
@@ -832,7 +832,7 @@ bool GDXLib::D2PIO_GetDeviceInfo()
   Serial.println(pResponse->SerialNumber);
   Serial.print("***  Device name: ");
   Serial.println(pResponse->DeviceName);
-  strcpy(deviceNam, pResponse->DeviceName);
+ //!!! strcpy(deviceNam, pResponse->DeviceName);
   Serial.print("***  Mfg ID: ");
   Serial.println(pResponse->manufacturerId);
   Serial.print("***  Mfg Date: ");
@@ -911,7 +911,7 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
         Serial.println(pResponse->samplingMode);
         Serial.print("***  Units: ");
         Serial.println(pResponse->sensorUnit);
-        strcpy(channelUnits, pResponse->sensorUnit);//!!!note this works, but is it the right channel?
+     //!!!   strcpy(channelUnits, pResponse->sensorUnit);//!!!note this works, but is it the right channel?
         Serial.print("***  Measurement uncertainty: ");
         Serial.println(pResponse->measurementUncertainty);
         Serial.print("***  Measurement min: ");
@@ -1157,11 +1157,11 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   #if defined DEBUG//none of the below stuff works!!!
      Serial.println("BLE connection parameters:");
      Serial.print(  "  Interval: ");
-     Serial.println(g_peripheral.getConnectionInterval());
+  //!!!   Serial.println(g_peripheral.getConnectionInterval());
      Serial.print(  "  Timeout:  ");
-     Serial.println(g_peripheral.getConnectionTimeout());
+  //!!!   Serial.println(g_peripheral.getConnectionTimeout());
      Serial.print(  "  Latency:  ");
-     Serial.println(g_peripheral.getConnectionLatency());
+  //!!!   Serial.println(g_peripheral.getConnectionLatency());
      Serial.print("***D2PIO_GetStatus()");
   #endif
      
