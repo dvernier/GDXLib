@@ -1,9 +1,10 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-#define TWO_LINE_DISPLAY //comment out for no DISPLAY on Arduino Nano 33 BLE
+//#define TWO_LINE_DISPLAY //comment out for no DISPLAY on Arduino Nano 33 BLE
 //#define TWO_LINE_DISPLAY_DIG2 //comment out for no DISPLAY on Digital 2 Shield connector
+#define TWO_LINE_DISPLAY_I2C //comment out for no DISPLAY I2C
 //#define FOUR_CHARACTER_DISPLAY_DIG1 //comment out for no DISPLAY on Digital 1 Shield connector
-//#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
+#define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 //#define C_F_VERSION //C and F temperature
 //#define LEDS
 //#define BLE_SENSORS //Use Built-in Arduino Nano33 BLE sensors
@@ -43,6 +44,11 @@
   const int softwareRx = 3;
   SoftwareSerial s7s(softwareRx, softwareTx);
 #endif //FOUR_CHARACTER_DISPLAY_DIG1
+
+#if defined TWO_LINE_DISPLAY_I2C
+   #include <Wire.h>
+   #define DISPLAY_ADDRESS1 0x72 //This is the default address of the OpenLCD
+#endif //TWO_LINE_DISPLAY_I2C
 
 GDXLib GDX;
 static char strUnits[16];
@@ -155,6 +161,22 @@ void setup()
       // Clear the display before jumping into loop
       clearDisplay();  
   #endif //FOUR_CHARACTER_DISPLAY_DIG1
+
+  #if defined TWO_LINE_DISPLAY_I2C
+      // all very indented lines here are used for TWO_LINE_DISPLAY via I2C
+      Wire.begin(); //Join the bus as master
+      //By default .begin() will set I2C SCL to Standard Speed mode of 100kHz
+      //Wire.setClock(400000); //Optional - set I2C SCL to High Speed Mode of 400kHz
+      //Send the reset command to the display - this forces the cursor to return to the beginning of the display
+      Wire.beginTransmission(DISPLAY_ADDRESS1);
+      Wire.write('|'); //Put LCD into setting mode
+      Wire.write('-'); //Send clear display command
+      delay(1000);
+      Wire.write('hello'); //Send clear display command
+            delay(1000);
+      Wire.endTransmission();
+      delay (777);
+#endif //TWO_LINE_DISPLAY_I2C
   
   //set things up in the steps below
   char sensorName[64]="             ";//for proximity pairing
@@ -427,7 +449,10 @@ void setup()
       Serial.print("strBuffer");
       Serial.println(strBuffer);
   #endif // FOUR_CHARACTER_DISPLAY_DIG1
-
+  
+  #if defined TWO_LINE_DISPLAY_I2C
+        i2cSendFloat(channelReading);
+  #endif // TWO_LINE_DISPLAY_I2C
 
   #if defined LEDS
    for (int dPin = 2; dPin<10;dPin++)
@@ -625,3 +650,24 @@ void setDecimals(byte decimals)
   s7s.write(decimals);
 }
 */
+  #if defined TWO_LINE_DISPLAY_I2C
+  void i2cSendFloat(float number)
+{
+  char strBuffer[32];
+  Wire.beginTransmission(DISPLAY_ADDRESS1); // transmit to device #1
+  Wire.write('|'); //Put LCD into setting mode
+  Wire.write('-'); //Send clear display command
+
+  //Wire.print(t);
+  //Wire.print(" ");
+  Wire.print(number);
+  //sprintf(strBuffer, "%2f", number);
+
+  //Serial.print("Number          ");
+  //Serial.println(number);
+  //Serial.print(" strBuffer ");
+  //Serial.println(strBuffer);
+
+  Wire.endTransmission(); //Stop I2C transmission
+}
+  #endif // TWO_LINE_DISPLAY_I2C

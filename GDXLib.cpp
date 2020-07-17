@@ -5,7 +5,7 @@ Version 0.71 with lots of feedback on errors if you turn on DEBUG
 and this version runs with DEBUG on.
 ---  
 */
-#define DEBUG //NOTE THIS PRINTS OUT DECODING STUFF!!!
+//#define DEBUG //NOTE THIS PRINTS OUT DECODING STUFF!!!
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"
@@ -195,13 +195,6 @@ static byte                                        g_RSSIStrength;
 static unsigned long                               g_RSSIAge;
 
 
-
- //below are mentions of functions to avoid the not found stuff. Are they needed?!!!
-void GoDirectBLE_Error();
-bool D2PIO_StartMeasurements(byte channelNumber);
-byte D2PIO_CalculateChecksum(const byte buffer[]);
-bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
-byte getRSSI();
 //=============================================================================
 // autoID()Function 
 //=============================================================================!@
@@ -325,8 +318,9 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
   // Make sure we found a GDX device
   if ((peripheral.localName()[0] != 'G') ||
       (peripheral.localName()[1] != 'D') ||
-      (peripheral.localName()[2] != 'X'))
-      //specify a type of sensor by adding letters here!!!
+      (peripheral.localName()[2] != 'X')||
+      (peripheral.localName()[3] != '-'))
+      //specify a type of sensor by adding letters here, after the '-'!!!
     return D2PIO_SCAN_RESULT_NONE;
 
   // Create a relative strength reading from 0 to 16
@@ -1154,16 +1148,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
 
   // Wait for connection interval to finish negotiating
   delay(1000);
-  #if defined DEBUG//none of the below stuff works!!!
-     Serial.println("BLE connection parameters:");
-     Serial.print(  "  Interval: ");
-  //!!!   Serial.println(g_peripheral.getConnectionInterval());
-     Serial.print(  "  Timeout:  ");
-  //!!!   Serial.println(g_peripheral.getConnectionTimeout());
-     Serial.print(  "  Latency:  ");
-  //!!!   Serial.println(g_peripheral.getConnectionLatency());
-     Serial.print("***D2PIO_GetStatus()");
-  #endif
+
      
   if (!D2PIO_GetStatus())
     GoDirectBLE_Error();
@@ -1193,7 +1178,6 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
   if (!D2PIO_StartMeasurements(g_channelNumber))
     GoDirectBLE_Error();
     
-  //delay(10);//!!! I think we do not need this
   g_MeasurementCounter = 0;
   g_measurement = 0.0;
   #if defined DEBUG
