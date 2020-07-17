@@ -154,9 +154,8 @@ struct D2PIOGetDeviceInfoCmdResponse
   char     DeviceDescription[D2PIO_MAX_DEVICEDESCRIPTION_LENGTH];//NULL terminated UTF-8 string.
 } __attribute__ ((packed));
 
-
+//the line below specifies the threshold RSSI for connecting!!!
 #define GDX_BLE_AUTO_CONNECT_RSSI_THRESHOLD -44
-
 #define GDX_BLE_STATE_RESET      0
 #define GDX_BLE_STATE_SCAN_IDLE  1
 #define GDX_BLE_STATE_SCAN_WEAK  2
@@ -191,7 +190,7 @@ static byte                                        g_rollingCounter = 0;
 static byte                                        g_ReadBuffer[256];
 static unsigned long                               g_MeasurementCounter;
 static float                                       g_measurement;
-static byte                                        g_RSSIStrength;
+static int                                         g_RSSIStrength;
 static unsigned long                               g_RSSIAge;
 
 
@@ -338,8 +337,9 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)
     Serial.print(peripheral.localName());
     Serial.print("*** at ");
     Serial.print(peripheral.address());
-    Serial.print("*** with RSSI ");
+    Serial.print("*** with RSSI ");//This is the value I want
     Serial.print(peripheral.rssi());
+    g_RSSIStrength=peripheral.rssi();
     Serial.println();
     Serial.print("***peripheral.rssi() ");
     Serial.println(peripheral.rssi());
@@ -1198,7 +1198,7 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
 }
 
 //=============================================================================
-// GoDirectBLE_GetStatus() Function
+// GoDirectBLE_GetStatus() Function//not used!!!
 //=============================================================================
 void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2, byte& batteryPercent)
 {
@@ -1208,14 +1208,6 @@ void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareV
   batteryPercent = g_status.batteryLevelPercent;
   Serial.print("*** batteryPercent: ");
   Serial.println(batteryPercent);//this is correct here in the library code
-}
-
-//=============================================================================
-// GoDirectBLE_GetScanRSSI() Function . !!! not used, but until I make sure RSSI is working, I am leaving it in.
-//=============================================================================
-byte GDXLib::GDXLib::GoDirectBLE_GetScanRSSI()
-{
-  //return g_RSSIStrength;
 }
 
 //=============================================================================
@@ -1247,8 +1239,17 @@ uint8_t GDXLib::GoDirectBLE_GetChargeStatus()
 {
   return g_status.chargerState;
 }
+
 //=============================================================================
-// GoDirectBLE_DisplayChannelAsInteger() Function I do not think we use this, but until I deal with radiation counters, I am leaving it in.
+// GoDirectBLE_GetScanRSSI() Function 
+//=============================================================================
+int GDXLib::GoDirectBLE_GetScanRSSI()
+{
+  return g_RSSIStrength;
+}
+
+//=============================================================================
+// GoDirectBLE_DisplayChannelAsInteger() Function I do not think we use this, but until I deal with radiation counters, I am leaving it in.!!!
 //=============================================================================
 bool GDXLib::GoDirectBLE_DisplayChannelAsInteger()
 {

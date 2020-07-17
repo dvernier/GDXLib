@@ -16,7 +16,7 @@ class GDXLib
     char* channelUnits()     { return _channelUnits ;};
     uint8_t batteryPercent() { return _batteryPercent ;};
     uint8_t chargeState()    { return _chargeState ;};
-    byte RSSI()               { return _RSSI ;};
+    int RSSI()               { return _RSSI ;};
     
     void GoDirectBLE_Begin();
     void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
@@ -25,17 +25,16 @@ class GDXLib
     void GoDirectBLE_End();
     char strBuffer[64]; //used in Read Sensor
     bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
-    //static byte g_ReadBuffer[256];////used in Read Sensor
     float GoDirectBLE_GetMeasurement();
     
  private:// also known as local  
 
-    char _channelName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66  !!!!!!!!!!
-    char _deviceName[66];//60 bytes I AM CHANGING THIS FROM 32 TO TO 66
-    char _channelUnits[66];// 32 bytes I AM CHANGING THIS FROM 18 TO TO 66
+    char _channelName[32];
+    char _deviceName[32];
+    char _channelUnits[32];// 32 bytes
     uint8_t _batteryPercent;
     uint8_t _chargeState;
-    byte _RSSI;
+    int _RSSI;
     
     unsigned long _samplePeriodInMilliseconds;// used in begin
     int  _channel;
@@ -67,14 +66,14 @@ class GDXLib
     void GoDirectBLE_Reset();  //
     void GoDirectBLE_Read();
     void GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2, byte& batteryPercent);
-    byte GoDirectBLE_GetScanRSSI();
+    int GoDirectBLE_GetScanRSSI();
     const char* GoDirectBLE_GetDeviceName();
     const char* GoDirectBLE_GetSerialNumber();
     const char* GoDirectBLE_GetOrderCode();
     const char* GoDirectBLE_GetChannelUnits();
     uint8_t GoDirectBLE_GetBatteryStatus();
     uint8_t GoDirectBLE_GetChargeStatus();
-    byte    GoDirectBLE_GetRSSI();
+    int    GoDirectBLE_GetRSSI();
     bool GoDirectBLE_DisplayChannelAsInteger();
     char* GoDirectBLE_GetChannelName();
 

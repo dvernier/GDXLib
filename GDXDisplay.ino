@@ -253,11 +253,8 @@ void setup()
   Serial.println(GDX.batteryPercent());
   Serial.print("chargeState ");
   Serial.println(GDX.chargeState());
-  Serial.print("RSSI ");
-  Serial.println(GDX.RSSI()-256);//I DO NOT UNDERSTAND WHY I HAVE TO DO THE SUBTRACTION
-
   #if defined STATUS //THERE ARE PROBLEMS LURKING HERE IN THE STATUS
-    Serial.println("RSSI: ");
+    Serial.print("RSSI: ");
     Serial.println(GDX.RSSI());
     Serial.print("battery: ");
     Serial.print(GDX.batteryPercent());
@@ -283,7 +280,6 @@ void setup()
     Serial.print("chargeState: ");
     Serial.println(strBuffer);
   
-  
     #if defined TWO_LINE_DISPLAY
       CharDisplayPrintLine(1, "RSSI ");
       //Serial1.write(254); // cursor to beginning of second line
@@ -304,6 +300,10 @@ void setup()
       //CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
       delay(2000);
     #endif //TWO_LINE_DISPLAY
+
+    #if defined TWO_LINE_DISPLAY_I2C
+        //maybe add some stuff here!!!
+    #endif // TWO_LINE_DISPLAY_I2C
 
  #endif //STATUS  
   
