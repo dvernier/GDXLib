@@ -1,40 +1,11 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
-//#define TWO_LINE_DISPLAY //comment out for no DISPLAY on Arduino Nano 33 BLE
-//#define TWO_LINE_DISPLAY_DIG2 //comment out for no DISPLAY on Digital 2 Shield connector
-#define TWO_LINE_DISPLAY_I2C //comment out for no DISPLAY I2C
+#define TWO_LINE_DISPLAY_TX //comment out for no DISPLAY on Arduino Nano 33 BLE
+//#define TWO_LINE_DISPLAY_I2C //comment out for no DISPLAY I2C
 //#define FOUR_CHARACTER_DISPLAY_DIG1 //comment out for no DISPLAY on Digital 1 Shield connector
 #define STATUS //to display battery status, RSSI, and other info THIS SEEMS TO BE THE CRASHER RIGHT NOW!
 //#define C_F_VERSION //C and F temperature
 //#define LEDS
-//#define BLE_SENSORS //Use Built-in Arduino Nano33 BLE sensors
-//#define BLE_SENSE_TH//Use Built-in Arduino Nano33 Sense (temp and humidity)
-//#define BLE_SENSE_P//Use Built-in Arduino Nano33 Sense (pressure)
-//#define BLE_SENSE_APDS9960//Use Built-in Arduino Nano33 Sense (RGB, IR, proximity, gestures,etc)
-
-#if defined BLE_SENSORS
-  #include <Arduino_LSM9DS1.h> //for reading sensors in Arduino Nano33 BLE
-#endif //BLE_SENSE
-
-#if defined BLE_SENSE_TH
-  #include <Arduino_HTS221.h>//for reading temp and humidity sensors in Arduino Nano33 Sense
-#endif //BLE_SENSE_TH
-
-#if defined BLE_SENSE_P
-  #include <Arduino_LPS22HB.h> //for reading pressure sensor in Arduino Nano33 Sense
-#endif //BLE_SENSE_P
-
-#if defined BLE_SENSE_APDS9960
-  #include <Arduino_APDS9960.h>
-  int proximity = 0;//I think these are global variables
-  int r = 0, g = 0, b = 0;
-  unsigned long lastUpdate = 0;
-#endif //BLE_SENSE_APDS9960
-
-#if defined TWO_LINE_DISPLAY_DIG2
-  #include <SoftwareSerial.h> //library used in printing to display
-  SoftwareSerial mySerial(3,9); //for display, pin 9 = TX, pin 3 = RX (unused)
-#endif //TWO_LINE_DISPLAY_DIG2
 
 #if defined FOUR_CHARACTER_DISPLAY_DIG1
   #include <SoftwareSerial.h> //library used in printing to display
@@ -81,49 +52,12 @@ void setup()
         delay (100);
       }          
   #endif //LEDS
-
-  #if defined BLE_SENSORS
-    if (!IMU.begin()) //for built-in sensors in the Arduino Nano 33BLE
-      {
-        Serial.println("Failed to initialize IMU!");
-        while (1);
-      }
-  #endif //BLE_SENSORS
-  
-  #if defined BLE_SENSE_TH
-   if (!HTS.begin()) {
-     Serial.println("Failed to initialize humidity temperature sensor!");
-     while (1);
-     }
- #endif //BLE_SENSE_TH
-
- #if defined BLE_SENSE_P
-  if (!BARO.begin()) {
-    Serial.println("Failed to initialize pressure sensor!");
-    while (1);
-  }
- #endif //BLE_SENSE_P
- 
- #if defined BLE_SENSE_APDS9960
-  if (!APDS.begin()) {
-    Serial.println("Error initializing APDS9960 sensor.");
-    while (true); // Stop forever
-  }
-
- #endif //BLE_SENSE_APDS9960
-
- #if defined TWO_LINE_DISPLAY
-    CharDisplayInit();
-    delay (2000);
-    //DisplayTest();//!!!to test 2-line display
-    //DisplayTest4();//!!!to test 4-line display (not set up)
- #endif //TWO_LINE_DISPLAY
-
  
  #if defined C_F_VERSION
     Serial.print  ("special version  ");
     Serial.println("C and F temp only");
-    #if defined TWO_LINE_DISPLAY
+    
+    #if defined TWO_LINE_DISPLAY_TX
       CharDisplayPrintLine(1, "special version");
       CharDisplayPrintLine(2, "C & F temp only");
       delay (2000);
@@ -131,20 +65,12 @@ void setup()
   #endif //C_F_VERSION
   
   Serial.print("Looking for "); 
-  #if defined TWO_LINE_DISPLAY
-    CharDisplayPrintLine(1, "Looking for ");
-  #endif //TWO_LINE_DISPLAY
 
-  #if defined TWO_LINE_DISPLAY_DIG2
-    mySerial.begin(9600); // for sending characters to display
-    delay(500); // wait for display to boot up
-    mySerial.write(124); // adjust backlight brightness of display
-    mySerial.write(150); //max=157, 150=73%, 130=40%,128=off
-    delay(500); // wait for display to start
-    mySerial.write(254); // command character
-    mySerial.write(128); // move to line 1, position 0,
-    mySerial.print("Looking for ");
-  #endif //TWO_LINE_DISPLAY_DIG2
+  #if defined TWO_LINE_DISPLAY_TX
+      CharDisplayInit();
+      CharDisplayPrintLine(1,"Searching for");
+      CharDisplayPrintLine(2,"GDX sensor");
+  #endif //TWO_LINE_DISPLAY_TX
 
   #if defined FOUR_CHARACTER_DISPLAY_DIG1
       s7s.begin(9600);
@@ -197,15 +123,10 @@ void setup()
   {
     Serial.println("any GDX sensor ");
     
-    #if defined TWO_LINE_DISPLAY
+    #if defined TWO_LINE_DISPLAY_TX
       CharDisplayPrintLine(2, "any GDX sensor");
     #endif //TWO_LINE_DISPLAY
-
-    #if defined TWO_LINE_DISPLAY_DIG2
-      mySerial.write(254); // cursor to start of bottom line
-      mySerial.write(192);
-      mySerial.print( "any GDX sensor");
-    #endif //TWO_LINE_DISPLAY_DIG2
+    
     delay(2000);
     
     GDX.Begin();
@@ -213,17 +134,12 @@ void setup()
   else
   {
     Serial.println(sensorName);
-    #if defined TWO_LINE_DISPLAY
+    
+    #if defined TWO_LINE_DISPLAY_TX
       CharDisplayPrintLine(2, sensorName);
       delay(2000);
-    #endif //TWO_LINE_DISPLAY
-    
-    #if defined TWO_LINE_DISPLAY_DIG2
-      mySerial.write(254); // command character
-      mySerial.write(192); // move to line 2, position 0,
-      mySerial.print(sensorName);
-      delay(2000);
-    #endif //TWO_LINE_DISPLAY_DIG2
+    #endif //TWO_LINE_DISPLAY_TX
+   
     
     GDX.Begin(sensorName,channel, period);//specify channel and period here also
   }
@@ -233,17 +149,13 @@ void setup()
   delay(1000);
   Serial.print("deviceName ");
   Serial.println(GDX.deviceName());
-  #if defined TWO_LINE_DISPLAY
+  
+  #if defined TWO_LINE_DISPLAY_TX
     CharDisplayPrintLine(1, "Found           ");
-    //CharDisplayPrintLine(2, GDX.deviceName());
-    //strcpy(strUnits,"deg C");//HACK if you want degrees displayed !!!
-  #endif //TWO_LINE_DISPLAY
-  #if defined TWO_LINE_DISPLAY_DIG2
-    mySerial.write(254); // command character
-    mySerial.write(128); // move to line 2, position 0,
-    mySerial.print("Found           ");
-  #endif //TWO_LINE_DISPLAY_DIG2
-  delay(1000);
+    CharDisplayPrintLine(2, GDX.deviceName());
+    delay(2000);
+  #endif //TWO_LINE_DISPLAY_TX
+
   Serial.print("ChannelName: ");
   Serial.println(GDX.channelName());
   Serial.print("ChannelUnits: ");
@@ -253,21 +165,10 @@ void setup()
   //ConvertUTF8ToASCII(strUnits);
   Serial.print("strUnits ");
   Serial.println(GDX.channelUnits());
-  
   Serial.print("batteryPercent ");
   Serial.println(GDX.batteryPercent());
-  Serial.print("chargeState ");
-  Serial.println(GDX.chargeState());
-  #if defined STATUS //THERE USED TO BE PROBLEMS LURKING HERE IN THE STATUS
-    Serial.print("RSSI: ");
-    Serial.println(GDX.RSSI());
-    Serial.print("battery: ");
-    Serial.print(GDX.batteryPercent());
-    Serial.println(" %");
-    Serial.print("ChargeState: ");
-    Serial.print(GDX.chargeState());
-    Serial.println(" (0=idle, 1= charging, 2= complete, 3= error)");
-    switch(GDX.chargeState())
+  Serial.print("chargeState: ");
+  switch(GDX.chargeState())
     {
       case 0:
         strcpy(strBuffer,"not connected");
@@ -282,34 +183,23 @@ void setup()
         strcpy(strBuffer,"error");
         break;
     }
-    Serial.print("chargeState: ");
     Serial.println(strBuffer);
   
-    #if defined TWO_LINE_DISPLAY
-      CharDisplayPrintLine(1, "RSSI ");
-      Serial1.write(254); // cursor to beginning of second line
-      Serial1.write(192); 
-      //Serial1.print(GDX.RSSI());//
-      delay(2000);
-      CharDisplayPrintLine(1, "battery: PC");
-      Serial1.write(254); // cursor to beginning of second line
-      Serial1.write(192); 
-      Serial1.print(GDX.batteryPercent());
-      Serial1.write(254);// cursor to the end of second line
-      Serial1.write(204);
-      Serial1.print("ChargeState: ");
-      Serial1.print("PC");
-      delay(2000);
-    
+  #if defined STATUS //THERE USED TO BE PROBLEMS LURKING HERE IN THE STATUS
       CharDisplayPrintLine(1, "ChargeState: ");
       CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
+      delay(2000);   
+      
+      CharDisplayPrintLine(1, "battery PC: ");
+      sprintf(strBuffer, "%d", GDX.batteryPercent());
+      CharDisplayPrintLine(2, strBuffer);//
       delay(2000);
-    #endif //TWO_LINE_DISPLAY
-
-    #if defined TWO_LINE_DISPLAY_I2C
-        //maybe add some stuff here!!!
-    #endif // TWO_LINE_DISPLAY_I2C
-
+      
+      CharDisplayPrintLine(1, "RSSI: ");
+      sprintf(strBuffer, "%d", GDX.RSSI());
+      CharDisplayPrintLine(2, strBuffer);//
+      delay(2000);
+      
  #endif //STATUS  
   
   Serial.println ("Data Table:");
@@ -331,95 +221,7 @@ void setup()
         }//end of if
    #endif //C_F_VERSION
   
-   #if defined BLE_SENSORS
-    float x, y, z;//accelerations
-    if (IMU.accelerationAvailable()) 
-    {
-       IMU.readAcceleration(x, y, z);
-       //Serial.print("x acceleration ");
-       //Serial.println(x);
-    if (x>.1)// if tilted
-        {
-          channelReading= channelReading*1.8+32;//convert C to F degrees  HACK
-          //sprintf(strBuffer, "%.2f %s", channelReading,"deg F");// causes crash
-          sprintf(strBuffer, "%.2f %s", channelReading,"deg F");  
-        }//end of if tilted
-     }//end of if IMU
-  #endif //BLE_SENSORS
-
- #if defined BLE_SENSE_TH
-  // read all the sensor values
-  float temperature = HTS.readTemperature();
-  float humidity    = HTS.readHumidity();
-
-  // print each of the sensor values
-  Serial.print("Readings from Nano 33 Sense: Temperature = ");
-  Serial.print(temperature);
-  Serial.println(" °C");
-
-  Serial.print("Humidity    = ");
-  Serial.print(humidity);
-  Serial.println(" %");
- #endif BLE_SENSE_TH
-
- #if defined BLE_SENSE_P
-    float pressure = BARO.readPressure();
-    Serial.print("Pressure = ");
-    Serial.print(pressure);
-    Serial.println(" kPa");
- #endif BLE_SENSE_P
-
- #if defined BLE_SENSE_APDS9960
-      // Check if a proximity reading is available.
-      if (APDS.proximityAvailable()) {
-        proximity = APDS.readProximity();
-      }// if APDS
-    
-      //check if a gesture reading is available
-      if (APDS.gestureAvailable()) {
-        int gesture = APDS.readGesture();
-        switch (gesture) {
-          case GESTURE_UP:
-            Serial.println("Detected UP gesture");
-            break;
-    
-          case GESTURE_DOWN:
-            Serial.println("Detected DOWN gesture");
-            break;
-    
-          case GESTURE_LEFT:
-            Serial.println("Detected LEFT gesture");
-            break;
-    
-          case GESTURE_RIGHT:
-            Serial.println("Detected RIGHT gesture");
-            break;
-    
-          default:
-            // ignore
-            break;
-        }
-      }
- 
-      // check if a color reading is available
-      if (APDS.colorAvailable()) {
-        APDS.readColor(r, g, b);
-      }
-    
-      // Print updates every 100ms
-      //if (millis() - lastUpdate > 100) 
-      //{
-        lastUpdate = millis();
-        Serial.print("Proximity: ");
-        Serial.println(proximity);
-        Serial.print(" rgb=");
-        Serial.print(r);
-        Serial.print(",");
-        Serial.print(g);
-        Serial.print(",");
-        Serial.println(b);
-     // }
-  #endif BLE_SENSE_APDS9960
+  
   
   Serial.print(GDX.channelName());
   Serial.print(" channelReading ");
@@ -428,21 +230,12 @@ void setup()
   Serial.print(" ");
   Serial.println(channelReading);
   
-  #if defined TWO_LINE_DISPLAY
+  #if defined TWO_LINE_DISPLAY_TX
     CharDisplayPrintLine(1, GDX.channelName());
     CharDisplayPrintLine(2,strBuffer);
   #endif // TWO_LINE_DISPLAY
 
-  #if defined TWO_LINE_DISPLAY_DIG2
-   mySerial.write(254);
-   mySerial.write(1); //clear display
-   mySerial.write(254); // command character
-   mySerial.write(128); // move to line 1, position 0,
-   mySerial.print(GDX.channelName());
-   mySerial.write(254); // command character
-   mySerial.write(192); // move to line 2, position 0,
-   mySerial.print(channelReading);
-  #endif // TWO_LINE_DISPLAY_DIG2
+
   
    #if defined FOUR_CHARACTER_DISPLAY_DIG1
       // Magical sprintf creates a string for us to send to the s7s.
@@ -549,57 +342,7 @@ void CharDisplayInit()
   Serial1.write(128);  
 }
 
-void DisplayTest()
-{
-  for( int b=137;b<158;b=b+10)
-  {
-  //this code is for the older Sparkfun displays with the add on boards
-  //it seems to work with the new ones, also
-  //Serial1.write(254);//clear screen
-  //Serial1.write(1);
-  //delay(2000);
-  Serial1.write(124); // adjust backlight brightness of display
-  Serial1.write(b); //max=157, 150=73%, 130=40%,128=off
-  Serial1.write(254); // cursor to beginning of first line
-  Serial1.write(128);
-  Serial1.print("                ");
-  Serial1.write(254); // cursor to beginning of first line
-  Serial1.write(192);
-  Serial1.print("                ");
-  Serial1.write(254); // cursor to beginning of first line
-  Serial1.print("Brightness Level");
-  Serial1.write(254); // cursor to beginning of second line
-  Serial1.write(192); 
-  Serial1.print("b=");
-  Serial1.write(254);// cursor to the end of second line
-  Serial1.write(204);
-  Serial1.print(b);
-  delay(3000);
-    }
-  Serial1.write(124); // adjust backlight brightness of display
-  Serial1.write(150); //max=157, 150=73%, 130=40%,128=off
-  delay(2000);
-}
-void DisplayTest4()
-{
-  Serial1.write('|');
-  //Serial1.write(24);
-  //Serial1.write(contrast);
-  //Serial1.write('|');
-  //Serial1.write('-');
-  CharDisplayPrintLine(1, "               ");
-  CharDisplayPrintLine(2, "               ");
-  CharDisplayPrintLine(3, "               ");
-  CharDisplayPrintLine(4, "               ");
-  delay(2000);  
-  CharDisplayPrintLine(1, "      this     ");
-  CharDisplayPrintLine(2, "        is     ");
-  CharDisplayPrintLine(3, "          a    ");
-  CharDisplayPrintLine(4, "           test");
-  delay(2000);
-  Serial1.print("Hello ");
-  delay(2000);
-}
+
 //=============================================================================
 // ConvertUTF8ToASCII() Function
 // Very limited -- only supports a few translations
@@ -628,33 +371,6 @@ void ConvertUTF8ToASCII(char* s)
   s[k] = 0;
 }
 
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-void clearDisplay()
-{
-  s7s.write(0x76);  // Clear display command
-}
-
-// Set the displays brightness. Should receive byte with the value
-//  to set the brightness to
-//  dimmest------------->brightest
-//     0--------127--------255
-
-void setBrightness(byte value)
-{
-  s7s.write(0x7A);  // Set brightness command byte
-  s7s.write(value);  // brightness data byte
-}
-
-// Turn on any, none, or all of the decimals.
-//  The six lowest bits in the decimals parameter sets a decimal 
-//  (or colon, or apostrophe) on or off. A 1 indicates on, 0 off.
-//  [MSB] (X)(X)(Apos)(Colon)(Digit 4)(Digit 3)(Digit2)(Digit1)
-void setDecimals(byte decimals)
-{
-  s7s.write(0x77);
-  s7s.write(decimals);
-}
-*/
   #if defined TWO_LINE_DISPLAY_I2C
   void i2cSendFloat(float number)
 {
