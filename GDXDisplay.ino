@@ -176,10 +176,15 @@ void setup()
             delay(1000);
       Wire.endTransmission();
       delay (777);
+      //adjust contrast:
+      Wire.write('|'); //Put LCD into setting mode
+      Wire.write(24); //Send clear display command
+      Wire.write(50); //Send contrast//seemed good in testing
+      Wire.endTransmission();
 #endif //TWO_LINE_DISPLAY_I2C
   
   //set things up in the steps below
-  char sensorName[64]="             ";//for proximity pairing
+  char sensorName[64]="             ";//for proximity pairing  !!!            111
   //char sensorName[32]="GDX-ST 0P1000S9";
   //char sensorName[32]="GDX-TMP 0F1038J5";
   //char sensorName[32]="GDX-FOR 072001P5";
@@ -203,7 +208,7 @@ void setup()
     #endif //TWO_LINE_DISPLAY_DIG2
     delay(2000);
     
-    GDX.GoDirectBLE_Begin();
+    GDX.Begin();
   }
   else
   {
@@ -220,10 +225,10 @@ void setup()
       delay(2000);
     #endif //TWO_LINE_DISPLAY_DIG2
     
-    GDX.GoDirectBLE_Begin(sensorName,channel, period);//specify channel and period here also
+    GDX.Begin(sensorName,channel, period);//specify channel and period here also
   }
   delay(1000);
-  GDX.autoID();// this is the routine to get device info
+
   Serial.println("Found: ");
   delay(1000);
   Serial.print("deviceName ");
@@ -253,7 +258,7 @@ void setup()
   Serial.println(GDX.batteryPercent());
   Serial.print("chargeState ");
   Serial.println(GDX.chargeState());
-  #if defined STATUS //THERE ARE PROBLEMS LURKING HERE IN THE STATUS
+  #if defined STATUS //THERE USED TO BE PROBLEMS LURKING HERE IN THE STATUS
     Serial.print("RSSI: ");
     Serial.println(GDX.RSSI());
     Serial.print("battery: ");
@@ -282,22 +287,22 @@ void setup()
   
     #if defined TWO_LINE_DISPLAY
       CharDisplayPrintLine(1, "RSSI ");
-      //Serial1.write(254); // cursor to beginning of second line
-      //Serial1.write(192); 
-      //Serial1.print(GDX.RSSI());//this is broken!!!
+      Serial1.write(254); // cursor to beginning of second line
+      Serial1.write(192); 
+      //Serial1.print(GDX.RSSI());//
       delay(2000);
       CharDisplayPrintLine(1, "battery: PC");
-      //Serial1.write(254); // cursor to beginning of second line
-      //Serial1.write(192); 
-      //Serial1.print(GDX.batteryPercent());
-      //Serial1.write(254);// cursor to the end of second line
-      //Serial1.write(204);
-      //Serial1.print("ChargeState: ");
-      //Serial1.print("PC");
+      Serial1.write(254); // cursor to beginning of second line
+      Serial1.write(192); 
+      Serial1.print(GDX.batteryPercent());
+      Serial1.write(254);// cursor to the end of second line
+      Serial1.write(204);
+      Serial1.print("ChargeState: ");
+      Serial1.print("PC");
       delay(2000);
     
       CharDisplayPrintLine(1, "ChargeState: ");
-      //CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
+      CharDisplayPrintLine(2, strBuffer);// left over from use in the switch above
       delay(2000);
     #endif //TWO_LINE_DISPLAY
 

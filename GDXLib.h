@@ -18,11 +18,10 @@ class GDXLib
     uint8_t chargeState()    { return _chargeState ;};
     int RSSI()               { return _RSSI ;};
     
-    void GoDirectBLE_Begin();
-    void GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
-    void Start();
+    void Begin();
+    void Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
+    void Stop();
     float readSensor();//a public method
-    void GoDirectBLE_End();
     char strBuffer[64]; //used in Read Sensor
     bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
     float GoDirectBLE_GetMeasurement();

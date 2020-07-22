@@ -1,7 +1,8 @@
-/* This is a library to make using Vernier GDX sensors 
+/*  GDXLib demo Serial Display (2020.07.22)
+ *  This is a library to make using Vernier GDX sensors 
  easy using an Arduino which supports the Arduino BLE library
  
-Version 0.71 with lots of feedback on errors if you turn on DEBUG
+GDXLib version 0.74 with lots of feedback on errors if you turn on DEBUG
 and this version runs with DEBUG on.
 ---  
 */
@@ -243,8 +244,8 @@ float GDXLib::readSensor()
   }
 
 // note that the begin methods are way below, but they should be set up
-//void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
-//void GDXLib::GoDirectBLE_Begin()  // maybe rename this GoDirectStart()
+//void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
+//void GDXLib::Begin()  // maybe rename this GoDirectStart()
 //void GDXLib::GoDirectBLE_Scan();
 
 //=============================================================================
@@ -1053,9 +1054,9 @@ void GDXLib::GoDirectBLE_Error()
     BLE.scanForName(g_deviceName, true);//!!! there is no such function
 }
 //=============================================================================
-// GoDirectBLE_Begin() Function
+// Begin() Function
 //=============================================================================
-void GDXLib::GoDirectBLE_Begin()  // maybe rename this GoDirectStart()
+void GDXLib::Begin()  // maybe rename this GoDirectStart()
 {
   #if defined DEBUG
     Serial.println("***in Begin(GDX....");
@@ -1068,9 +1069,9 @@ void GDXLib::GoDirectBLE_Begin()  // maybe rename this GoDirectStart()
 } //end begin
 
 //=============================================================================
-// GoDirectBLE_Begin() Function
+// Begin() Function
 //=============================================================================
-void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
+void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
 {
   #if defined DEBUG
     Serial.print("***in Begin");
@@ -1171,15 +1172,44 @@ void GDXLib::GoDirectBLE_Begin(char* deviceName, byte channelNumber, unsigned lo
 
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
     GoDirectBLE_Error();
+  //below is the AutoID code, which really just reports:
+   #if defined DEBUG
+        Serial.println("in AutoID");
+        Serial.print("*** _channelName: ");
+        Serial.println(_channelName);
+        Serial.print("samplePeriodInMilliseconds) ");//
+        Serial.println(g_samplePeriodInMilliseconds);
+  #endif
+  strcpy(_channelUnits, GoDirectBLE_GetChannelUnits());
+  strcpy(_channelName, GoDirectBLE_GetChannelName());
+  strcpy(_deviceName, GoDirectBLE_GetDeviceName());
+  _RSSI=GoDirectBLE_GetScanRSSI(); 
+  _batteryPercent=GoDirectBLE_GetBatteryStatus();
+  _chargeState   =GoDirectBLE_GetChargeStatus();
+  
   #if defined DEBUG
     Serial.print("**$ calling _StartMeasurements, channel: ");
     Serial.println(g_channelNumber); 
   #endif
+  
   if (!D2PIO_StartMeasurements(g_channelNumber))
     GoDirectBLE_Error();
     
   g_MeasurementCounter = 0;
   g_measurement = 0.0;
+  if (GoDirectBLE_DisplayChannelAsInteger())//!!!
+      {
+      Serial.print("***");
+      Serial.println("assuming an Integer");
+      sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), _channelUnits);
+      }
+      else
+      {
+      Serial.print("***");
+      Serial.println("assuming a float");sprintf(strBuffer, "%.3f %s", GoDirectBLE_GetMeasurement(), _channelUnits);
+      }
+      Serial.print("***");
+      Serial.println(strBuffer);
   #if defined DEBUG
     Serial.print("***g_measurement "); 
     Serial.println(g_measurement);
@@ -1273,9 +1303,9 @@ float GDXLib::GoDirectBLE_GetMeasurement()
 }
 
 //=============================================================================
-// GoDirectBLE_End() Function //WE SHOULD PROBABLY USE THIS IN THE MAIN CODE
+// Stop() Function // not used; WE SHOULD PROBABLY USE THIS IN THE MAIN CODE
 //=============================================================================
-void GDXLib::GoDirectBLE_End()
+void GDXLib::Stop()
 {
   BLE.end();
 }
