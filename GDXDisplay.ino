@@ -110,14 +110,14 @@ void setup()
 #endif //TWO_LINE_DISPLAY_I2C
   
   //set things up in the steps below
-  char sensorName[64]="             ";//for proximity pairing  !!!            111
+  //char sensorName[64]="             ";//for proximity pairing  !!!            111
   //char sensorName[32]="GDX-ST 0P1000S9";
   //char sensorName[32]="GDX-TMP 0F1038J5";
-  //char sensorName[32]="GDX-FOR 072001P5";
+  char sensorName[32]="GDX-FOR 072001D0";
   //char sensorName[32]="GDX-ACC 0H1019K1";//&&
   int period = 1000; //time between readings   
-  if (period<400)
-        period = 400; //do not allow faster sampling
+  if (period<100)
+        period = 100; //do not allow faster sampling!!!
     
   if (sensorName[1] == ' ') //if no specific sensor seleted (I used 2nd character here)
   {
@@ -303,7 +303,7 @@ void setup()
        } // end of 9/10
 
   #endif //LEDS
-  delay(period-400);//in my tests, this will adjust the loop repeats at about the same time as the sample period
+  delay(period);//!!!in my tests, this will adjust the loop repeats at about the same time as the sample period
   // this would need to be adjusted.
   //sensors.
 }//end of loop
