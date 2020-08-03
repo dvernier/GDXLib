@@ -1,12 +1,14 @@
 /* This is a library to make using Vernier GDX sensors 
  easy using an Arduino which supports the Arduino BLE library
  
-Version 0.74 with lots of feedback on errors if you turn on DEBUG
-and this version runs with DEBUG on.
+Version 0.82 with a new structure for the readMeasurements portion and
+lots of feedback on errors if you uncomment the #define DEBUG line.
+
 Also, this version has a Stop function and should handle RSSI properly.
+and this version has a restructured readSensor
 --- 
 */
-#define DEBUG //NOTE THIS PRINTS OUT DECODING STUFF!!!
+#define DEBUG //NOTE THIS PRINTS OUT DECODING INFORMATION!!!
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"
@@ -187,52 +189,7 @@ static unsigned long                               g_MeasurementCounter;
 static float                                       g_measurement;
 static int                                         g_RSSIStrength;
 static unsigned long                               g_RSSIAge;
-//=============================================================================
-// autoID()Function 
-//=============================================================================!@
-void GDXLib::autoID() 
-{
-  #if defined DEBUG
-        Serial.println("in AutoID");
-        Serial.print("*** _channelName: ");
-        Serial.println(_channelName);
-        Serial.print("samplePeriodInMilliseconds) ");//
-        Serial.println(g_samplePeriodInMilliseconds);
-  #endif
-  strcpy(_channelUnits, GoDirectBLE_GetChannelUnits());
-  strcpy(_channelName, GoDirectBLE_GetChannelName());
-  strcpy(_deviceName, GoDirectBLE_GetDeviceName());
-  _RSSI=GoDirectBLE_GetScanRSSI(); 
-  _batteryPercent=GoDirectBLE_GetBatteryStatus();
-  _chargeState   =GoDirectBLE_GetChargeStatus();
-  }// end of AutoID function
 
- //=============================================================================
-// readSensor() Function
-//=============================================================================!@
-float GDXLib::readSensor() 
-{
-  #if defined DEBUG
-        Serial.print("**in readSensor,  samplePeriodInMilliseconds) ");
-        Serial.println(g_samplePeriodInMilliseconds);      
-  #endif
-  if (!BLE.connected())
-  {
-     GoDirectBLE_Error();
-  }    
-  if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement)){
-        //why are the lines below never printed??????
-        delay (5); 
-        Serial.print("***** D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement) ");
-        Serial.println(D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement));     
-      }
-  channelReading=g_measurement;
-  #if defined DEBUG
-    Serial.print("*** g_measurement back in readSensor: ");
-    Serial.println(g_measurement);
-  #endif
-  return channelReading;
-  }
 
 //=============================================================================
 // DumpGatttService() Function
@@ -240,7 +197,6 @@ float GDXLib::readSensor()
 bool GDXLib::DumpGatttService(BLEDevice peripheral, char* uuid)
 {
   int i;
-
   // Discover peripheral attributes
   delay(2000);
   //Serial.println("***Discovering service attributes ...");
@@ -501,41 +457,25 @@ bool GDXLib::D2PIO_ReadBlocking(byte buffer[], int timeout)
   return true;
 }
 //=============================================================================
-// D2PIO_ReadMeasurement() Function
+// D2PIO_ReadMeasurement() Function (Kevin's version with a debug)!!!
 //=============================================================================
 bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
 {
-   #if defined DEBUG
-       Serial.print("in D2PIO_ReadMeasurement ");
-   #endif
   byte offset = 0;
   int timeoutCounter = 0;
+
   // Return immediately if there is nothing to do.
-  while (!g_d2pioResponse.valueUpdated()){
-    #if defined DEBUG
-      Serial.print("#");
-    #endif
-  }
+  if (!g_d2pioResponse.valueUpdated()) return false;
+    
   while (true)
-  //while (g_d2pioResponse.valueUpdated())
   {
     // Copy the current chunk into the output buffer
     memcpy(&buffer[offset], g_d2pioResponse.value(), g_d2pioResponse.valueLength());
     offset = offset + g_d2pioResponse.valueLength();
-    #if defined DEBUG
-        Serial.print("buffer: ");
-        for (int i = 0; i < buffer[1]; i++)
-        {
-          Serial.print(buffer[i], HEX);
-          Serial.print("** ");
-        }
-        Serial.println("end of buffer");
-    #endif  
+
     // Check if we have received the complete packet
-    if ((offset >= 1) && (offset == buffer[1])) 
-        break;
-    //does break do the job here????
-    //THIS IS THE SHAKIEST PART OF THIS CODE!!! CHECK THIS!!!
+    if ((offset >= 1) && (offset == buffer[1])) break;
+      
     // Now that we have started received a measurement,
     // we must wait for all of it to arrive.
     while (!g_d2pioResponse.valueUpdated())
@@ -543,7 +483,7 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
       timeoutCounter++;
       if (timeoutCounter > timeout)
       {
-      //  Serial.println("***ERROR: D2PIO_ReadMeasurement timeout!");
+        Serial.println("ERROR: D2PIO_ReadMeasurement timeout!");
         return false;
       }
       delay(1);
@@ -1141,21 +1081,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
 
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
     GoDirectBLE_Error();
-  //below is the AutoID code, which really just reports:
-   #if defined DEBUG
-        Serial.println("in AutoID");
-        Serial.print("*** _channelName: ");
-        Serial.println(_channelName);
-        Serial.print("samplePeriodInMilliseconds) ");//
-        Serial.println(g_samplePeriodInMilliseconds);
-  #endif
-  strcpy(_channelUnits, GoDirectBLE_GetChannelUnits());
-  strcpy(_channelName, GoDirectBLE_GetChannelName());
-  strcpy(_deviceName, GoDirectBLE_GetDeviceName());
-  _RSSI=GoDirectBLE_GetScanRSSI(); 
-  _batteryPercent=GoDirectBLE_GetBatteryStatus();
-  _chargeState   =GoDirectBLE_GetChargeStatus();
-  
+
   #if defined DEBUG
     Serial.print("**$ calling _StartMeasurements, channel: ");
     Serial.println(g_channelNumber); 
@@ -1163,39 +1089,94 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   
   if (!D2PIO_StartMeasurements(g_channelNumber))
     GoDirectBLE_Error();
-  //case GDX_BLE_STATE_MEASURE:
-      if (GoDirectBLE_DisplayChannelAsInteger())
+
+
+  //below is the former AutoID code, which really sets values
+  _RSSI=GoDirectBLE_GetScanRSSI(); 
+  _batteryPercent=GoDirectBLE_GetBatteryStatus();
+  _chargeState   =GoDirectBLE_GetChargeStatus();
+  ;//I think this is the way to go!!!
+  sprintf(_channelName,"%s",GoDirectBLE_GetChannelName());
+  sprintf(_deviceName,"%s",GoDirectBLE_GetDeviceName());
+  sprintf(_channelUnits,"%s",GoDirectBLE_GetChannelUnits());
+  //strcpy(_channelUnits, g_channelInfo.sensorUnit);//!!!
+  //strcpy(_channelName, g_channelInfo.sensorDescription);
+  //strcpy(_deviceName, GoDirectBLE_GetDeviceName());
+  #if defined DEBUG
+    Serial.println("***HERE is all the info");
+    Serial.print("*** _RSSI"); 
+    Serial.println(_RSSI);
+    Serial.print("*** _batteryPercent");
+    Serial.println(_batteryPercent);
+    Serial.print("***_chargeState");
+    Serial.println(_chargeState);
+    Serial.print("***_channelUnits");//!!!
+    Serial.println(_channelUnits);
+    Serial.println(strlen(_channelUnits));
+    Serial.print("***_channelName");
+    Serial.println(_channelName);
+    Serial.println(strlen(_channelName));
+    Serial.print("***_deviceName");
+    Serial.println(_deviceName);
+    Serial.println(strlen(_deviceName));
+ #endif
+
+  }//end of while
+
+  }//end of Scan  }
+//=============================================================================
+// readSensor() Function
+//=============================================================================!@
+float GDXLib::readSensor() 
+{
+   #if defined DEBUG
+        Serial.print("**in readSensor,  samplePeriodInMilliseconds) ");
+        Serial.println(g_samplePeriodInMilliseconds);      
+  #endif
+  
+  bool dataFlag=false;
+  
+  while (!dataFlag){
+  if (!BLE.connected())
+  {
+     GoDirectBLE_Error();
+  }    
+ if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
+    {delay (1);//!!! I could try changing this
+     Serial.print("#");
+    } //end of calling if readMeasurement
+    dataFlag=true;
+    g_MeasurementCounter++;
+    #if defined DEBUG
+      Serial.print("*** g_MeasurementCounter incremented to ");
+      Serial.println(g_MeasurementCounter);
+    #endif
+    if (GoDirectBLE_DisplayChannelAsInteger())
       {
-       Serial.print("***");
--      Serial.println("assuming an Integer");
--      sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), _channelUnits);sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), _channelUnits);
-      }
+        #if defined DEBUG
+           Serial.print("***");
+-          Serial.print("assuming an Integer ");
+           Serial.println(GoDirectBLE_GetMeasurement());   
+        #endif
+-       sprintf(strBuffer, "%ld %s", GoDirectBLE_GetMeasurement(), _channelUnits);
+      }//end of if
       else
       {
-        Serial.print("***");
-        Serial.println("assuming a float");
+        #if defined DEBUG
+           Serial.print("***");
+           Serial.print("assuming a float ");
+           Serial.println(GoDirectBLE_GetMeasurement());
+        #endif
         sprintf(strBuffer, "%.3f %s", GoDirectBLE_GetMeasurement(), _channelUnits);
-      }
-      Serial.println(strBuffer);
-       
-  g_MeasurementCounter = 0;
-  g_measurement = 0.0;
-  #if defined DEBUG
-    Serial.print("***g_measurement "); 
-    Serial.println(g_measurement);
-    Serial.print("***g_MeasurementCounter");
-    Serial.println(g_MeasurementCounter);
-   
-    //Serial.print("*** strbuffer ");
-    //Serial.println(strbuffer);
-    delay(100);
-    Serial.print("***g_measurement2 "); 
-    Serial.println(g_measurement);
-    Serial.print("***g_MeasurementCounter2");
-    Serial.println(g_MeasurementCounter);
-  #endif
-  }//end else
-}
+        Serial.print("strlen(strBuffer) ");
+        Serial.println(strlen(strBuffer));
+      }//end of else
+
+  channelReading=GoDirectBLE_GetMeasurement();
+  return channelReading;
+  }//end of while
+  }//end of readSensor
+  
 //=============================================================================
 // GoDirectBLE_GetStatus() Function//not used!!!
 //=============================================================================
