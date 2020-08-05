@@ -8,7 +8,7 @@ Also, this version has a Stop function and should handle RSSI properly.
 and this version has a restructured readSensor
 --- 
 */
-#define DEBUG //NOTE THIS PRINTS OUT DECODING INFORMATION!!!
+//#define DEBUG //NOTE THIS PRINTS OUT DECODING INFORMATION!!!
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"

@@ -28,12 +28,12 @@ class GDXLib
     
  private:// also known as local  
 
-    char _channelName[32];
-    char _deviceName[32];
-    char _channelUnits[32];// 32 bytes!!!
-    uint8_t _batteryPercent;
-    uint8_t _chargeState;
-    int _RSSI;
+    char _channelName[32]="channelName";
+    char _deviceName[32]="deviceName";
+    char _channelUnits[32]="channelUnits";// 32 bytes!!!
+    uint8_t _batteryPercent=0;
+    uint8_t _chargeState=0;
+    int _RSSI=0;
     
     unsigned long _samplePeriodInMilliseconds;// used in begin
     int  _channel;
