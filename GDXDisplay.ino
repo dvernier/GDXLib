@@ -10,7 +10,7 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 GDXLib GDX;
-#define TWO_LINE_DISPLAY_TX //comment out for no DISPLAY on Arduino Nano 33 BLE
+//#define TWO_LINE_DISPLAY_TX //comment out for no DISPLAY on Arduino Nano 33 BLE
 
 void setup(){
   Serial.begin(9600);
@@ -25,18 +25,16 @@ void setup(){
       delay (2000);
   #endif //TWO_LINE_DISPLAY_TX  
   
-    GDX.Begin();  //use this line for proximity pairing
+    //GDX.Begin();  //use this line for proximity pairing
       //or
-    //GDX.Begin("GDX-ACC 0H1019K1",1, 500);//or specify device, channel and period here 
+    GDX.Begin("GDX-ACC 0H1019K1",1, 200);//or specify device, channel and period here 
     //GDX.Begin("GDX-RB 0K2000F4",2, 200);
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
+  
   Serial.print("channelName; ");
-  
   Serial.println (GDX.channelName());
-  //@Serial.print (" strlen(GDX.channelName() ");
-  Serial.println (strlen(GDX.channelName()));
-  
+
   Serial.print("channelUnits: ");
   Serial.println (GDX.channelUnits());
   
@@ -74,8 +72,8 @@ void setup(){
   for(int row=1;row<20;row++){
      Serial.print(row);
      Serial.print(" ");
-     float channelReading =row*row;//fake readings
-     //float channelReading =GDX.readSensor();
+     //float channelReading =row*row;//fake readings
+     float channelReading =GDX.readSensor();
      Serial.print(channelReading);
      Serial.print(" ");
      Serial.println (GDX.channelUnits());

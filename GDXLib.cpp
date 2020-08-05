@@ -8,7 +8,7 @@ Also, this version has a Stop function and should handle RSSI properly.
 and this version has a restructured readSensor
 --- 
 */
-//#define DEBUG //NOTE THIS PRINTS OUT DECODING INFORMATION!!!
+#define DEBUG //NOTE THIS PRINTS OUT DECODING INFORMATION!!!
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"
@@ -465,8 +465,10 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
   int timeoutCounter = 0;
 
   // Return immediately if there is nothing to do.
-  if (!g_d2pioResponse.valueUpdated()) return false;
-    
+  if (!g_d2pioResponse.valueUpdated()){
+    Serial.println("@");
+    return false;
+  }
   while (true)
   {
     // Copy the current chunk into the output buffer
@@ -475,7 +477,6 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
 
     // Check if we have received the complete packet
     if ((offset >= 1) && (offset == buffer[1])) break;
-      
     // Now that we have started received a measurement,
     // we must wait for all of it to arrive.
     while (!g_d2pioResponse.valueUpdated())
@@ -1145,6 +1146,7 @@ float GDXLib::readSensor()
     {delay (1);//!!! I could try changing this
      Serial.print("#");
     } //end of calling if readMeasurement
+ else{
     dataFlag=true;
     g_MeasurementCounter++;
     #if defined DEBUG
@@ -1171,9 +1173,9 @@ float GDXLib::readSensor()
         Serial.print("strlen(strBuffer) ");
         Serial.println(strlen(strBuffer));
       }//end of else
-
-  channelReading=GoDirectBLE_GetMeasurement();
-  return channelReading;
+  //channelReading=GoDirectBLE_GetMeasurement();//try something simplier
+  return g_measurement;
+ } //end of if
   }//end of while
   }//end of readSensor
   
