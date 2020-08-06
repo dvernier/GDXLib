@@ -1113,13 +1113,10 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
     Serial.println(_chargeState);
     Serial.print("***_channelUnits");//!!!
     Serial.println(_channelUnits);
-    Serial.println(strlen(_channelUnits));
     Serial.print("***_channelName");
     Serial.println(_channelName);
-    Serial.println(strlen(_channelName));
     Serial.print("***_deviceName");
     Serial.println(_deviceName);
-    Serial.println(strlen(_deviceName));
  #endif
 
   }//end of while
@@ -1130,53 +1127,54 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
 //=============================================================================!@
 float GDXLib::readSensor() 
 {
-   #if defined DEBUG
+  #if defined DEBUG
         Serial.print("**in readSensor,  samplePeriodInMilliseconds) ");
         Serial.println(g_samplePeriodInMilliseconds);      
   #endif
   
-  bool dataFlag=false;
-  
-  while (!dataFlag){
-  if (!BLE.connected())
-  {
-     GoDirectBLE_Error();
-  }    
- if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
-    {delay (1);//!!! I could try changing this
-     Serial.print("#");
-    } //end of calling if readMeasurement
- else{
-    dataFlag=true;
-    g_MeasurementCounter++;
-    #if defined DEBUG
-      Serial.print("*** g_MeasurementCounter incremented to ");
-      Serial.println(g_MeasurementCounter);
-    #endif
-    if (GoDirectBLE_DisplayChannelAsInteger())
+  while (true){
+      if (!BLE.connected())
       {
-        #if defined DEBUG
-           Serial.print("***");
--          Serial.print("assuming an Integer ");
-           Serial.println(GoDirectBLE_GetMeasurement());   
-        #endif
--       sprintf(strBuffer, "%ld %s", GoDirectBLE_GetMeasurement(), _channelUnits);
-      }//end of if
-      else
-      {
-        #if defined DEBUG
-           Serial.print("***");
-           Serial.print("assuming a float ");
-           Serial.println(GoDirectBLE_GetMeasurement());
-        #endif
-        sprintf(strBuffer, "%.3f %s", GoDirectBLE_GetMeasurement(), _channelUnits);
-        Serial.print("strlen(strBuffer) ");
-        Serial.println(strlen(strBuffer));
-      }//end of else
-  //channelReading=GoDirectBLE_GetMeasurement();//try something simplier
-  return g_measurement;
- } //end of if
+         GoDirectBLE_Error();
+      }  
+
+     if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
+        {     Serial.print("*** g_MeasurementCounter = ");
+              Serial.println(g_MeasurementCounter);  
+              Serial.print("#");
+        } //end of calling if readMeasurement with a failure
+     else{
+        
+        g_MeasurementCounter++;
+        Serial.print("*** g_MeasurementCounter incremented to ");
+        Serial.println(g_MeasurementCounter);
+        
+        if (GoDirectBLE_DisplayChannelAsInteger())
+          {
+            #if defined DEBUG
+               Serial.print("***");
+    -          Serial.print("assuming an Integer ");
+               Serial.println(GoDirectBLE_GetMeasurement());   
+            #endif
+    -       sprintf(strBuffer, "%ld %s", GoDirectBLE_GetMeasurement(), _channelUnits);
+          }//end of if integer
+          else
+          {
+            #if defined DEBUG
+               Serial.print("***");
+               Serial.print("assuming a float ");
+               Serial.println(GoDirectBLE_GetMeasurement());
+            #endif
+            sprintf(strBuffer, "%.3f %s", GoDirectBLE_GetMeasurement(), _channelUnits);
+            break;
+         }//end of else (not integer)
+      //channelReading=GoDirectBLE_GetMeasurement();//try something simplier
+      break;
+     
+      
+     }//end of else
   }//end of while
+   return g_measurement;
   }//end of readSensor
   
 //=============================================================================

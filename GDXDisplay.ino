@@ -10,7 +10,6 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 GDXLib GDX;
-//#define TWO_LINE_DISPLAY_TX //comment out for no DISPLAY on Arduino Nano 33 BLE
 
 void setup(){
   Serial.begin(9600);
@@ -18,17 +17,16 @@ void setup(){
   Serial.println("Searching for");
   Serial.println("GDX Sensor");
   char strBuffer[32]="unassigned";
-  #if defined TWO_LINE_DISPLAY_TX
+      // 2-LINE DISPLAY CODE
       CharDisplayInit();
       CharDisplayPrintLine(1,"Searching for");
       CharDisplayPrintLine(2,"GDX sensor");
       delay (2000);
-  #endif //TWO_LINE_DISPLAY_TX  
-  
-    //GDX.Begin();  //use this line for proximity pairing
+      //2-LINE DISPLAY CODE*/
+  GDX.Begin();  //use this line for proximity pairing
       //or
-    GDX.Begin("GDX-ACC 0H1019K1",1, 200);//or specify device, channel and period here 
-    //GDX.Begin("GDX-RB 0K2000F4",2, 200);
+  //GDX.Begin("GDX-ACC 0H1019K1",1, 200);//or specify device, channel and period here 
+  //GDX.Begin("GDX-RB 0K2000F4",2, 200);
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
   
@@ -47,27 +45,30 @@ void setup(){
   
   Serial.print("Bluetooth signal strength (RSSI): "); 
   Serial.println (GDX.RSSI());
-  
-  #if defined TWO_LINE_DISPLAY_TX
-      CharDisplayPrintLine(1,"Found: ");
-      CharDisplayPrintLine (2,GDX.deviceName());
+      /* 2-LINE DISPLAY CODE
+      //CharDisplayPrintLine(1,"Found: ");
+      //CharDisplayPrintLine (2,GDX.deviceName());
       delay(1000);
-      CharDisplayPrintLine (1,GDX.channelName());
-      CharDisplayPrintLine (1,GDX.channelUnits());
+      
+      //CharDisplayPrintLine (1,GDX.channelName());
+      //CharDisplayPrintLine (2,GDX.channelUnits());
       delay(1000);
-      CharDisplayPrintLine(1, "battery PC: ");
-      sprintf(strBuffer, "%d", GDX.batteryPercent());
-      CharDisplayPrintLine(2, strBuffer);
+      
+      //CharDisplayPrintLine(1, "battery PC: ");
+      //sprintf(strBuffer, "%d", GDX.batteryPercent());
+      //CharDisplayPrintLine(2, strBuffer);
       delay(1000);
-      CharDisplayPrintLine(1, "charge state: ");
-      sprintf(strBuffer, "%d", GDX.chargeState());
-      CharDisplayPrintLine(2, strBuffer);
+      
+      //CharDisplayPrintLine(1, "charge state: ");
+      //sprintf(strBuffer, "%d", GDX.chargeState());
+      //CharDisplayPrintLine(2, strBuffer);
       delay(1000);
-      CharDisplayPrintLine(1, "RSSI: ");
-      sprintf(strBuffer, "%d", GDX.RSSI());
-      CharDisplayPrintLine(2, strBuffer);
+      
+      //CharDisplayPrintLine(1, "RSSI: ");
+      //sprintf(strBuffer, "%d", GDX.RSSI());
+     // CharDisplayPrintLine(2, strBuffer);
       delay(1000);
-  #endif //TWO_LINE_DISPLAY_TX  
+     2-LINE DISPLAY CODE */
         
   for(int row=1;row<20;row++){
      Serial.print(row);
@@ -77,13 +78,13 @@ void setup(){
      Serial.print(channelReading);
      Serial.print(" ");
      Serial.println (GDX.channelUnits());
-     #if defined TWO_LINE_DISPLAY_TX
+     /* 2-LINE DISPLAY CODE
            //char strBuffer[32];
-           sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
-           CharDisplayPrintLine (1,GDX.channelName());
+           //sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+           //CharDisplayPrintLine (1,GDX.channelName());
            //CharDisplayPrintLine (2,GDX.channelUnits());
-           CharDisplayPrintLine(2, strBuffer);
-       #endif //TWO_LINE_DISPLAY_TX  
+           //CharDisplayPrintLine(2, strBuffer);
+       2-LINE DISPLAY CODE */
        delay(500);   
        }//end of for
      GDX.Stop();
@@ -98,11 +99,15 @@ void loop(){
   Serial.print("channelReading: ");
   Serial.print(channelReading);
   Serial.println(" units go here");
-  #if defined TWO_LINE_DISPLAY_TX
-     //sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
-     CharDisplayPrintLine (1,GDX.channelName());
-     CharDisplayPrintLine(2,strBuffer);
-  #endif //TWO_LINE_DISPLAY_TX  //Serial.println(GDX.channelUnits());
+  Serial.println(GDX.channelUnits());
+  
+  // 2-LINE DISPLAY CODE
+  //   //sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+  //   CharDisplayPrintLine (1,GDX.channelName());
+  //   CharDisplayPrintLine(2,strBuffer);
+  //2-LINE DISPLAY CODE
+  
+  Serial.println(GDX.channelUnits());
   delay (500);
   */
 }
@@ -118,7 +123,7 @@ void loop(){
         
           // Force a field width of 16.
           // Left justified with space padding on the right.
-          char strBuffer[64];
+          char strBuffer[32];
           sprintf(strBuffer, "%-16.15s",  strText);
         
           //For debug -- prints what goes to the display
