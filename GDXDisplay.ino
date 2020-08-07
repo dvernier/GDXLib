@@ -46,7 +46,7 @@ void setup(){
   Serial.print("Bluetooth signal strength (RSSI): "); 
   Serial.println (GDX.RSSI());
       /* 2-LINE DISPLAY CODE
-      //CharDisplayPrintLine(1,"Found: ");
+      CharDisplayPrintLine(1,"Found: ");
       //CharDisplayPrintLine (2,GDX.deviceName());
       delay(1000);
       
@@ -54,21 +54,21 @@ void setup(){
       //CharDisplayPrintLine (2,GDX.channelUnits());
       delay(1000);
       
-      //CharDisplayPrintLine(1, "battery PC: ");
+      CharDisplayPrintLine(1, "battery PC: ");
       //sprintf(strBuffer, "%d", GDX.batteryPercent());
       //CharDisplayPrintLine(2, strBuffer);
       delay(1000);
       
-      //CharDisplayPrintLine(1, "charge state: ");
+      CharDisplayPrintLine(1, "charge state: ");
       //sprintf(strBuffer, "%d", GDX.chargeState());
       //CharDisplayPrintLine(2, strBuffer);
       delay(1000);
       
-      //CharDisplayPrintLine(1, "RSSI: ");
+      CharDisplayPrintLine(1, "RSSI: ");
       //sprintf(strBuffer, "%d", GDX.RSSI());
-     // CharDisplayPrintLine(2, strBuffer);
+      //CharDisplayPrintLine(2, strBuffer);
       delay(1000);
-     2-LINE DISPLAY CODE */
+     //2-LINE DISPLAY CODE */
         
   for(int row=1;row<20;row++){
      Serial.print(row);
@@ -85,7 +85,7 @@ void setup(){
            //CharDisplayPrintLine (2,GDX.channelUnits());
            //CharDisplayPrintLine(2, strBuffer);
        2-LINE DISPLAY CODE */
-       delay(500);   
+      // delay(500);   
        }//end of for
      GDX.Stop();
        Serial.println("series of readings taken; stopping GDX data collection");

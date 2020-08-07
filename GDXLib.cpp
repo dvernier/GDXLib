@@ -457,18 +457,16 @@ bool GDXLib::D2PIO_ReadBlocking(byte buffer[], int timeout)
   return true;
 }
 //=============================================================================
-// D2PIO_ReadMeasurement() Function (Kevin's version with a debug)!!!
+// D2PIO_ReadMeasurement() Function (Kevin'x code unchanged)
 //=============================================================================
-bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
+bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
 {
   byte offset = 0;
   int timeoutCounter = 0;
 
   // Return immediately if there is nothing to do.
-  if (!g_d2pioResponse.valueUpdated()){
-    Serial.println("@");
-    return false;
-  }
+  if (!g_d2pioResponse.valueUpdated()) return false;
+    
   while (true)
   {
     // Copy the current chunk into the output buffer
@@ -477,6 +475,7 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
 
     // Check if we have received the complete packet
     if ((offset >= 1) && (offset == buffer[1])) break;
+      
     // Now that we have started received a measurement,
     // we must wait for all of it to arrive.
     while (!g_d2pioResponse.valueUpdated())
@@ -490,21 +489,17 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
       delay(1);
     }
   }
-
+    
   D2PIO_Dump("D2PIO << ", buffer);
 
   // Extract normal measurement packets -- NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32
-  // We only take the first measurement from the packet.  The protocol allows
+  // We only take the first measurement from the packet.  The protocol allows 
   // multiple to get stuffed into one packet but we just ignore the extras.
   if (buffer[4] == NGI_BLOB_MEAS_BLOB_SUB_TYPE_NORMAL_REAL32)
   {
     float record;
     memcpy(&record, &buffer[9], 4);
     measurement = record;
-    #if defined DEBUG
-      Serial.print("***measurement in readMeasurement: ");
-      Serial.println(measurement);
-    #endif
   }
   else if (buffer[4] == NGI_BLOB_MEAS_BLOB_SUB_TYPE_WIDE_REAL32)
   {
@@ -529,9 +524,10 @@ bool GDXLib::D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measuremen
     // Other BLOB sub-types not currently supported
     return false;
   }
-
+    
   return true;
 }
+
 //=============================================================================
 // D2PIO_Init() Function
 //=============================================================================
@@ -815,6 +811,9 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
     
         Serial.print("***  ID: ");
         Serial.println(pResponse->sensorId);
+        //THIS IS WHERE I TRIED TO HACK IN SPECIAL CODE FOR MD AND SND DEFAULT CHANNELS
+        //did if(deviceName.startsWith="GDX-SND" 
+        //g_channelNumber=2;!!!
         Serial.print("***  Measurement type: ");
         Serial.println(pResponse->numericMeasType);
         //I do not think the response above is valid. I got 0 for FOR and 0 for RMS!!!
@@ -1079,6 +1078,10 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   
   if (!D2PIO_GetChannelInfo(g_channelNumber, false))
         GoDirectBLE_Error();
+  
+  //if (!D2PIO_GetDefaultChannel(g_channelNumber)//!!!
+   //     GoDirectBLE_Error();//CAN I DO SOMETHING LIKE THIS?!!!
+     
 
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
     GoDirectBLE_Error();
@@ -1131,51 +1134,29 @@ float GDXLib::readSensor()
         Serial.print("**in readSensor,  samplePeriodInMilliseconds) ");
         Serial.println(g_samplePeriodInMilliseconds);      
   #endif
-  
-  while (true){
-      if (!BLE.connected())
-      {
-         GoDirectBLE_Error();
-      }  
+  if (!BLE.connected())
+     GoDirectBLE_Error();  
+  while(true){
+    if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement)){
+        //why are the lines below never printed??????
+        Serial.println("in whle true loop");
+        delay(10);
+      }//end of if false returned
+  }
+  channelReading=g_measurement;
+  #if defined DEBUG
+    Serial.print("*** g_measurement back in readSensor: ");
+    Serial.println(g_measurement);
+  #endif
+  return channelReading;
+  }
 
-     if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement))
-        {     Serial.print("*** g_MeasurementCounter = ");
-              Serial.println(g_MeasurementCounter);  
-              Serial.print("#");
-        } //end of calling if readMeasurement with a failure
-     else{
-        
-        g_MeasurementCounter++;
-        Serial.print("*** g_MeasurementCounter incremented to ");
-        Serial.println(g_MeasurementCounter);
-        
-        if (GoDirectBLE_DisplayChannelAsInteger())
-          {
-            #if defined DEBUG
-               Serial.print("***");
-    -          Serial.print("assuming an Integer ");
-               Serial.println(GoDirectBLE_GetMeasurement());   
-            #endif
-    -       sprintf(strBuffer, "%ld %s", GoDirectBLE_GetMeasurement(), _channelUnits);
-          }//end of if integer
-          else
-          {
-            #if defined DEBUG
-               Serial.print("***");
-               Serial.print("assuming a float ");
-               Serial.println(GoDirectBLE_GetMeasurement());
-            #endif
-            sprintf(strBuffer, "%.3f %s", GoDirectBLE_GetMeasurement(), _channelUnits);
-            break;
-         }//end of else (not integer)
-      //channelReading=GoDirectBLE_GetMeasurement();//try something simplier
-      break;
-     
-      
-     }//end of else
-  }//end of while
-   return g_measurement;
-  }//end of readSensor
+// note that the begin methods are way below, but they should be set up
+//void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
+//void GDXLib::Begin()  // maybe rename this GoDirect
+
+//void GDXLib::GoDirectBLE_Scan();
+
   
 //=============================================================================
 // GoDirectBLE_GetStatus() Function//not used!!!
