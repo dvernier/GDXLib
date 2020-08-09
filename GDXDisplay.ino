@@ -64,26 +64,26 @@ void setup(){
       // 2-LINE DISPLAY CODE
       CharDisplayPrintLine(1,"Found: ");
       CharDisplayPrintLine (2,GDX.deviceName());
-      delay(1000);
+      delay(100);
       
-      //CharDisplayPrintLine (1,GDX.channelName());
-      //CharDisplayPrintLine (2,GDX.channelUnits());
-      delay(1000);
-       /*
+      CharDisplayPrintLine (1,GDX.channelName());
+      CharDisplayPrintLine (2,GDX.channelUnits());
+      delay(100);
+             
       CharDisplayPrintLine(1, "battery PC: ");
-      //sprintf(strBuffer, "%d", GDX.batteryPercent());
-      //CharDisplayPrintLine(2, strBuffer);
-      delay(1000);
-      
-      CharDisplayPrintLine(1, "charge state: ");
+      sprintf(strBuffer, "%d", GDX.batteryPercent());
+      CharDisplayPrintLine(2, strBuffer);
+      delay(100);
+         /*       
+      //CharDisplayPrintLine(1, "charge state: ");
       //sprintf(strBuffer, "%d", GDX.chargeState());
       //CharDisplayPrintLine(2, strBuffer);
-      delay(1000);
+      delay(100);
       
-      CharDisplayPrintLine(1, "RSSI: ");
+      //CharDisplayPrintLine(1, "RSSI: ");
       //sprintf(strBuffer, "%d", GDX.RSSI());
       //CharDisplayPrintLine(2, strBuffer);
-      delay(1000);
+      delay(100);
      //2-LINE DISPLAY CODE */
         
   for(int row=1;row<11;row++){
