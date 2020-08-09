@@ -74,17 +74,17 @@ void setup(){
       sprintf(strBuffer, "%d", GDX.batteryPercent());
       CharDisplayPrintLine(2, strBuffer);
       delay(100);
-         /*       
-      //CharDisplayPrintLine(1, "charge state: ");
-      //sprintf(strBuffer, "%d", GDX.chargeState());
-      //CharDisplayPrintLine(2, strBuffer);
+               
+      CharDisplayPrintLine(1, "charge state: ");
+      sprintf(strBuffer, "%d", GDX.chargeState());
+      CharDisplayPrintLine(2, strBuffer);
       delay(100);
       
-      //CharDisplayPrintLine(1, "RSSI: ");
-      //sprintf(strBuffer, "%d", GDX.RSSI());
-      //CharDisplayPrintLine(2, strBuffer);
+      CharDisplayPrintLine(1, "RSSI: ");
+      sprintf(strBuffer, "%d", GDX.RSSI());
+      CharDisplayPrintLine(2, strBuffer);
       delay(100);
-     //2-LINE DISPLAY CODE */
+     //2-LINE DISPLAY CODE 
         
   for(int row=1;row<11;row++){
      Serial.print(row);
@@ -94,13 +94,13 @@ void setup(){
      Serial.print(channelReading);
      Serial.print(" ");
      Serial.println (GDX.channelUnits());
-     /* 2-LINE DISPLAY CODE
+     // 2-LINE DISPLAY CODE
            //char strBuffer[32];
-           //sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
-           //CharDisplayPrintLine (1,GDX.channelName());
-           //CharDisplayPrintLine (2,GDX.channelUnits());
-           //CharDisplayPrintLine(2, strBuffer);
-       2-LINE DISPLAY CODE */
+           sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+           CharDisplayPrintLine (1,GDX.channelName());
+           CharDisplayPrintLine (2,GDX.channelUnits());
+           CharDisplayPrintLine(2, strBuffer);
+       //2-LINE DISPLAY CODE */
       // delay(500);   
        }//end of for
      GDX.Stop();
