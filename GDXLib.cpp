@@ -1148,13 +1148,11 @@ float GDXLib::readSensor()
         Serial.println(g_samplePeriodInMilliseconds);      
   #endif
   if (!BLE.connected())
-  {
      GoDirectBLE_Error();
-  }    
   if(!D2PIO_ReadMeasurement(g_ReadBuffer, 5000, g_measurement)){
       #if defined DEBUG
         delay (5);//is there any reason for this? !!!
-        Serial.print("#"); 
+        //Serial.print("#"); 
       #endif
       }
   #if defined DEBUG
@@ -1163,6 +1161,10 @@ float GDXLib::readSensor()
   #endif
   return g_measurement;
   }
+
+
+
+
 
 //=============================================================================
 // GoDirectBLE_GetStatus() Function//not used!!!
@@ -1176,7 +1178,6 @@ void GDXLib::GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareV
   Serial.print("*** batteryPercent: ");
   Serial.println(batteryPercent);//this is correct here in the library code
 }
-
 //=============================================================================
 // GoDirectBLE_GetDeviceName() Function
 //=============================================================================
@@ -1184,7 +1185,6 @@ const char* GDXLib::GoDirectBLE_GetDeviceName()
 {
   return g_peripheral.localName().c_str();
 }
-
 //=============================================================================
 // GoDirectBLE_GetChannelUnits() Function
 //=============================================================================
@@ -1214,7 +1214,6 @@ int GDXLib::GoDirectBLE_GetScanRSSI()
 {
   return g_RSSIStrength;
 }
-
 //=============================================================================
 // GoDirectBLE_DisplayChannelAsInteger() Function I do not think we use this, but until I deal with radiation counters, I am leaving it in.!!!
 //=============================================================================
@@ -1222,7 +1221,6 @@ bool GDXLib::GoDirectBLE_DisplayChannelAsInteger()
 {
   return (g_channelInfo.numericMeasType == 1);
 }
-
 //=============================================================================
 // GoDirectBLE_GetChannelName() Function
 //=============================================================================
@@ -1230,7 +1228,6 @@ char* GDXLib::GoDirectBLE_GetChannelName()
 {
   return g_channelInfo.sensorDescription;
 }
-
 //=============================================================================
 // GoDirectBLE_GetMeasurement() Function NOT USED, BUT SHOULD IT BE?????????????????
 //=============================================================================
@@ -1238,7 +1235,6 @@ float GDXLib::GoDirectBLE_GetMeasurement()
 {
   return g_measurement;
 }
-
 //=============================================================================
 // GoDirectBLE_End() Function // not used; WE SHOULD PROBABLY USE THIS IN THE MAIN CODE
 //=============================================================================
