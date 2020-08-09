@@ -439,7 +439,7 @@ bool GDXLib::D2PIO_ReadBlocking(byte buffer[], int timeout)
       timeoutCounter++;
       if (timeoutCounter > timeout)
       {
-        Serial.println("***ERROR: D2PIO_ReadBlocking timeout!");
+        //Serial.println("***ERROR: D2PIO_ReadBlocking timeout!");
         return false;
       }
       delay(1);
@@ -465,7 +465,8 @@ bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
   int timeoutCounter = 0;
 
   // Return immediately if there is nothing to do.
-  if (!g_d2pioResponse.valueUpdated()) return false;
+  if (!g_d2pioResponse.valueUpdated()) 
+    return false;
     
   while (true)
   {
@@ -483,7 +484,7 @@ bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement)
       timeoutCounter++;
       if (timeoutCounter > timeout)
       {
-        Serial.println("ERROR: D2PIO_ReadMeasurement timeout!");
+        //Serial.println("ERROR: D2PIO_ReadMeasurement timeout!");
         return false;
       }
       delay(1);
