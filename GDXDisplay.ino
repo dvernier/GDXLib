@@ -61,15 +61,15 @@ void setup(){
   
   Serial.print("Bluetooth signal strength (RSSI): "); 
   Serial.println (GDX.RSSI());
-      /* 2-LINE DISPLAY CODE
+      // 2-LINE DISPLAY CODE
       CharDisplayPrintLine(1,"Found: ");
-      //CharDisplayPrintLine (2,GDX.deviceName());
+      CharDisplayPrintLine (2,GDX.deviceName());
       delay(1000);
       
       //CharDisplayPrintLine (1,GDX.channelName());
       //CharDisplayPrintLine (2,GDX.channelUnits());
       delay(1000);
-      
+       /*
       CharDisplayPrintLine(1, "battery PC: ");
       //sprintf(strBuffer, "%d", GDX.batteryPercent());
       //CharDisplayPrintLine(2, strBuffer);
