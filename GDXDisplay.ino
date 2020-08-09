@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20200728, using the 0.82 cpp code)
+ GDXLib Demo (v. 20200809, using the 0.83 with then old ReadSensor cpp code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -45,6 +45,22 @@ void setup(){
   
   Serial.print("Bluetooth signal strength (RSSI): "); 
   Serial.println (GDX.RSSI());
+  
+  Serial.print("channelName; ");
+  Serial.println (GDX.channelName());
+
+  Serial.print("channelUnits: ");
+  Serial.println (GDX.channelUnits());
+  
+  Serial.print("Battery status(%): ");
+  Serial.println (GDX.batteryPercent());
+  
+  Serial.print("ChargeState: ");
+  Serial.print (GDX.chargeState());
+  Serial.println(" (0=idle, 1=charging, 2=charging complete, 3=error)");
+  
+  Serial.print("Bluetooth signal strength (RSSI): "); 
+  Serial.println (GDX.RSSI());
       /* 2-LINE DISPLAY CODE
       CharDisplayPrintLine(1,"Found: ");
       //CharDisplayPrintLine (2,GDX.deviceName());
@@ -70,7 +86,7 @@ void setup(){
       delay(1000);
      //2-LINE DISPLAY CODE */
         
-  for(int row=1;row<20;row++){
+  for(int row=1;row<11;row++){
      Serial.print(row);
      Serial.print(" ");
      //float channelReading =row*row;//fake readings
