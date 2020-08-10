@@ -1,7 +1,7 @@
 /* This is a library to make using Vernier GDX sensors 
  easy using an Arduino which supports the Arduino BLE library
  
-Version 0.83 which is the old 71 with slight tweeks.
+Version 0.84 
 
 
 
@@ -12,7 +12,7 @@ Version 0.83 which is the old 71 with slight tweeks.
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"
-#define GDXLib_LIB_VERSION "0.7"//automatically displayed
+#define GDXLib_LIB_VERSION "0.84"//automatically displayed
 
 GDXLib::GDXLib()
 {}
@@ -22,7 +22,7 @@ char channelUnits[16];
 int channelNumber;
 uint8_t chargerStatus;
 int batteryPercent;
-char strBuffer[32];
+//char strBuffer[32];
 char strFW1[16];// These are not used in my code
 char strFW2[16];
 #define D2PIO_CMD_ID_GET_STATUS                          0x10
@@ -1102,10 +1102,6 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
     Serial.println(g_channelNumber); 
   #endif
  
-    Serial.print("**$ calling _StartMeasurements, g_channel: ");//!!!
-    Serial.println(g_channelNumber);
-  if (!D2PIO_StartMeasurements(g_channelNumber))
-    GoDirectBLE_Error();
 
 
   //below is the former AutoID code, which really sets values
@@ -1138,6 +1134,16 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   }//end of while
 
   }//end of Scan  }
+
+ //=============================================================================
+// readSensor() Function
+//=============================================================================!@
+   void GDXLib::start() {
+   Serial.print("**$ calling _StartMeasurements, g_channel: ");//!!!
+    Serial.println(g_channelNumber);
+  if (!D2PIO_StartMeasurements(g_channelNumber))
+    GoDirectBLE_Error();
+   }
  //=============================================================================
 // readSensor() Function
 //=============================================================================!@

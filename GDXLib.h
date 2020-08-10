@@ -21,6 +21,7 @@ class GDXLib
     void Begin();
     void Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
     void Stop();
+    void start();
     float readSensor();//a public method
     bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
     float GoDirectBLE_GetMeasurement();
