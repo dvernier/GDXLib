@@ -11,16 +11,17 @@ class GDXLib
     
     void autoID();//this is the function for the autoID code
     // it returns calibration information
-    char* channelName()     { return _channelName ;};
+    char* channelName()      { return _channelName ;};
     char* deviceName()       { return _deviceName ;};
     char* channelUnits()     { return _channelUnits ;};
     uint8_t batteryPercent() { return _batteryPercent ;};
     uint8_t chargeState()    { return _chargeState ;};
     int RSSI()               { return _RSSI ;};
-    
+    int channelNumber()      { return _channelNumber ;};
+    unsigned long samplePeriodInMilliseconds() { return _samplePeriodInMilliseconds;};
     void Begin();
     void Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
-    void Stop();
+    void stop();
     void start();
     float readSensor();//a public method
     bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
@@ -35,8 +36,8 @@ class GDXLib
     uint8_t _batteryPercent=0;
     uint8_t _chargeState=0;
     int _RSSI=0;
-    
-    unsigned long _samplePeriodInMilliseconds;// used in begin
+    int _channelNumber=0;
+    unsigned long _samplePeriodInMilliseconds;
     int  _channel;
     char _strBuffer[32]; //used in Read Sensor
     
@@ -73,7 +74,9 @@ class GDXLib
     uint8_t GoDirectBLE_GetBatteryStatus();
     uint8_t GoDirectBLE_GetChargeStatus();
     int    GoDirectBLE_GetRSSI();
+    unsigned long GoDirectBLE_GetSamplePeriod();
     bool GoDirectBLE_DisplayChannelAsInteger();
     char* GoDirectBLE_GetChannelName();
+    int GoDirectBLE_GetChannelNumber();
 };
 #endif

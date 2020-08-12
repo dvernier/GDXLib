@@ -228,7 +228,7 @@ bool GDXLib::DumpGatttService(BLEDevice peripheral, char* uuid)
 //=============================================================================
 // D2PIO_Scan() Function
 //=============================================================================
-int D2PIO_Scan(bool useRssiThreshold, int threshold)
+int D2PIO_Scan(bool useRssiThreshold, int threshold)//useRssiThreshold is autoconnect!!!
 {
   // Check if a peripheral has been discovered
   #if defined DEBUG
@@ -302,8 +302,10 @@ g_RSSIStrength=peripheral.rssi();
  #endif
  
   // Check RSSI threshold (optional)
-  if (useRssiThreshold && (peripheral.rssi() < threshold)) return D2PIO_SCAN_RESULT_WEAK;
-         g_peripheral = peripheral;
+  //how does useRssiThreshold get set to true !!!
+  if (useRssiThreshold && (peripheral.rssi() < threshold)) 
+          return D2PIO_SCAN_RESULT_WEAK;
+   g_peripheral = peripheral;
   return D2PIO_SCAN_RESULT_SUCCESS;
 }
 
@@ -973,7 +975,7 @@ void GDXLib::GoDirectBLE_Error()
   if (g_autoConnect)
     BLE.scan(true);
   else
-    BLE.scanForName(g_deviceName, true);//!!! there is no such function
+    BLE.scanForName(g_deviceName, true);//!!! this is weird
 }
 //=============================================================================
 // Begin() Function
@@ -990,12 +992,12 @@ void GDXLib::Begin()  // maybe rename this GoDirectStart()
   GoDirectBLE_Scan();
 } //end begin
 //=============================================================================
-// Begin() Function
+// Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds) Function
 //=============================================================================
 void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
 {
   #if defined DEBUG
-    Serial.print("***in Begin");
+    Serial.print("***in Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)");
     Serial.println(deviceName);
   #endif
  
@@ -1011,7 +1013,27 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   #endif
   GoDirectBLE_Scan();
   } //end begin
+/*=============================================================================
+// Begin(char* deviceName) Function
 //=============================================================================
+void GDXLib::Begin(char* deviceName)
+{
+  #if defined DEBUG
+    Serial.print("***in Begin(char* deviceName, byte channelNumber)");
+    Serial.println(deviceName);
+  #endif
+  g_deviceName = deviceName; // this really is the device name
+  g_channelNumber = -1;
+  g_samplePeriodInMilliseconds = 0;
+  g_autoConnect = true;
+  #if defined DEBUG
+    Serial.print("***deviceName");
+    Serial.println(deviceName);  
+  #endif
+  GoDirectBLE_Scan();
+  } 
+  */
+  //end begin//=============================================================================
 // GoDirectBLE_Scan() Function
 //=============================================================================
   void GDXLib::GoDirectBLE_Scan()
@@ -1027,7 +1049,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   if (g_autoConnect)
     BLE.scan(true);
   else
-    BLE.scanForName(g_deviceName, true);//!!! there is no such function
+    BLE.scanForName(g_deviceName, true);
 
   int scanResult = D2PIO_SCAN_RESULT_NONE; //0
   //Kevin's Idle through Flush
@@ -1040,7 +1062,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
         Serial.println("***D2PIO_SCAN_RESULT_SUCCESS");
      #endif
       break;
-      }
+      }//end of if
     if (scanResult == D2PIO_SCAN_RESULT_WEAK) //1
       Serial.println(".");
       //Serial.println("***D2PIO_SCAN_RESULT_WEAK");
@@ -1108,13 +1130,13 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   _RSSI=GoDirectBLE_GetScanRSSI(); 
   _batteryPercent=GoDirectBLE_GetBatteryStatus();
   _chargeState   =GoDirectBLE_GetChargeStatus();
+  _samplePeriodInMilliseconds =GoDirectBLE_GetSamplePeriod();
+  _channelNumber =GoDirectBLE_GetChannelNumber();
   ;//I think this is the way to go!!!
   sprintf(_channelName,"%s",GoDirectBLE_GetChannelName());
   sprintf(_deviceName,"%s",GoDirectBLE_GetDeviceName());
   sprintf(_channelUnits,"%s",GoDirectBLE_GetChannelUnits());
-  //strcpy(_channelUnits, g_channelInfo.sensorUnit);//!!!
-  //strcpy(_channelName, g_channelInfo.sensorDescription);
-  //strcpy(_deviceName, GoDirectBLE_GetDeviceName());
+
     #if defined DEBUG
     Serial.println("***HERE is all the info");
     Serial.print("*** _RSSI"); 
@@ -1199,6 +1221,20 @@ const char* GDXLib::GoDirectBLE_GetChannelUnits()
   return g_channelInfo.sensorUnit;
 }
 //=============================================================================
+// GoDirectBLE_GetSamplePeriod() Function
+//=============================================================================
+unsigned long GDXLib::GoDirectBLE_GetSamplePeriod()
+{
+  return g_samplePeriodInMilliseconds;
+}
+//=============================================================================
+// GoDirectBLE_GetChannelNumber() Function
+//=============================================================================
+int GDXLib::GoDirectBLE_GetChannelNumber()
+{
+  return g_channelNumber;
+}
+//=============================================================================
 // GoDirectBLE_GetBatteryStatus() Function
 //=============================================================================
 uint8_t GDXLib::GoDirectBLE_GetBatteryStatus()
@@ -1212,7 +1248,6 @@ uint8_t GDXLib::GoDirectBLE_GetChargeStatus()
 {
   return g_status.chargerState;
 }
-
 //=============================================================================
 // GoDirectBLE_GetScanRSSI() Function 
 //=============================================================================
@@ -1242,9 +1277,9 @@ float GDXLib::GoDirectBLE_GetMeasurement()
   return g_measurement;
 }
 //=============================================================================
-// GoDirectBLE_End() Function // not used; WE SHOULD PROBABLY USE THIS IN THE MAIN CODE
+// GoDirectBLE_End() Function 
 //=============================================================================
-void GDXLib::Stop()
+void GDXLib::stop()
 {
   BLE.end();
 }

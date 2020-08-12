@@ -38,6 +38,9 @@ void setup(){
 
   Serial.print("channelUnits: ");
   Serial.println (GDX.channelUnits());
+
+  Serial.print("channelNumber: ");
+  Serial.println (GDX.channelNumber());
   
   Serial.print("Battery status(%): ");
   Serial.println (GDX.batteryPercent());
@@ -51,6 +54,9 @@ void setup(){
   
   Serial.print("channelName; ");
   Serial.println (GDX.channelName());
+  
+  Serial.print("samplePeriod; ");
+  Serial.println (GDX.samplePeriodInMilliseconds());
 
   Serial.print("channelUnits: ");
   Serial.println (GDX.channelUnits());
@@ -108,7 +114,7 @@ void setup(){
        //2-LINE DISPLAY CODE */
       // delay(500);   
        }//end of for
-     GDX.Stop();
+     GDX.stop();
        Serial.println("series of readings taken; stopping GDX data collection");
 }//end of setup
 
