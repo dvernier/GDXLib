@@ -26,9 +26,9 @@ void setup(){
       CharDisplayPrintLine(2,"GDX sensor");
       delay (2000);
       //2-LINE DISPLAY CODE*/
-  //GDX.Begin();  //use this line for proximity pairing
+  GDX.Begin();  //use this line for proximity pairing
       //or
-  GDX.Begin("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
+  //GDX.Begin("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
   //GDX.Begin("GDX-RB 0K2000F4",2, 200);
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
@@ -112,31 +112,29 @@ void setup(){
            CharDisplayPrintLine (2,GDX.channelUnits());
            CharDisplayPrintLine(2, strBuffer);
        //2-LINE DISPLAY CODE */
-      // delay(500);   
+ 
        }//end of for
      GDX.stop();
-       Serial.println("series of readings taken; stopping GDX data collection");
+     Serial.println("series of readings taken; stopping GDX data collection");
+     CharDisplayPrintLine (1,"finished with   ");
+     CharDisplayPrintLine (2,"sensor readings ");
+     delay(1000); 
+     GDX.start(); 
 }//end of setup
 
 void loop(){
- /*
   //char strBuffer[32];
   Serial.println("top of loop");
   float channelReading =GDX.readSensor();
   Serial.print("channelReading: ");
   Serial.print(channelReading);
-  Serial.println(" units go here");
   Serial.println(GDX.channelUnits());
   
-  // 2-LINE DISPLAY CODE
-  //   //sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
-  //   CharDisplayPrintLine (1,GDX.channelName());
-  //   CharDisplayPrintLine(2,strBuffer);
-  //2-LINE DISPLAY CODE
-  
-  Serial.println(GDX.channelUnits());
-  delay (500);
-  */
+      // 2-LINE DISPLAY CODE
+      sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+      CharDisplayPrintLine (1,GDX.channelName());
+      CharDisplayPrintLine(2,strBuffer);
+      //2-LINE DISPLAY CODE
 }
 
         // Both the functions below are used for TWO_LINE_DISPLAY with serial connection,
@@ -161,9 +159,7 @@ void loop(){
           //Serial.println(strlen(strBuffer));
           
           Serial1.write((uint8_t)254); 
-          delay(100);//!!!
-          Serial1.write(lineCode);  
-          delay(100);//!!!
+          Serial1.write(lineCode); 
           Serial1.write(strBuffer, 15);
         }
       
@@ -174,7 +170,6 @@ void loop(){
           //Clear the screen
           Serial1.write((uint8_t)254);
           Serial1.write((uint8_t)1);
-                  delay(100);//!!!
           // Move cursor to beginning of line1
           Serial1.write(254); 
           Serial1.write(128);  
@@ -183,12 +178,9 @@ void loop(){
         
           //Clear the screen
           Serial1.write((uint8_t)254);
-                    delay(100);//!!!
           Serial1.write((uint8_t)1);
-                  delay(100);//!!!
           // Move cursor to beginning of line1
           Serial1.write(254); 
-                    delay(100);//!!!
           Serial1.write(128);  
         }
         void ConvertUTF8ToASCII(char* s)

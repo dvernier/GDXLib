@@ -21,6 +21,7 @@ class GDXLib
     unsigned long samplePeriodInMilliseconds() { return _samplePeriodInMilliseconds;};
     void Begin();
     void Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
+    //void Begin(char* deviceName);//is this not allowed? !!!
     void stop();
     void start();
     float readSensor();//a public method

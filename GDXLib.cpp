@@ -262,6 +262,13 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)//useRssiThreshold is autoco
       (peripheral.localName()[2] != 'X')||
       (peripheral.localName()[3] != '-'))
       //specify a type of sensor by adding letters here, after the '-'!!!
+   /*The code below should be taken out if Begin(deviceName) is not allowed!!!
+   if (g_deviceName!="null"){
+          peripheral.localName()[4] != g_deviceName[4];
+          peripheral.localName()[5] != g_deviceName[5];
+          peripheral.localName()[6] != g_deviceName[6];
+      }
+    */  
     return D2PIO_SCAN_RESULT_NONE;
 
   // Create a relative strength reading from 0 to 16
@@ -991,6 +998,21 @@ void GDXLib::Begin()  // maybe rename this GoDirectStart()
   g_autoConnect = true;
   GoDirectBLE_Scan();
 } //end begin
+/*=============================================================================
+// Begin(char* deviceName) Function   Is this not allowed? !!!
+//=============================================================================
+void GDXLib::Begin(char* deviceName)  //
+{
+  #if defined DEBUG
+    Serial.println("***in Begin(char* deviceName)");
+  #endif
+  g_deviceName = deviceName; // this really is the device name
+  g_channelNumber = -1;
+  g_samplePeriodInMilliseconds = 0;
+  g_autoConnect = true;
+  GoDirectBLE_Scan();
+} //end begin
+*/
 //=============================================================================
 // Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds) Function
 //=============================================================================
@@ -1001,7 +1023,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
     Serial.println(deviceName);
   #endif
  
-  g_deviceName = deviceName; // this really is the device name
+  g_deviceName = deviceName; 
   g_channelNumber = channelNumber;
   g_samplePeriodInMilliseconds = samplePeriodInMilliseconds;
   g_autoConnect = false;
@@ -1013,27 +1035,8 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   #endif
   GoDirectBLE_Scan();
   } //end begin
-/*=============================================================================
-// Begin(char* deviceName) Function
+
 //=============================================================================
-void GDXLib::Begin(char* deviceName)
-{
-  #if defined DEBUG
-    Serial.print("***in Begin(char* deviceName, byte channelNumber)");
-    Serial.println(deviceName);
-  #endif
-  g_deviceName = deviceName; // this really is the device name
-  g_channelNumber = -1;
-  g_samplePeriodInMilliseconds = 0;
-  g_autoConnect = true;
-  #if defined DEBUG
-    Serial.print("***deviceName");
-    Serial.println(deviceName);  
-  #endif
-  GoDirectBLE_Scan();
-  } 
-  */
-  //end begin//=============================================================================
 // GoDirectBLE_Scan() Function
 //=============================================================================
   void GDXLib::GoDirectBLE_Scan()
@@ -1119,12 +1122,6 @@ void GDXLib::Begin(char* deviceName)
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))
     GoDirectBLE_Error();
   //below is the AutoID code, which really just reports:
-   #if defined DEBUG
-    Serial.print("**$ calling _StartMeasurements, g_channel: ");
-    Serial.println(g_channelNumber); 
-  #endif
- 
-
 
   //below is the former AutoID code, which really sets values
   _RSSI=GoDirectBLE_GetScanRSSI(); 
@@ -1161,11 +1158,14 @@ void GDXLib::Begin(char* deviceName)
 // readSensor() Function
 //=============================================================================!@
    void GDXLib::start() {
-   Serial.print("**$ calling _StartMeasurements, g_channel: ");//!!!
-    Serial.println(g_channelNumber);
+    #if defined DEBUG
+    Serial.print("**$ calling _StartMeasurements, g_channel: ");
+    Serial.println(g_channelNumber); 
+  #endif
   if (!D2PIO_StartMeasurements(g_channelNumber))
     GoDirectBLE_Error();
    }
+
  //=============================================================================
 // readSensor() Function
 //=============================================================================!@
