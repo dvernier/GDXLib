@@ -24,6 +24,7 @@ class GDXLib
     //void Begin(char* deviceName);//is this not allowed? !!!
     void stop();
     void start();
+    void close();
     float readSensor();//a public method
     bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
     float GoDirectBLE_GetMeasurement();

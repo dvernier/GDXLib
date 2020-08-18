@@ -888,7 +888,7 @@ bool GDXLib::D2PIO_GetChannelInfoAll()
 bool GDXLib::D2PIO_Autoset()
 {
   unsigned long availableMask = 0;
-  unsigned long defaultMask = 0;
+  unsigned long defaultMask = 0;//
   unsigned long testMask = 1;
   byte i;
   if (!D2PIO_GetAvailableChannels(availableMask)) return false;
@@ -914,6 +914,9 @@ bool GDXLib::D2PIO_Autoset()
     Serial.print(" ***g_channelNumber ");
     Serial.print(g_channelNumber);
   #endif
+  //HACK!!!
+  if(g_deviceName=="Sound")
+     g_channelNumber=2;
   
   // Set the sample rate according to the typical value for this sensor.
   // However we limit it to about 200ms for the sake of Arduino.
@@ -1155,7 +1158,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   }//end of Scan  }
 
  //=============================================================================
-// readSensor() Function
+// start() Function
 //=============================================================================!@
    void GDXLib::start() {
     #if defined DEBUG
@@ -1189,10 +1192,6 @@ float GDXLib::readSensor()
   #endif
   return g_measurement;
   }
-
-
-
-
 
 //=============================================================================
 // GoDirectBLE_GetStatus() Function//not used!!!
@@ -1282,4 +1281,11 @@ float GDXLib::GoDirectBLE_GetMeasurement()
 void GDXLib::stop()
 {
   BLE.end();
+}
+//=============================================================================
+// GoDirectBLE_End() Function 
+//=============================================================================
+void GDXLib::close()
+{
+  BLE.disconnect();
 }

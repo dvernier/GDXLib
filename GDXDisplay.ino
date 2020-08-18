@@ -52,9 +52,6 @@ void setup(){
   Serial.print("Bluetooth signal strength (RSSI): "); 
   Serial.println (GDX.RSSI());
   
-  Serial.print("channelName; ");
-  Serial.println (GDX.channelName());
-  
   Serial.print("samplePeriod; ");
   Serial.println (GDX.samplePeriodInMilliseconds());
 
@@ -64,7 +61,7 @@ void setup(){
       // characters to ones that we can display.
       sprintf(strUnits, "%s", GDX.channelUnits());
       ConvertUTF8ToASCII(strUnits);
-      Serial.println (strUnits);
+  Serial.println (strUnits);
   
   Serial.print("Battery status(%): ");
   Serial.println (GDX.batteryPercent());
@@ -75,6 +72,8 @@ void setup(){
   
   Serial.print("Bluetooth signal strength (RSSI): "); 
   Serial.println (GDX.RSSI());
+  Serial.println ("threshold = -44 ");//!!!NOTE IN .CPP CODE
+  
       // 2-LINE DISPLAY CODE
       CharDisplayPrintLine(1,"Found: ");
       CharDisplayPrintLine (2,GDX.deviceName());
@@ -85,19 +84,21 @@ void setup(){
       delay(2000);
             
       sprintf(strBuffer,"%s %d %s %d","batt:",GDX.batteryPercent(),"CS:",GDX.chargeState());
-      Serial.print("strBuffer: ");
-      Serial.println(strBuffer);
       CharDisplayPrintLine(1, strBuffer);
+      sprintf(strBuffer,"%s %d", "channelNumber",GDX.channelNumber());
+      CharDisplayPrintLine(2, strBuffer);
       delay(2000);
       
+      CharDisplayPrintLine (1,"channelNumber   ");
+     
       sprintf(strBuffer,"%s %d", "   RSSI:   ",GDX.RSSI());
-      Serial.print("strBuffer: ");
-      Serial.println(strBuffer);
-      CharDisplayPrintLine(2, strBuffer);
-      delay(200);
+      CharDisplayPrintLine (1,strBuffer);
+      CharDisplayPrintLine (2,"threshold = -44 ");//!!!NOTE IN .CPP CODE
+      delay(2000);
       //2-LINE DISPLAY CODE 
       
-        GDX.start();
+  GDX.start();
+  delay(200);
   for(int row=1;row<11;row++){
      Serial.print(row);
      Serial.print(" ");
@@ -119,11 +120,12 @@ void setup(){
      CharDisplayPrintLine (1,"finished with   ");
      CharDisplayPrintLine (2,"sensor readings ");
      delay(1000); 
-     GDX.start(); 
+     GDX.close(); 
+     delay(1000); 
 }//end of setup
 
 void loop(){
-  //char strBuffer[32];
+  /*char strBuffer[32];
   Serial.println("top of loop");
   float channelReading =GDX.readSensor();
   Serial.print("channelReading: ");
@@ -135,6 +137,7 @@ void loop(){
       CharDisplayPrintLine (1,GDX.channelName());
       CharDisplayPrintLine(2,strBuffer);
       //2-LINE DISPLAY CODE
+*/
 }
 
         // Both the functions below are used for TWO_LINE_DISPLAY with serial connection,
@@ -183,7 +186,8 @@ void loop(){
           Serial1.write(254); 
           Serial1.write(128);  
         }
-        void ConvertUTF8ToASCII(char* s)
+        
+void ConvertUTF8ToASCII(char* s)
 { 
   unsigned int k = 0;
   unsigned int len = strlen(s);
@@ -191,19 +195,36 @@ void loop(){
 
   for (unsigned int i = 0; i < len; i++)
   {
-    c = s[i];    
-    if (c == 0xC2)
+    c = s[i]; 
+    Serial.print("in convert, len = "); 
+    Serial.print(len); 
+    Serial.print(" i = ");        
+    Serial.print(i); 
+    Serial.print(" c = ");  
+    Serial.println(c);        
+    if (c == 0xC2)// if the character is weird
     {
-      i++; // skip to the next character
+        //move some code like this to .cpp
+        Serial.println("WIERD CHARACTER FOUND");
+        Serial.println(GDX.channelName()[7]);
+        if (GDX.channelName()[0]=='T')
+        Serial.print("TEMPERATURE");
+      if (GDX.channelName()[7]=='a')
+        Serial.print("ACCELERATION");
+      if (GDX.channelName()[0]=='C')
+        Serial.print("CONDUCTIVITY"); 
+      //other wierd ones are CO2 and O2       
+       i++; // skip to the next character, and check it
       c = s[i];            
       if      (c == 0xB5) c = 'u';  // micro
       else if (c == 0xB0) c = 0xDF; // degrees (specific for 16x2 LCD character set)
       else if (c == 0xB2) c = '2';  // squared          
-    }
+    }//END OF IF
     
     s[k] = c;
     k++;
-  }
+}
+ 
   s[k] = 0;
 }
  
