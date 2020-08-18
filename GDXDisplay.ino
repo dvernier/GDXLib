@@ -1,426 +1,230 @@
-#include <ArduinoBLE.h>
-
-//should these be global?????
-static int state = -1;
-static char strUnits[16];
-char* s1 = "                    ";
-char* s2 = "                    ";
-char* s3 = "                    ";
-char* s4 = "                    ";
-int choice;
-/*from lib:
-  #define D2PIO_MAX_ORDERCODE_LENGTH 16
-  #define D2PIO_MAX_SERIALNUMBER_LENGTH 16
-  #define D2PIO_BLE_ADDRESS_LENGTH 6
-  #define D2PIO_MAX_DEVICENAME_LENGTH 32
-  #define D2PIO_MAX_DEVICEDESCRIPTION_LENGTH 64
-  #define D2PIO_MAX_NUM_BYTES_IN_SENSOR_DESCRIPTION 60
-  #define D2PIO_MAX_NUM_BYTES_IN_SENSOR_UNIT 32
-*/
+/*
+ GDXLib Demo (v. 20200809, using the 0.84 )
+ This is a simple demo program for using GDX sensors on any Arduino 
+ which supports the Arduino BLE library. This includes the Nano33 BLE,
+ Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
+ The lines with the major indents are for using a 2-line display connected
+ with three serial lines. Leave the line #define  TWO_LINE_DISPLAY_TX commented
+ out unless you have such a display.
+ */
+#include "ArduinoBLE.h"
 #include "GDXLib.h"
-GDXLib GDX;//!!!!!!!!!!!!
-//char deviceNam[18];// 32 bytes !!! I made these bigger to avoid problems
-//char channelName[32];//60 bytes
-//char channelUnits[18];// 32 bytes
-//uint8_t batteryPercent;
-//uint8_t chargerStatus;
-//char strFW1[16];
-//char strFW2[16];
-/* GET RID OF BECAUSE IT IS DONE IN THE LIBARY 
+GDXLib GDX;
+  char strBuffer[32]="unassigned";
+  char strUnits[32]="strUnits";
 
-
-char sN[16];// 32 bytes this is an expermment
-
-
-byte scanRSSI;
-char strBuffer[64];
-
-*/
-byte batteryLevel;// junk, I think
-//float channelReading;
-//char sensorName[] = "GDX-ACC 0H010767"; // we will use this to display later
-//char sensorName[]="     ";//!!! this should be deviceName or someting like that
-//leave the name blank to have the program search for nearest GDX sensor
-// and connect.
-
-void setup()
-{
-  // Initialize the debug serial port
+void setup(){
   Serial.begin(9600);
-  delay(100);
-  CharDisplayInit(); //initilize the graphic display
-  Serial.println("Vernier GDX");
-  Serial.println("Sensor display");
-  CharDisplayPrintLine(1, "Vernier GDX");
-  CharDisplayPrintLine(2, "Sensor display");
-  delay(5000);// long delay here to let me get serial monitor started
-  GDX.GoDirectBLE_Begin();//this is an attempt to call the library
-  //GoDirectBLE_Begin("GDX-ACC 0H101767",3,1000);
-  /*Serial.println(" Looking for");
-  CharDisplayPrintLine(1, "Looking for");
-
-  if (sensorName[5] == ' ') //if no specific sensor seleted
-  {
-    Serial.print("sensorName[5] ");
-    Serial.println(sensorName[5]);
-    delay(5000);
-    Serial.println("any GDX sensor");
-    CharDisplayPrintLine(2, "any GDX sensor");
-    //GoDirectBLE_Begin();
-    GoDirectBLE_Begin("GDX-ACC 0H101676",3,1000);
-  }
-  else
-  {
-    Serial.println(sensorName);
-    CharDisplayPrintLine(2, "specified");
-    GoDirectBLE_Begin("GDX-ACC 0H101767", 1, 1000);
-    //GoDirectBLE_Begin();
-    
-  }
-  */
-  GDX.autoID();
-  delay(2000);
-
-  //this is from kevin's loop:
-  // Cache the unit string and try to remap special UTF8
-  // characters to ones that we can display.
-  //sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
- // ConvertUTF8ToASCII(strUnits);
-  delay(1000);
-  //these have been set up in the library code:
-  Serial.print("deviceName:: ");
-  //Serial.println (deviceNam);
-  //CharDisplayPrintLine(1, deviceNam);
-  //Serial.print("ScanRSSI via function: ");
-  //Serial.println(GoDirectBLE_GetScanRSSI());//Note how this is handled. Is this the way to go, renames?
-  //CharDisplayPrintBarGraph(2, GoDirectBLE_GetScanRSSI());
-  delay(2000);
-  Serial.print("channelName:: ");
-  //Serial.print (channelName);
-  //Serial.println("  channelName via funtion: ");
-  //Serial.println(GoDirectBLE_GetChannelName());
-  Serial.print("channelUnits:: ");
-  //Serial.print(channelUnits);
-  //Serial.print("  channelUnits via funtion: ");
-  //Serial.println(GoDirectBLE_GetChannelUnits()); 
-  //CharDisplayPrintLine(2, channelUnits);
-  Serial.print("batteryPercent:: ");
-  //Serial.println (batteryPercent);
-  Serial.print("chargerStatus:: ");
-  //Serial.println (chargerStatus);
-  /*Serial.println("FW1:  FW2:  BAT:");
-  CharDisplayPrintLine(1, "FW1:  FW2:  BAT:");
-  GoDirectBLE_GetStatus(strFW1, strFW2, batteryLevel);
-  sprintf(&strBuffer[0], "%-6s",  strFW1);
-  sprintf(&strBuffer[6], "%-6s",  strFW2);
-  sprintf(&strBuffer[12], "%d%%", batteryLevel);
-  Serial.print("strBuffer: ");
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(2, strBuffer);
-  */
-  Serial.print("GDX.channelUnits() ");
-  Serial.println(GDX.channelUnits());
-  Serial.print("GDX.channelNameL() ");
-  Serial.println(GDX.channelUnits());
-  delay(2000);
-
-//  GoDirectBLE_Measure() ;// should this be renamed START?
-
- /* GoDirectBLE_Measure() ;
-  // Cache the unit string and try to remap special UTF8
-  // characters to ones that we can display.
-  sprintf(strUnits, "%s", GoDirectBLE_GetChannelUnits());
-  ConvertUTF8ToASCII(strUnits);
-
-  // Print a default measurement line.
-  // This is nice for sensors that don't start displaying right away.
-  sprintf(strBuffer, "--- %s", strUnits);
-  delay(2000);
-  //seems to start building the string
-  //this is from kevin's loop:
-
-  if (GoDirectBLE_DisplayChannelAsInteger())
-  {
-    sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), strUnits);
-  }
-  else
-  {
-    sprintf(strBuffer, "%.2f %s", GoDirectBLE_GetMeasurement(), strUnits);
-
-  }
-  Serial.print(strBuffer);
-  CharDisplayPrintLine(2, strBuffer);
-  Serial.print (" ");
-  Serial.print(strBuffer[0]);
-  Serial.print (" ");
-  channelReading = atof(strBuffer);
-  Serial.println(channelReading);
-
-  if (GoDirectBLE_DisplayChannelAsInteger())
-  {
-    sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), strUnits);
-  }
-  else
-  {
-    sprintf(strBuffer, "%.1f %s", GoDirectBLE_GetMeasurement(), strUnits);
-    //DLV hack to round temp to 1 digits to the right of the decimal. !!!DLV hack to change rounding
-  }
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(2, strBuffer);
-
-  delay(100);
-  Serial.println (" repeating...");
-  if (GoDirectBLE_DisplayChannelAsInteger())
-  {
-    sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), strUnits);
-  }
-  else
-  {
-    sprintf(strBuffer, "%.1f %s", GoDirectBLE_GetMeasurement(), strUnits);
-    //DLV hack to round temp to 1 digits to the right of the decimal. !!!DLV hack to change rounding
-  }
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(2, strBuffer);
-*/
+  delay(500);
+  Serial.println("Searching for");
+  Serial.println("GDX Sensor");
+  char strBuffer[32]="unassigned";
+  char strUnits[32]="strUnits";
+      // 2-LINE DISPLAY CODE
+      CharDisplayInit();
+      CharDisplayPrintLine(1,"Searching for");
+      CharDisplayPrintLine(2,"GDX sensor");
+      delay (2000);
+      //2-LINE DISPLAY CODE*/
+  GDX.Begin();  //use this line for proximity pairing
+      //or
+  //GDX.Begin("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
+  //GDX.Begin("GDX-RB 0K2000F4",2, 200);
+  Serial.print("Found: ");
+  Serial.println (GDX.deviceName());
   
-}
+  Serial.print("channelName; ");
+  Serial.println (GDX.channelName());
 
-void loop()
-{
-  /*GoDirectBLE_Read();
-  if (GoDirectBLE_DisplayChannelAsInteger())
-  {
-    sprintf(strBuffer, "%ld %s", (int32_t)GoDirectBLE_GetMeasurement(), strUnits);
-  }
-  else
-  {
-    sprintf(strBuffer, "%.2f %s", GoDirectBLE_GetMeasurement(), strUnits);
+  Serial.print("channelUnits: ");
+  Serial.println (GDX.channelUnits());
 
-  }
-  Serial.print("printing buffer rounded to 2 digits; ");
-  Serial.print(channelName);
-  Serial.print("   ");
-  Serial.println(strBuffer);
-  CharDisplayPrintLine(1, channelName);
-  CharDisplayPrintLine(2, strBuffer);
-  //Serial.print (" ");
-  //Serial.print(strBuffer[0]);
-  //Serial.print (" ");
-  channelReading = atof(strBuffer);
+  Serial.print("channelNumber: ");
+  Serial.println (GDX.channelNumber());
   
-  /*Serial.print("printing channel reading as a float and units ");
+  Serial.print("Battery status(%): ");
+  Serial.println (GDX.batteryPercent());
+  
+  Serial.print("ChargeState: ");
+  Serial.print (GDX.chargeState());
+  Serial.println(" (0=idle, 1=charging, 2=charging complete, 3=error)");
+  
+  Serial.print("Bluetooth signal strength (RSSI): "); 
+  Serial.println (GDX.RSSI());
+  
+  Serial.print("samplePeriod; ");
+  Serial.println (GDX.samplePeriodInMilliseconds());
+
+  Serial.print("channelUnits: ");
+  Serial.println (GDX.channelUnits());
+      // Cache the unit string and try to remap special UTF8
+      // characters to ones that we can display.
+      sprintf(strUnits, "%s", GDX.channelUnits());
+      ConvertUTF8ToASCII(strUnits);
+  Serial.println (strUnits);
+  
+  Serial.print("Battery status(%): ");
+  Serial.println (GDX.batteryPercent());
+  
+  Serial.print("ChargeState: ");
+  Serial.print (GDX.chargeState());
+  Serial.println(" (0=idle, 1=charging, 2=charging complete, 3=error)");
+  
+  Serial.print("Bluetooth signal strength (RSSI): "); 
+  Serial.println (GDX.RSSI());
+  Serial.println ("threshold = -44 ");//!!!NOTE IN .CPP CODE
+  
+      // 2-LINE DISPLAY CODE
+      CharDisplayPrintLine(1,"Found: ");
+      CharDisplayPrintLine (2,GDX.deviceName());
+      delay(2000);
+      
+      CharDisplayPrintLine (1,GDX.channelName());
+      CharDisplayPrintLine (2,GDX.channelUnits());
+      delay(2000);
+            
+      sprintf(strBuffer,"%s %d %s %d","batt:",GDX.batteryPercent(),"CS:",GDX.chargeState());
+      CharDisplayPrintLine(1, strBuffer);
+      sprintf(strBuffer,"%s %d", "channelNumber",GDX.channelNumber());
+      CharDisplayPrintLine(2, strBuffer);
+      delay(2000);
+      
+      CharDisplayPrintLine (1,"channelNumber   ");
+     
+      sprintf(strBuffer,"%s %d", "   RSSI:   ",GDX.RSSI());
+      CharDisplayPrintLine (1,strBuffer);
+      CharDisplayPrintLine (2,"threshold = -44 ");//!!!NOTE IN .CPP CODE
+      delay(2000);
+      //2-LINE DISPLAY CODE 
+      
+  GDX.start();
+  delay(200);
+  for(int row=1;row<11;row++){
+     Serial.print(row);
+     Serial.print(" ");
+     float channelReading =GDX.readSensor();
+     Serial.print(channelReading);
+     Serial.print(" ");
+     Serial.println (strUnits);
+     // 2-LINE DISPLAY CODE
+           //char strBuffer[32];
+           sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+           CharDisplayPrintLine (1,GDX.channelName());
+           CharDisplayPrintLine (2,GDX.channelUnits());
+           CharDisplayPrintLine(2, strBuffer);
+       //2-LINE DISPLAY CODE */
+ 
+       }//end of for
+     GDX.stop();
+     Serial.println("series of readings taken; stopping GDX data collection");
+     CharDisplayPrintLine (1,"finished with   ");
+     CharDisplayPrintLine (2,"sensor readings ");
+     delay(1000); 
+     GDX.close(); 
+     delay(1000); 
+}//end of setup
+
+void loop(){
+  /*char strBuffer[32];
+  Serial.println("top of loop");
+  float channelReading =GDX.readSensor();
+  Serial.print("channelReading: ");
   Serial.print(channelReading);
-  Serial.print(" ");
-  Serial.print(" channelUnits ");
-  Serial.print(channelUnits);
-  Serial.print(" channelUnits as a function ");
-  Serial.println(GoDirectBLE_GetChannelUnits());
+  Serial.println(GDX.channelUnits());
   
-   This code should be removed, unless you are doing the nametag thing.
-   // I think I can detect the following angles:  -90, -60, -30, 0, 30, 60, 90.
-  int  choice = 7;  
-  if (channelReading > 80 )
-    int choice = 1;
-  else if (channelReading > 50 )
-    choice = 2;
-  else if (channelReading > 20 )
-    choice = 3;
-  else if (channelReading >-20 )
-    choice = 4;
-  else if (channelReading >-50 )
-    choice = 5;
-  else if (channelReading >-80 )
-    choice = 6;
-    else choice=7;
-  Serial.print("channelReading ");
-  Serial.println (channelReading);
-  Serial.print("  choice ");
-  Serial.println (choice);
-
-  switch (choice) {
-    case 1:
-      {
-    //         "12345678901234567890";
-    strcpy( s1,"   90    WELCOME    ");
-    strcpy( s2,"   NSTA 2020 BOSTON ");
-    strcpy( s3,"                    ");
-    strcpy( s4,"    DAVE VERNIER    ");
-      }
-      break;
-    case 2:
-      {
-        //      "12345678901234567890";
-   strcpy( s1, " 60  PROGRAMMABLE   ");
-   strcpy( s2, "NAMETAG IS A FUN    ");
-   strcpy( s3, "  STUDENT PROJECT   ");
-   strcpy( s4, "OUR GDX SENSORS     ");
-      }
-      break;
-    case 3:
-      {
-        //     "12345678901234567890");
-    strcpy(s1, "30  IT IS CONTROLLED");
-    strcpy(s2, "BY AN ARDUINO       ");
-    strcpy(s3, "NANO 33 BLE         ");
-    strcpy(s4, "                    ");
-      }
-      break;
-    case 4:
-     {
-        //     "12345678901234567890");
-    strcpy(s1, "LEVEL      ONTROLLED");
-    strcpy(s2, "BY AN ARDUINO       ");
-    strcpy(s3, "NANO 33 BLE         ");
-    strcpy(s4, "                    ");
-      }
-      break;
-    case 5:
-    {
-        //     "12345678901234567890");
-    strcpy(s1, " 30 down");
-    strcpy(s2, "BY AN ARDUINO       ");
-    strcpy(s3, "NANO 33 BLE         ");
-    strcpy(s4, "                    ");
-    }
-      break;
-    case 6:
-    {
-    strcpy(s1, "  60 degress down");
-    strcpy(s2, "BY AN ARDUINO       ");
-    strcpy(s3, "NANO 33 BLE         ");
-    strcpy(s4, "                    ");
-    }
-      break;
-    case 7:
-      { 
-         // "12345678901234567890";
-  strcpy(s1," DOWN 90              ");
-  strcpy(s2,"   HELLO, I'M DAVID ");
-  strcpy(s3,"   I'M DEAF;        ");
-  strcpy(s4,"        DO YOU SIGN?");
-      }
-      break;
-  } //end of switch
-
-  Serial.println(s1);
-  Serial.println(s2);
-  Serial.println(s3);
-  Serial.println(s4);
-  delay(500);
-  */
-}
-////////////////////
-
-void CharDisplayPrintLine(int line, const char* strText)
-{
-  uint8_t lineCode = 128;
-  if (line == 2) lineCode = 192;
-
-  // Force a field width of 16.
-  // Left justified with space padding on the right.
-  char strBuffer[32];
-  sprintf(strBuffer, "%-16.16s",  strText);
-
-  // For debug -- prints what goes to the display
-  //Serial.print("[");
-  //Serial.print(strBuffer);
-  //Serial.println("]");
-
-  Serial1.write((uint8_t)254);
-  Serial1.write(lineCode);
-  Serial1.write(strBuffer, 16);
+      // 2-LINE DISPLAY CODE
+      sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
+      CharDisplayPrintLine (1,GDX.channelName());
+      CharDisplayPrintLine(2,strBuffer);
+      //2-LINE DISPLAY CODE
+*/
 }
 
-void CharDisplayPrintBarGraph(int line, byte value)
-{
-  // For the 16x2 display with the A00 ROM code
-  // the 0xFF character is a full pixel block.
-  char strBuffer[32];
-  sprintf(strBuffer, "%.*s", value, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  CharDisplayPrintLine(line, strBuffer);
-}
-
-void CharDisplayInit()
-{
-  Serial1.begin(9600);
-  delay(500);
-
-  // Clear the screen
-  Serial1.write((uint8_t)254);
-  Serial1.write((uint8_t)1);
-
-  // Move cursor to beginning of line1
-  Serial1.write(254);
-  Serial1.write(128);
-}
-
-void SegmentDisplayInit()
-{
-  // Initialze the display.
-  // It is on the dedicated hardware serial port on the Arduino101.
-  // This is the predefined Serial1 object.
-  Serial1.begin(9600);
-  Serial1.write(0x76); // Clear
-  Serial1.write("----", 4);
-}
-
-void SegmentDisplayPrintFloat(float number)
-{
-  char tempString[16];
-
-  uint8_t dot = 0x00;
-  signed long value;
-  signed long value100 = number * 100;
-  signed long value1000 = number * 1000;
-
-  if (number < 0)
-  {
-    if      (value100 > -1000)  dot = 0x2;
-    else if (value100 > -10000) dot = 0x4;
-    value = value100;
-  }
-  else
-  {
-    if      (value1000 < 10000)   dot = 0x01;
-    else if (value1000 < 100000)  dot = 0x02;
-    else if (value1000 < 1000000) dot = 0x04;
-    value = value1000;
-  }
-
-  sprintf(tempString, "%04ld", value);
-  tempString[4] = 0;
-
-  Serial1.write((uint8_t)0x79); // Ensure cursor position at first digit
-  Serial1.write((uint8_t)0x00);
-  Serial1.write(tempString, 4);
-  Serial1.write((uint8_t)0x77); // Set decimal place
-  Serial1.write(dot);
-}
-
-//=============================================================================
-// ConvertUTF8ToASCII() Function
-// Very limited -- only supports a few translations
-//=============================================================================
+        // Both the functions below are used for TWO_LINE_DISPLAY with serial connection,
+        // and are not needed if you are using an Arduino Uno WiFi and the display on connected to
+        // the Vernier Arduino shield.
+        
+        void CharDisplayPrintLine(int line, const char* strText){
+          uint8_t lineCode = 128;
+          delay(100);//!!!
+          if (line == 2) lineCode = 192;
+        
+          // Force a field width of 16.
+          // Left justified with space padding on the right.
+          //char strBuffer[32];
+          sprintf(strBuffer, "%-16.15s",  strText);
+        
+          //For debug -- prints what goes to the display
+          //Serial.print(" strBuffer ");
+          //Serial.print("[");
+          //Serial.print(strBuffer);
+          //Serial.println("]");
+          //Serial.println(strlen(strBuffer));
+          
+          Serial1.write((uint8_t)254); 
+          Serial1.write(lineCode); 
+          Serial1.write(strBuffer, 15);
+        }
+      
+        void CharDisplayInit(){
+          Serial1.begin(9600);
+          delay(500);
+        
+          //Clear the screen
+          Serial1.write((uint8_t)254);
+          Serial1.write((uint8_t)1);
+          // Move cursor to beginning of line1
+          Serial1.write(254); 
+          Serial1.write(128);  
+        }
+          void ClearScreen(){
+        
+          //Clear the screen
+          Serial1.write((uint8_t)254);
+          Serial1.write((uint8_t)1);
+          // Move cursor to beginning of line1
+          Serial1.write(254); 
+          Serial1.write(128);  
+        }
+        
 void ConvertUTF8ToASCII(char* s)
-{
+{ 
   unsigned int k = 0;
   unsigned int len = strlen(s);
   byte c;
 
   for (unsigned int i = 0; i < len; i++)
   {
-    c = s[i];
-    if (c == 0xC2)
+    c = s[i]; 
+    Serial.print("in convert, len = "); 
+    Serial.print(len); 
+    Serial.print(" i = ");        
+    Serial.print(i); 
+    Serial.print(" c = ");  
+    Serial.println(c);        
+    if (c == 0xC2)// if the character is weird
     {
-      i++; // skip to the next character
-      c = s[i];
+        //move some code like this to .cpp
+        Serial.println("WIERD CHARACTER FOUND");
+        Serial.println(GDX.channelName()[7]);
+        if (GDX.channelName()[0]=='T')
+        Serial.print("TEMPERATURE");
+      if (GDX.channelName()[7]=='a')
+        Serial.print("ACCELERATION");
+      if (GDX.channelName()[0]=='C')
+        Serial.print("CONDUCTIVITY"); 
+      //other wierd ones are CO2 and O2       
+       i++; // skip to the next character, and check it
+      c = s[i];            
       if      (c == 0xB5) c = 'u';  // micro
       else if (c == 0xB0) c = 0xDF; // degrees (specific for 16x2 LCD character set)
-      else if (c == 0xB2) c = '2';  // squared
-    }
-
+      else if (c == 0xB2) c = '2';  // squared          
+    }//END OF IF
+    
     s[k] = c;
     k++;
-  }
+}
+ 
   s[k] = 0;
 }
+ 
