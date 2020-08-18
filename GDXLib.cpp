@@ -888,7 +888,7 @@ bool GDXLib::D2PIO_GetChannelInfoAll()
 bool GDXLib::D2PIO_Autoset()
 {
   unsigned long availableMask = 0;
-  unsigned long defaultMask = 0;//
+  unsigned long defaultMask = 0;
   unsigned long testMask = 1;
   byte i;
   if (!D2PIO_GetAvailableChannels(availableMask)) return false;
