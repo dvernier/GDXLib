@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20200809, using the 0.84 )
+ GDXLib Demo (v. 20200819, using the 0.85 )
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -29,7 +29,8 @@ void setup(){
   GDX.Begin();  //use this line for proximity pairing
       //or
   //GDX.Begin("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
-  //GDX.Begin("GDX-RB 0K2000F4",2, 200);
+  //GDX.Begin("GDX-RB 0K2000F4",2, 500);
+  //GDX.Begin("GDX-SND 0T1001L7",3, 500);
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
   
@@ -51,28 +52,10 @@ void setup(){
   
   Serial.print("Bluetooth signal strength (RSSI): "); 
   Serial.println (GDX.RSSI());
+  Serial.println ("threshold = -44 ");//!!!NOTE SET IN .CPP CODE
   
-  Serial.print("samplePeriod; ");
+  Serial.print("samplePeriod: ");
   Serial.println (GDX.samplePeriodInMilliseconds());
-
-  Serial.print("channelUnits: ");
-  Serial.println (GDX.channelUnits());
-      // Cache the unit string and try to remap special UTF8
-      // characters to ones that we can display.
-      sprintf(strUnits, "%s", GDX.channelUnits());
-      ConvertUTF8ToASCII(strUnits);
-  Serial.println (strUnits);
-  
-  Serial.print("Battery status(%): ");
-  Serial.println (GDX.batteryPercent());
-  
-  Serial.print("ChargeState: ");
-  Serial.print (GDX.chargeState());
-  Serial.println(" (0=idle, 1=charging, 2=charging complete, 3=error)");
-  
-  Serial.print("Bluetooth signal strength (RSSI): "); 
-  Serial.println (GDX.RSSI());
-  Serial.println ("threshold = -44 ");//!!!NOTE IN .CPP CODE
   
       // 2-LINE DISPLAY CODE
       CharDisplayPrintLine(1,"Found: ");
@@ -88,14 +71,12 @@ void setup(){
       sprintf(strBuffer,"%s %d", "channelNumber",GDX.channelNumber());
       CharDisplayPrintLine(2, strBuffer);
       delay(2000);
-      
-      CharDisplayPrintLine (1,"channelNumber   ");
      
       sprintf(strBuffer,"%s %d", "   RSSI:   ",GDX.RSSI());
       CharDisplayPrintLine (1,strBuffer);
-      CharDisplayPrintLine (2,"threshold = -44 ");//!!!NOTE IN .CPP CODE
+      CharDisplayPrintLine (2,"threshold = -44 ");//!!!NOTE SET IN .CPP CODE
       delay(2000);
-      //2-LINE DISPLAY CODE 
+      //2-LINE DISPLAY CODE*/ 
       
   GDX.start();
   delay(200);
@@ -105,7 +86,7 @@ void setup(){
      float channelReading =GDX.readSensor();
      Serial.print(channelReading);
      Serial.print(" ");
-     Serial.println (strUnits);
+     Serial.println(GDX.channelUnits());
      // 2-LINE DISPLAY CODE
            //char strBuffer[32];
            sprintf(strBuffer, "%.2f %s", channelReading, GDX.channelUnits());
@@ -146,7 +127,6 @@ void loop(){
         
         void CharDisplayPrintLine(int line, const char* strText){
           uint8_t lineCode = 128;
-          delay(100);//!!!
           if (line == 2) lineCode = 192;
         
           // Force a field width of 16.

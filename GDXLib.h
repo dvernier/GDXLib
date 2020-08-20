@@ -1,6 +1,6 @@
   #ifndef GDXLib_h  
   #define GDXLib_h
-  //define GDXLIB_LIB_VERSION "0.83" // displayed automatically
+  //define GDXLIB_LIB_VERSION "0.85" // displayed automatically
   // This is a library to make using GDX sensors easy
   #include "ArduinoBLE.h"
 
@@ -28,7 +28,6 @@ class GDXLib
     float readSensor();//a public method
     bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
     float GoDirectBLE_GetMeasurement();
-
     
  private:// also known as local  
 
@@ -61,11 +60,11 @@ class GDXLib
     bool D2PIO_Autoset();
     bool D2PIO_StartMeasurements(byte channelNumber);
     
-    void GoDirectBLE_Measure();  //
+    void GoDirectBLE_Measure();
     void GoDirectBLE_Error();
     void GoDirectBLE_Start();
     void GoDirectBLE_Scan();
-    void GoDirectBLE_Reset();  //
+    void GoDirectBLE_Reset();
     void GoDirectBLE_Read();
     void GoDirectBLE_GetStatus(char* strFirmwareVersion1, char* strFirmwareVersion2, byte& batteryPercent);
     int GoDirectBLE_GetScanRSSI();
