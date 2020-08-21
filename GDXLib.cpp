@@ -645,7 +645,6 @@ bool GDXLib::D2PIO_GetAvailableChannels(unsigned long& availableMask)
    #if defined DEBUG
       Serial.println ("***@@@ in D2PIO_GetAvailableChannels() Function");
    #endif
-   //!!!GetDefaultChannels()  TYPO
   
   byte command[] = {
   0x58, 0x00, 0x00, 0x00, 0x51
@@ -863,9 +862,6 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
     
         Serial.print("***  ID: ");
         Serial.println(pResponse->sensorId);
-        //THIS IS WHERE I TRIED TO HACK IN SPECIAL CODE FOR MD AND SND DEFAULT CHANNELS
-        //did if(deviceName.startsWith="GDX-SND" 
-        //g_channelNumber=2;!!!
         Serial.print("***  Measurement type: ");
         Serial.println(pResponse->numericMeasType);
         Serial.print("***  Sampling mode: ");
@@ -949,12 +945,12 @@ bool GDXLib::D2PIO_Autoset()
   #endif
   
    //!!! I am trying to hack this for SND. It works for FOR
-     if ((_deviceName[4] = 'F')&&
-         (_deviceName[5] = 'O')&&
-         (_deviceName[6] = 'R'))
+     if ((_deviceName[4] = 'S')&&
+         (_deviceName[5] = 'N')&&
+         (_deviceName[6] = 'D'))
              g_channelNumber=2;
              //set for A-weighted dB for Sound Sensor
- //    
+  
   // Get the channel info
   if (!D2PIO_GetChannelInfo(g_channelNumber, false)) return false;
   
@@ -962,7 +958,7 @@ bool GDXLib::D2PIO_Autoset()
   // However we limit it to about 200ms for the sake of Arduino.
   // Not sure if this is actually slow enough!?
   g_samplePeriodInMilliseconds = g_channelInfo.typMeasurementPeriod / 1000;
-  //WE MAY WANT TO PUT SOMETHING LIKE IT BACK IN LATER !!!
+  //WE MAY WANT TO REDUCE THE TIME OR GET RID OF LATER!!!
   if (g_samplePeriodInMilliseconds < 200) g_samplePeriodInMilliseconds = 200;
 
   Serial.print("***Autoset channel number: ");
@@ -1142,7 +1138,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   // Wait for connection interval to finish negotiating
   delay(1000);
   
-  //Get the deviceName set so I can use it below!!!
+  //Get the deviceName set so I can use it below in the hack to specify channel!!!
    sprintf(_deviceName,"%s",GoDirectBLE_GetDeviceName());
    Serial.println("");
    Serial.print("*** _deviceName");
@@ -1175,7 +1171,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   _channelNumber =GoDirectBLE_GetChannelNumber();
   ;//I think this is the way to go!!!
   sprintf(_channelName,"%s",GoDirectBLE_GetChannelName());
-  sprintf(_deviceName,"%s",GoDirectBLE_GetDeviceName());
+  sprintf(_deviceName,"%s",GoDirectBLE_GetDeviceName());//!!!this is actually a repeat of a line above
   sprintf(_channelUnits,"%s",GoDirectBLE_GetChannelUnits());
 
     #if defined DEBUG
@@ -1186,7 +1182,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
     Serial.println(_batteryPercent);
     Serial.print("***_chargeState");
     Serial.println(_chargeState);
-    Serial.print("***_channelUnits");//!!!
+    Serial.print("***_channelUnits");
     Serial.println(_channelUnits);
     Serial.print("***_channelName");
     Serial.println(_channelName);
@@ -1296,7 +1292,7 @@ int GDXLib::GoDirectBLE_GetScanRSSI()
   return g_RSSIStrength;
 }
 //=============================================================================
-// GoDirectBLE_DisplayChannelAsInteger() Function I do not think we use this, but until I deal with radiation counters, I am leaving it in.!!!
+// GoDirectBLE_DisplayChannelAsInteger() Function I do not think we use this, but until I deal with everything digital, I am leaving it in.!!!
 //=============================================================================
 bool GDXLib::GoDirectBLE_DisplayChannelAsInteger()
 {

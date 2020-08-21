@@ -30,7 +30,7 @@ void setup(){
       //or
   //GDX.Begin("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
   //GDX.Begin("GDX-RB 0K2000F4",2, 500);
-  //GDX.Begin("GDX-SND 0T1001L7",3, 500);
+  //GDX.Begin("GDX-SND 0T1001L7",2, 500);
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
   

@@ -33,7 +33,7 @@ class GDXLib
 
     char _channelName[32]="channelName";
     char _deviceName[32]="deviceName";
-    char _channelUnits[32]="channelUnits";// 32 bytes!!!
+    char _channelUnits[32]="channelUnits";
     uint8_t _batteryPercent=0;
     uint8_t _chargeState=0;
     int _RSSI=0;
