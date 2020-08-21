@@ -945,10 +945,12 @@ bool GDXLib::D2PIO_Autoset()
   #endif
   
    //!!! I am trying to hack this for SND. It works for FOR
-     if ((_deviceName[4] = 'S')&&
-         (_deviceName[5] = 'N')&&
-         (_deviceName[6] = 'D'))
+     if ((_deviceName[4] == 'S')&&
+         (_deviceName[5] == 'N')&&
+         (_deviceName[6] == 'D')){
              g_channelNumber=2;
+                Serial.print("***setting channel to 2 for SND");
+         }   
              //set for A-weighted dB for Sound Sensor
   
   // Get the channel info
