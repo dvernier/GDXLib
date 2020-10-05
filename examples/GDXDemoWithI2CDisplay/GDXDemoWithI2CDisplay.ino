@@ -70,6 +70,7 @@ void setup(){
       lcd.clear();
       lcd.print(GDX.channelName());
       lcd.setCursor(0,1);// column, row
+      ConvertUTF8ToASCII(GDX.channelUnits());
       lcd.print(GDX.channelUnits());
       delay(2000);
             
@@ -122,4 +123,34 @@ void loop(){
        lcd.setCursor(0,1);// column, row
        lcd.print(GDX.channelUnits());
        //2-LINE DISPLAY CODE */
+}
+
+void ConvertUTF8ToASCII(char* s)
+{
+  unsigned int k = 0;
+  unsigned int len = strlen(s);
+  byte c;
+
+  for (unsigned int i = 0; i < len; i++)
+  {
+    c = s[i];
+    Serial.print("i ");
+    Serial.print(i);
+    Serial.print("c ");
+    Serial.println(c);
+    if (c == 0xC2)
+    {
+      i++; // skip to the next character
+      c = s[i];
+      if      (c == 0xB5) c = 'u';  // micro
+      else if (c == 0xB0) c = 0xDF; // degrees (specific for 16x2 LCD character set)
+      else if (c == 0xB2) c = '2';  // squared (superscript 2)
+      else if (c == 0xB3) c = '3';  // cubed (superscript 3)
+      //else if (c == 0xB2) c = '2';  // subscript 2 !!! what is sent for subscript 2????
+    }
+
+    s[k] = c;
+    k++;
+  }
+  s[k] = 0;
 }
