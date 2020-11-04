@@ -251,22 +251,22 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)//useRssiThreshold is autoco
 
     return D2PIO_SCAN_RESULT_NONE;
   }
-
+   Serial.print (".");
   // Make sure we found a GDX device
   if ((peripheral.localName()[0] != 'G') ||
       (peripheral.localName()[1] != 'D') ||
-      (peripheral.localName()[2] != 'X')||
+      (peripheral.localName()[2] != 'X') ||
       (peripheral.localName()[3] != '-'))
-      //specify a type of sensor by adding letters here, after the '-'!!!
-   /*The code below should be taken out if Begin(deviceName) is not allowed!!!
-   if (g_deviceName!="null"){
-          peripheral.localName()[4] != g_deviceName[4];
-          peripheral.localName()[5] != g_deviceName[5];
-          peripheral.localName()[6] != g_deviceName[6];
-      }
-    */  
-    return D2PIO_SCAN_RESULT_NONE;
-
+   return D2PIO_SCAN_RESULT_NONE;
+   
+   Serial.print (",");
+   if (g_deviceName[3]=='*'){
+     if ((peripheral.localName()[4] != g_deviceName[4]) ||
+         (peripheral.localName()[5] != g_deviceName[5]) ||
+         (peripheral.localName()[6] != g_deviceName[6]))
+   return D2PIO_SCAN_RESULT_NONE;
+   }
+   
   // Create a relative strength reading from 0 to 16
   // 0  = Very weak
   // 16 = Strong enough to connect
@@ -1042,21 +1042,6 @@ void GDXLib::Begin()  // maybe rename this GoDirectStart()
   g_autoConnect = true;
   GoDirectBLE_Scan();
 } //end begin
-/*=============================================================================
-// Begin(char* deviceName) Function   Is this not allowed? !!!
-//=============================================================================
-void GDXLib::Begin(char* deviceName)  //
-{
-  #if defined DEBUG
-    Serial.println("***in Begin(char* deviceName)");
-  #endif
-  g_deviceName = deviceName; // this really is the device name
-  g_channelNumber = -1;
-  g_samplePeriodInMilliseconds = 0;
-  g_autoConnect = true;
-  GoDirectBLE_Scan();
-} //end begin
-*/
 //=============================================================================
 // Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds) Function
 //=============================================================================
@@ -1070,7 +1055,12 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   g_deviceName = deviceName; 
   g_channelNumber = channelNumber;
   g_samplePeriodInMilliseconds = samplePeriodInMilliseconds;
-  g_autoConnect = false;
+  if (g_deviceName[3]=='*')   g_autoConnect = true;
+  else g_autoConnect = false;
+    Serial.print("*** searching for "); 
+    Serial.println(deviceName);
+  
+  
   #if defined DEBUG
     Serial.print("***g_channelNumber specified ");
     Serial.println(g_channelNumber);
