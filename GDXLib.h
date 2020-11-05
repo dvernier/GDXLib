@@ -1,6 +1,6 @@
   #ifndef GDXLib_h  
   #define GDXLib_h
-  //define GDXLIB_LIB_VERSION "0.85" // displayed automatically
+  //define GDXLIB_LIB_VERSION "0.88" // displayed automatically
   // This is a library to make using GDX sensors easy
   #include "ArduinoBLE.h"
 
@@ -19,9 +19,8 @@ class GDXLib
     int RSSI()               { return _RSSI ;};
     int channelNumber()      { return _channelNumber ;};
     unsigned long samplePeriodInMilliseconds() { return _samplePeriodInMilliseconds;};
-    void Begin();
-    void Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
-    //void Begin(char* deviceName);//is this not allowed? !!!
+    void Open();
+    void Open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
     void stop();
     void start();
     void close();
@@ -29,8 +28,7 @@ class GDXLib
     bool D2PIO_ReadMeasurement(byte buffer[], int timeout, float& measurement);
     float GoDirectBLE_GetMeasurement();
     
- private:// also known as local  
-
+ private:// 
     char _channelName[32]="channelName";
     char _deviceName[32]="deviceName";
     char _channelUnits[32]="channelUnits";

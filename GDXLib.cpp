@@ -1,14 +1,16 @@
 /* This is a library to make using Vernier GDX sensors 
  easy using an Arduino which supports the Arduino BLE library
  
-Version 0.85 
+Version 0.88 - addition of support for begin(GDX*ACC XXXXXXXXX) and minor clean up
+Also, I changed the word "Begin" to "Open"
+and it supports samplePeriodInMilliseconds.
 ---  
 */
 //#define DEBUG //NOTE THIS PRINTS OUT DECODING STUFF!!!
 #include "ArduinoBLE.h"
 #include "Arduino.h"
 #include "GDXLib.h"
-#define GDXLib_LIB_VERSION "0.85"//automatically displayed
+#define GDXLib_LIB_VERSION "0.88"//automatically displayed
 
 GDXLib::GDXLib()
 {}
@@ -252,7 +254,7 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)//useRssiThreshold is autoco
     return D2PIO_SCAN_RESULT_NONE;
   }
    Serial.print (".");
-  // Make sure we found a GDX device
+  // Make sure we found a GDX device (always)
   if ((peripheral.localName()[0] != 'G') ||
       (peripheral.localName()[1] != 'D') ||
       (peripheral.localName()[2] != 'X') ||
@@ -260,6 +262,8 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)//useRssiThreshold is autoco
    return D2PIO_SCAN_RESULT_NONE;
    
    Serial.print (",");
+   //the code below checks to see if we have the right type of GDX sensor
+   //in the cases where the '*" was used only.
    if (g_deviceName[3]=='*'){
      if ((peripheral.localName()[4] != g_deviceName[4]) ||
          (peripheral.localName()[5] != g_deviceName[5]) ||
@@ -290,11 +294,11 @@ g_RSSIStrength=peripheral.rssi();
     Serial.print("***peripheral.rssi() ");
     Serial.println(peripheral.rssi());
 
-      uint8_t mfgData[64];
-      uint8_t mgfDataLen = 0;
-      Serial.print("***MfgData=");
-      Serial.print("*** ");
-      for (int i = 0; i < mgfDataLen; i++)
+    uint8_t mfgData[64];
+    uint8_t mgfDataLen = 0;
+    Serial.print("***MfgData=");
+    Serial.print("*** ");
+    for (int i = 0; i < mgfDataLen; i++)
       {
         Serial.print(mfgData[i], HEX);
         Serial.print("*** ");
@@ -362,7 +366,7 @@ bool GDXLib::GDXLib::D2PIO_DiscoverService(BLEDevice peripheral)
   //Serial.println("***Subscribed to D2PIO response notifications");
   //d2pioResponse.setEventHandler(BLEValueUpdated, D2PIO_ResponseHandler);
 
-  return true;
+    return true;
 }
 
 //=============================================================================
@@ -599,44 +603,7 @@ bool GDXLib::D2PIO_SetMeasurementPeriod(unsigned long measurementPeriodInMillise
   if (!D2PIO_ReadBlocking(g_ReadBuffer, 5000)) return false;
   return true;
 }
-//=============================================================================
-// D2PIO_GetDefaultChannel() Function //!!! Get rid of this
-//=============================================================================
-//bool GDXLib::D2PIO_GetDefaultChannel(byte& channelNumber)
-//{
-//    byte command[] = {
-//      0x58, 0x00, 0x00, 0x00, 0x56
-//    };
-//
-//    // Populate the packet header bytes
-//    command[1] = sizeof(command);
-//    command[2] = g_rollingCounter--;
-//    command[3] = D2PIO_CalculateChecksum(command);
-//
-//    if (!D2PIO_Write(command)) return false;
-//    if (!D2PIO_ReadBlocking(g_ReadBuffer, 5000)) return false;
-//
-//    // Extract the channel mask from the packet
-//    unsigned long channelMask;
-//    memcpy(&channelMask, &g_ReadBuffer[6], 4);
-//
-//    // Find the first channel number that is set
-//    int i;
-//    unsigned long testMask = 1;
-//    for (i = 0; i < 32; i++)
-//    {piiiiiiiiiiiiiiuu
-//      if (testMask & channelMask)
-//      {
-//        channelNumber = i;
-//        break;
-//      }
-//      testMask = testMask << 1;
-//    }
-//
-//    if (i == 32) return false;
 
-//    return true;
-//}
 //=============================================================================
 // D2PIO_GetAvailableChannels() Function
 //=============================================================================
@@ -686,26 +653,8 @@ bool GDXLib::D2PIO_GetDefaultChannels(unsigned long& defaultMask)
 
   // Extract the channel mask from the packet
   unsigned long mask;
-  memcpy(&mask, &g_ReadBuffer[6], 4);
-    /* The code below was in a function called D2PIO_GetDefaultChannels() Function, which is
-     *  now commmented out.
-    // Find the first channel number that is set
-   int i;
-    unsigned long testMask = 1;
-    for (i = 0; i < 32; i++)
-    {
-      if (testMask & channelMask)
-      {
-        channelNumber = i;
-        break;
-      }
-      testMask = testMask << 1;
-    }
-
-    if (i == 32) return false;
-*/
-  
- defaultMask = mask;
+  memcpy(&mask, &g_ReadBuffer[6], 4); 
+  defaultMask = mask;
   return true;
 }
 //=============================================================================
@@ -1003,6 +952,7 @@ bool GDXLib::D2PIO_StartMeasurements(byte channelNumber)
   return true;
 }
 //end of D2PIO functions
+
 ///=============================================================================
 // GoDirectBLE_Error() Function// Just added 041920
 //=============================================================================
@@ -1029,37 +979,36 @@ void GDXLib::GoDirectBLE_Error()
     BLE.scanForName(g_deviceName, true);
 }
 //=============================================================================
-// Begin() Function
+// Open() Function
 //=============================================================================
-void GDXLib::Begin()  // maybe rename this GoDirectStart()
+void GDXLib::Open()  // This used to be labelled Begin
 {
   #if defined DEBUG
-    Serial.println("***in Begin(GDX....");
+    Serial.println("***in Open(GDX....");
   #endif
   g_deviceName = NULL;
   g_channelNumber = -1;
   g_samplePeriodInMilliseconds = 0;
   g_autoConnect = true;
   GoDirectBLE_Scan();
-} //end begin
+} //end Open
 //=============================================================================
-// Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds) Function
+// Open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds) Function
 //=============================================================================
-void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
+void GDXLib::Open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
 {
   #if defined DEBUG
-    Serial.print("***in Begin(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)");
+    Serial.print("***in Open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)");
     Serial.println(deviceName);
   #endif
  
   g_deviceName = deviceName; 
   g_channelNumber = channelNumber;
   g_samplePeriodInMilliseconds = samplePeriodInMilliseconds;
-  if (g_deviceName[3]=='*')   g_autoConnect = true;
+  if (g_deviceName[3]=='*')   g_autoConnect = true;//this allow for the search for a type of GDX device
   else g_autoConnect = false;
-    Serial.print("*** searching for "); 
-    Serial.println(deviceName);
-  
+  Serial.print("*** searching for "); 
+  Serial.println(deviceName);
   
   #if defined DEBUG
     Serial.print("***g_channelNumber specified ");
@@ -1068,7 +1017,7 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
     Serial.println(deviceName);  
   #endif
   GoDirectBLE_Scan();
-  } //end begin
+  } //end Open
 
 //=============================================================================
 // GoDirectBLE_Scan() Function
@@ -1130,7 +1079,6 @@ void GDXLib::Begin(char* deviceName, byte channelNumber, unsigned long samplePer
   // Wait for connection interval to finish negotiating
   delay(1000);
   
-  //Get the deviceName set so I can use it below in the hack to specify channel!!!
    sprintf(_deviceName,"%s",GoDirectBLE_GetDeviceName());
    Serial.println("");
    Serial.print("*** _deviceName");
