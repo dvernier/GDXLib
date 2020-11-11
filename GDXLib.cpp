@@ -2,7 +2,7 @@
  easy using an Arduino which supports the Arduino BLE library
  
 Version 0.88 - addition of support for begin(GDX*ACC XXXXXXXXX) and minor clean up
-Also, I changed the word "Begin" to "Open"
+Also, I changed the word "Begin" to "open"
 and it supports samplePeriodInMilliseconds.
 ---  
 */
@@ -261,7 +261,7 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)//useRssiThreshold is autoco
       (peripheral.localName()[3] != '-'))
    return D2PIO_SCAN_RESULT_NONE;
    
-   Serial.print (",");
+   Serial.println(",");
    //the code below checks to see if we have the right type of GDX sensor
    //in the cases where the '*" was used only.
    if (g_deviceName[3]=='*'){
@@ -912,10 +912,12 @@ bool GDXLib::D2PIO_Autoset()
   //WE MAY WANT TO REDUCE THE TIME OR GET RID OF LATER!!!
   if (g_samplePeriodInMilliseconds < 200) g_samplePeriodInMilliseconds = 200;
 
-  Serial.print("***Autoset channel number: ");
-  Serial.println(g_channelNumber);
-  Serial.print("***Autoset sample period (ms): ");
-  Serial.println(g_samplePeriodInMilliseconds);
+  #if defined DEBUG
+    Serial.print("***Autoset channel number: ");
+    Serial.println(g_channelNumber);
+    Serial.print("***Autoset sample period (ms): ");
+    Serial.println(g_samplePeriodInMilliseconds);
+  #endif
   return true;
 }
 //=============================================================================
@@ -979,26 +981,26 @@ void GDXLib::GoDirectBLE_Error()
     BLE.scanForName(g_deviceName, true);
 }
 //=============================================================================
-// Open() Function
+// open() Function
 //=============================================================================
-void GDXLib::Open()  // This used to be labelled Begin
+void GDXLib::open()  // This used to be labelled Begin
 {
   #if defined DEBUG
-    Serial.println("***in Open(GDX....");
+    Serial.println("***in open(GDX....");
   #endif
   g_deviceName = NULL;
   g_channelNumber = -1;
   g_samplePeriodInMilliseconds = 0;
   g_autoConnect = true;
   GoDirectBLE_Scan();
-} //end Open
+} //end open
 //=============================================================================
-// Open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds) Function
+// open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds) Function
 //=============================================================================
-void GDXLib::Open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
+void GDXLib::open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)
 {
   #if defined DEBUG
-    Serial.print("***in Open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)");
+    Serial.print("***in open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds)");
     Serial.println(deviceName);
   #endif
  
@@ -1007,17 +1009,16 @@ void GDXLib::Open(char* deviceName, byte channelNumber, unsigned long samplePeri
   g_samplePeriodInMilliseconds = samplePeriodInMilliseconds;
   if (g_deviceName[3]=='*')   g_autoConnect = true;//this allow for the search for a type of GDX device
   else g_autoConnect = false;
-  Serial.print("*** searching for "); 
-  Serial.println(deviceName);
-  
   #if defined DEBUG
+    Serial.print("*** searching for "); 
+    Serial.println(deviceName);
     Serial.print("***g_channelNumber specified ");
     Serial.println(g_channelNumber);
     Serial.print("***deviceName");
     Serial.println(deviceName);  
   #endif
   GoDirectBLE_Scan();
-  } //end Open
+  } //end open
 
 //=============================================================================
 // GoDirectBLE_Scan() Function
@@ -1069,7 +1070,9 @@ void GDXLib::Open(char* deviceName, byte channelNumber, unsigned long samplePeri
   }//end if
   else
   {
-    Serial.println("SUCCESS");
+   #if defined DEBUG
+      Serial.println("SUCCESS");
+   #endif
    delay(10);  // Kevin: seems okay without this delay//!!!
   if (!D2PIO_DiscoverService(g_peripheral)) //Kevin's Discover 
     GoDirectBLE_Error();
@@ -1079,10 +1082,13 @@ void GDXLib::Open(char* deviceName, byte channelNumber, unsigned long samplePeri
   // Wait for connection interval to finish negotiating
   delay(1000);
   
-   sprintf(_deviceName,"%s",GoDirectBLE_GetDeviceName());
-   Serial.println("");
-   Serial.print("*** _deviceName");
-   Serial.println(_deviceName);
+  sprintf(_deviceName,"%s",GoDirectBLE_GetDeviceName());
+  #if defined DEBUG
+    Serial.println("");
+    Serial.print("*** _deviceName");
+    Serial.println(_deviceName);
+  #endif
+   
   if (!D2PIO_GetStatus())
     GoDirectBLE_Error();
   if (!D2PIO_GetDeviceInfo()) //Kevin's Setup

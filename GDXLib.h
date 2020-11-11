@@ -19,8 +19,8 @@ class GDXLib
     int RSSI()               { return _RSSI ;};
     int channelNumber()      { return _channelNumber ;};
     unsigned long samplePeriodInMilliseconds() { return _samplePeriodInMilliseconds;};
-    void Open();
-    void Open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
+    void open();
+    void open(char* deviceName, byte channelNumber, unsigned long samplePeriodInMilliseconds);
     void stop();
     void start();
     void close();

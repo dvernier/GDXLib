@@ -13,13 +13,12 @@ char strUnits[32]="strUnits";
 void setup(){
   Serial.begin(9600);
   delay(500);
-  Serial.println("Searching for");
-  Serial.println("GDX Sensor");
+  Serial.println("Searching for GDX Sensor");
   char strBuffer[32]="unassigned";
   char strUnits[32]="strUnits";
-  GDX.Open();  //use this line for proximity pairing, or use a statement like one of the two below:
-  //GDX.open("GDX*ACC XXXXXXXX",1, 1000);//specify a type of GDX device, channel and period here 
-  //GDX.open("GDX-ACC 0H1019K1",1, 1000);//or specify a specific GDX device, channel and period here 
+  //GDX.open();  //use this line for proximity pairing, or use a statement like one of the two below:
+  //GDX.open("GDX*ST XXXXXXXX",1, 1000);//specify a type of GDX device, channel and period here 
+  GDX.open("GDX-ACC 0H1019K1",1, 1000);//or specify a specific GDX device, channel and period here 
   
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
