@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201104, using the 0.88 )
+ GDXLib Demo (v. 20201104, using the 0.88 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -7,19 +7,21 @@
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 GDXLib GDX;
-char strBuffer[32]="unassigned";
-char strUnits[32]="strUnits";
-
+  char strBuffer[32]="unassigned";
+  char strUnits[32]="strUnits";
+  int numberOfReadings=10;// change as you wish
+  int readingNumber=0;// this will increment
+  
 void setup(){
   Serial.begin(9600);
   delay(500);
-  Serial.println("Searching for GDX Sensor");
-  char strBuffer[32]="unassigned";
-  char strUnits[32]="strUnits";
-  //GDX.open();  //use this line for proximity pairing, or use a statement like one of the two below:
-  //GDX.open("GDX*ST XXXXXXXX",1, 1000);//specify a type of GDX device, channel and period here 
-  GDX.open("GDX-ACC 0H1019K1",1, 1000);//or specify a specific GDX device, channel and period here 
-  
+  Serial.println("Searching for");
+  Serial.println("GDX Sensor");
+  GDX.open();  //use this line for proximity pairing
+      //or
+  //GDX.open("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
+      //or
+  //GDX.open("GDX*ACC XXXXXXXX",1, 1000);//or specify device, channel and period here 
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
   
@@ -31,9 +33,6 @@ void setup(){
 
   Serial.print("channelNumber: ");
   Serial.println (GDX.channelNumber());
-
-  Serial.print("samplePeriodInMilliseconds: ");
-  Serial.println (GDX.samplePeriodInMilliseconds());
   
   Serial.print("Battery status(%): ");
   Serial.println (GDX.batteryPercent());
@@ -48,31 +47,25 @@ void setup(){
   
   Serial.print("samplePeriod: ");
   Serial.println (GDX.samplePeriodInMilliseconds());
-   
+  
   GDX.start();
-  delay(200);
-  for(int row=1;row<11;row++){ //take 10 readings and then stop. 
-     Serial.print(row);
+  delay(500);//let readings start
+  
+}//end of setup
+
+void loop(){
+  readingNumber++;// increment
+  if (readingNumber<=numberOfReadings){
+     Serial.print(readingNumber);
      Serial.print(" ");
      float channelReading =GDX.readSensor();
      Serial.print(channelReading);
      Serial.print(" ");
      Serial.println(GDX.channelUnits());
-   }//end of for
-       
-     GDX.stop();
-     Serial.println("series of readings taken; stopping GDX data collection");
-     GDX.close(); 
-     
-}//end of setup
-
-void loop(){
-  //add the code below if you want repeated readings:
-  /*
-  Serial.println("top of loop");
-  float channelReading =GDX.readSensor();
-  Serial.print("channelReading: ");
-  Serial.print(channelReading);
-  Serial.println(GDX.channelUnits());
-  */
+  }//end of if
+   if (readingNumber==numberOfReadings+1){
+      GDX.stop();
+      GDX.close();
+      Serial.println("series of readings taken; stopping GDX data collection");
+  }//end of if
 }
