@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20200819, using the 0.85 )
+ GDXLib Demo (v. 20201104, using the 0.88 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -23,10 +23,11 @@ void setup(){
       //2-LINE DISPLAY CODE*/
   Serial.println("Searching for");
   Serial.println("GDX Sensor");
-  GDX.Begin();  //use this line for proximity pairing
+  GDX.open();  //use this line for proximity pairing
       //or
-  //GDX.Begin("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
-
+  //GDX.open("GDX-ACC 0H1019K1",1, 1000);//or specify specific device, channel and period here 
+     //or
+  //GDX.open("GDX*ACC XXXXXXXX",1, 1000);//or specify device type, channel and period here 
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
   
@@ -93,49 +94,38 @@ void setup(){
 }//end of setup
 
 void loop(){
-  /*float channelReading =GDX.readSensor();
-  Serial.print("channelReading: ");
-  Serial.print(channelReading);
-  Serial.println(GDX.channelUnits());
-       // 2-LINE DISPLAY CODE
-       sprintf(strBuffer, "%.2f", channelReading);
-       CharDisplayPrintLine (1,strBuffer);
-       CharDisplayPrintLine (2,GDX.channelUnits());
-  */
 }
-// Both the functions below are used for TWO_LINE_DISPLAY with serial connection,
-        // and are not needed if you are using an Arduino Uno WiFi and the display on connected to
-        // the Vernier Arduino shield.
-        
-        void CharDisplayPrintLine(int line, const char* strText){
-          uint8_t lineCode = 128;
-          if (line == 2) lineCode = 192;
-        
-          // Force a field width of 16.
-          // Left justified with space padding on the right.
-          //char strBuffer[32];
-          sprintf(strBuffer, "%-16.15s",  strText);
-        
-          //For debug -- prints what goes to the display
-          //Serial.print(" strBuffer ");
-          //Serial.print("[");
-          //Serial.print(strBuffer);
-          //Serial.println("]");
-          //Serial.println(strlen(strBuffer));
-          
-          Serial1.write((uint8_t)254); 
-          Serial1.write(lineCode); 
-          Serial1.write(strBuffer, 15);
-        }
+// Both the functions below are used for TWO_LINE_DISPLAY with serial connection.
       
-        void CharDisplayInit(){
-          Serial1.begin(9600);
-          delay(500);
-        
-          //Clear the screen
-          Serial1.write((uint8_t)254);
-          Serial1.write((uint8_t)1);
-          // Move cursor to beginning of line1
-          Serial1.write(254); 
-          Serial1.write(128);  
-        }
+void CharDisplayPrintLine(int line, const char* strText){
+    uint8_t lineCode = 128;
+    if (line == 2) lineCode = 192;
+  
+    // Force a field width of 16.
+    // Left justified with space padding on the right.
+    //char strBuffer[32];
+    sprintf(strBuffer, "%-16.15s",  strText);
+  
+    //For debug -- prints what goes to the display
+    //Serial.print(" strBuffer ");
+    //Serial.print("[");
+    //Serial.print(strBuffer);
+    //Serial.println("]");
+    //Serial.println(strlen(strBuffer));
+    
+    Serial1.write((uint8_t)254); 
+    Serial1.write(lineCode); 
+    Serial1.write(strBuffer, 15);
+}
+      
+void CharDisplayInit(){
+    Serial1.begin(9600);
+    delay(500);
+    
+    //Clear the screen
+    Serial1.write((uint8_t)254);
+    Serial1.write((uint8_t)1);
+    // Move cursor to beginning of line1
+    Serial1.write(254); 
+    Serial1.write(128);  
+}

@@ -1,17 +1,17 @@
 /*
- GDXLib Demo (v. 20200819, using the 0.85 )
+ GDXLib Demo (v. 20201104, using the 0.88 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
  The lines with the major indents are for using a 2-line display connected
- with three serial lines. 
+ with four I2C lines. 
  */
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 GDXLib GDX;
 char strBuffer[32]="unassigned";
 char strUnits[32]="strUnits";
-   //indented lines are for 2-line display
+   //indented lines are for 2-line I2C display
    // this version uses I2C connection
    #include <Wire.h>
    #include <SerLCD.h> //Click here to get the library: http://librarymanager/All#SparkFun_SerLCD
@@ -31,10 +31,11 @@ void setup(){
       lcd.print("GDX Sensor");
       delay(1000);
       //2-LINE DISPLAY CODE*/
-  GDX.Begin();  //use this line for proximity pairing
+  GDX.open();  //use this line for proximity pairing
       //or
-  //GDX.Begin("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
-
+  //GDX.open("GDX-ACC 0H1019K1",1, 1000);//or specify specific device, channel and period here 
+      //or
+  //GDX.open("GDX*ACC XXXXXXXX",1, 1000);//or specify device type, channel and period here 
   Serial.print("Found: ");
   Serial.println (GDX.deviceName());
   
@@ -88,7 +89,7 @@ void setup(){
       lcd.setCursor(0,1);// column, row
       lcd.print("threshold = -44 ");//!!!NOTE SET IN .CPP CODE
       delay(2000);
-      //2-LINE DISPLAY CODE*/ 
+      //2-LINE DISPLAY CODE*/
   
   GDX.start();
   delay(200);
@@ -112,17 +113,6 @@ void setup(){
 }//end of setup
 
 void loop(){
-  /*float channelReading =GDX.readSensor();
-  Serial.print("channelReading: ");
-  Serial.print(channelReading);
-  Serial.println(GDX.channelUnits());
-         // 2-LINE DISPLAY CODE
-       lcd.clear(); //Clear 
-       sprintf(strBuffer, "%.2f", channelReading);
-       lcd.print(strBuffer);
-       lcd.setCursor(0,1);// column, row
-       lcd.print(GDX.channelUnits());
-       //2-LINE DISPLAY CODE */
 }
 
 void ConvertUTF8ToASCII(char* s)

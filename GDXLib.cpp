@@ -1252,7 +1252,7 @@ char* GDXLib::GoDirectBLE_GetChannelName()
   return g_channelInfo.sensorDescription;
 }
 //=============================================================================
-// GoDirectBLE_GetMeasurement() Function NOT USED, BUT SHOULD IT BE?????????????????
+// GoDirectBLE_GetMeasurement() Function NOT USED, BUT SHOULD IT BE?
 //=============================================================================
 float GDXLib::GoDirectBLE_GetMeasurement()
 {
@@ -1271,4 +1271,7 @@ void GDXLib::stop()
 void GDXLib::close()
 {
   BLE.disconnect();
+  #if defined DEBUG
+     Serial.println("*** BlE connection closed");
+  #endif
 }

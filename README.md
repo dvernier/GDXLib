@@ -1,1 +1,1 @@
-# GDX DisplayLibrary to make reading Vernier GDX sensors easy to use with the Arduino Nano 33 BLE.
+# GDX DisplayLibrary to make reading any Vernier GDX sensors easy when working with any Arduino which supports the Arduino BLE library. 

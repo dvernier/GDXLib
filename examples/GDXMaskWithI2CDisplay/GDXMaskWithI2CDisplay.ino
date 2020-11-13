@@ -1,5 +1,5 @@
 /*
- GDX Mask Demo (v. 20200728, using the 0.85 library)
+ GDX Mask Demo (v. 20201104, using the 0.88 library code)
  // This version supports a I2C 2-line display
  */
 #include "ArduinoBLE.h"
@@ -52,7 +52,7 @@ void setup(){
       //2-LINE DISPLAY CODE*/
   #endif //DISPLAY
 
-  //GDX.Begin();  //use this line for proximity pairing
+  //GDX.open();  //use this line for proximity pairing
     //or
     // 2-LINE DISPLAY CODE
       lcd.clear();
@@ -60,7 +60,7 @@ void setup(){
       lcd.setCursor(0,1);// column, row
       lcd.print("GDX-ACC 0H101767");
       delay(2000);
-  GDX.Begin("GDX-ACC 0H101767",11, 800);//or specify device, channel and period here 
+  GDX.open("GDX*ACC XXXXXXXX",11, 800);//or specify device, channel and period here 
   Serial.println("Found: ");
   Serial.print("deviceName:: ");
   Serial.println(GDX.deviceName());
