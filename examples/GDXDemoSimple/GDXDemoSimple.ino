@@ -1,4 +1,4 @@
-//GDXLibDemoSimple (v. 20201104, using the 0.88 library code)
+//GDXLibDemoSimple (v. 20201123, using the 0.90 library code)
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 GDXLib GDX;
@@ -13,8 +13,9 @@ void setup(){
   //GDX.open("GDX*ACC XXXXXXXX",1, 1000);//or specify device type, channel and period here 
   delay(100);
   Serial.print("Found: ");
-  Serial.print("GDX.deviceName() ");
-  Serial.println (GDX.deviceName());
+  Serial.print(GDX.orderCode());
+  Serial.print(" ");
+  Serial.println (GDX.serialNumber());
   Serial.print("GDX.channelName() ");
   Serial.println (GDX.channelName());
   GDX.start();

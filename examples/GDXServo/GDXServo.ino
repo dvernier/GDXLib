@@ -50,7 +50,8 @@ void setup(){
   //GDX.open("GDX-ACC 0H1019K1",1, 1000);//or specify device, channel and period here 
 
   Serial.print("Found: ");
-  Serial.println (GDX.deviceName());
+  Serial.print(GDX.orderCode());
+  Serial.println (GDX.serialNumber());
   
   Serial.print("channelName; ");
   Serial.println (GDX.channelName());

@@ -19,9 +19,9 @@ void setup(){
   Serial.println("GDX Sensor");
   GDX.open();  //use this line for proximity pairing
       //or
-  //GDX.open("GDX-HD 151000A5",2, 1000);//or specify device, channel and period here 
+  //GDX.open("GDX-ACC 0H1019K1",11, 1000);//or specify device, channel and period here 
       //or
-  //GDX.open("GDX*HD XXXXXXXX",2, 1000);//or specify device, channel and period here 
+  //GDX.open("GDX*ACC XXXXXXXX",7, 1000);//or specify device, channel and period here 
   Serial.print("Found: ");
   Serial.print (GDX.orderCode());
   Serial.print(" ");

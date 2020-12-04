@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201104, using the 0.88 library code)
+ GDXLib Demo (v. 20201123, using the 0.90 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -10,7 +10,6 @@
 #include "GDXLib.h"
 GDXLib GDX;
 char strBuffer[32]="unassigned";
-char strUnits[32]="strUnits";
 
 void setup(){
   Serial.begin(9600);
@@ -29,7 +28,9 @@ void setup(){
      //or
   //GDX.open("GDX*ACC XXXXXXXX",1, 1000);//or specify device type, channel and period here 
   Serial.print("Found: ");
-  Serial.println (GDX.deviceName());
+  Serial.print (GDX.orderCode());
+  Serial.print (" ");
+  Serial.println (GDX.serialNumber());
   
   Serial.print("channelName; ");
   Serial.println (GDX.channelName());
@@ -55,7 +56,9 @@ void setup(){
   Serial.println (GDX.samplePeriodInMilliseconds());
   // 2-LINE DISPLAY CODE
       CharDisplayPrintLine(1,"Found: ");
-      CharDisplayPrintLine (2,GDX.deviceName());
+      delay(1000);
+      CharDisplayPrintLine (1,GDX.orderCode());
+      CharDisplayPrintLine (2,GDX.serialNumber());
       delay(2000);
       
       CharDisplayPrintLine (1,GDX.channelName());
@@ -95,7 +98,8 @@ void setup(){
 
 void loop(){
 }
-// Both the functions below are used for TWO_LINE_DISPLAY with serial connection.
+
+// All the functions below are used for TWO_LINE_DISPLAY with serial connection.
       
 void CharDisplayPrintLine(int line, const char* strText){
     uint8_t lineCode = 128;
@@ -112,7 +116,7 @@ void CharDisplayPrintLine(int line, const char* strText){
     //Serial.print(strBuffer);
     //Serial.println("]");
     //Serial.println(strlen(strBuffer));
-    
+    ConvertUTF8ToASCII(strBuffer);// to handle degree sign, and superscripts
     Serial1.write((uint8_t)254); 
     Serial1.write(lineCode); 
     Serial1.write(strBuffer, 15);
@@ -129,3 +133,28 @@ void CharDisplayInit(){
     Serial1.write(254); 
     Serial1.write(128);  
 }
+
+void ConvertUTF8ToASCII(char* s) // to handle degree sign, and superscripts
+{
+  unsigned int k = 0;
+  unsigned int len = strlen(s);
+  byte c;
+
+  for (unsigned int i = 0; i < len; i++)
+  {
+    c = s[i];
+    if (c == 0xC2)
+    {
+      i++; // skip to the next character
+      c = s[i];
+      if      (c == 0xB5) c = 'u';  // micro
+      else if (c == 0xB0) c = 0xDF; // degrees (specific for 16x2 LCD character set)
+      else if (c == 0xB2) c = '2';  // squared (superscript 2)
+      else if (c == 0xB3) c = '3';  // cubed (superscript 3)
+     }
+
+    s[k] = c;
+    k++;
+   }
+   s[k] = 0;
+ }

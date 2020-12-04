@@ -1,5 +1,5 @@
 /*
- GDX Mask Demo (v. 20201104, using the 0.88 library code)
+ GDX Mask Demo (v. 20201123, using the 0.90 library code)
  // This version supports a I2C 2-line display
  */
 #include "ArduinoBLE.h"
@@ -56,19 +56,20 @@ void setup(){
     //or
     // 2-LINE DISPLAY CODE
       lcd.clear();
-      lcd.print("Searhing for: ");
+      lcd.print("Searching for: ");
       lcd.setCursor(0,1);// column, row
       lcd.print("GDX-ACC 0H101767");
       delay(2000);
   GDX.open("GDX*ACC XXXXXXXX",11, 800);//or specify device, channel and period here 
   Serial.println("Found: ");
-  Serial.print("deviceName:: ");
-  Serial.println(GDX.deviceName());
+  Serial.print (GDX.orderCode());
+  Serial.print(" ");
+  Serial.println (GDX.serialNumber());
   Serial.print("channelName:: ");
   Serial.println(GDX.channelName());
   Serial.print("channelUnits:");
   Serial.println(GDX.channelUnits());
-  Serial.println("---");
+  Serial.println("---");  
   Serial.print("GetBatteryStatus()");
   Serial.println(GDX.batteryPercent());
   Serial.println("---");
@@ -76,7 +77,9 @@ void setup(){
       lcd.clear();
       lcd.print("Found: ");
       lcd.setCursor(0,1);// column, row
-      lcd.print(GDX.deviceName());
+      lcd.print (GDX.orderCode());
+      lcd.print(" ");
+      lcd.println (GDX.serialNumber());
       delay(2000);
       
       //2-LINE DISPLAY CODE*/ 

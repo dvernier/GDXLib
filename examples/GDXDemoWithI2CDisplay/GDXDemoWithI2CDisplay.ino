@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201104, using the 0.88 library code)
+ GDXLib Demo (v. 20201123, using the 0.90 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -37,7 +37,9 @@ void setup(){
       //or
   //GDX.open("GDX*ACC XXXXXXXX",1, 1000);//or specify device type, channel and period here 
   Serial.print("Found: ");
-  Serial.println (GDX.deviceName());
+  Serial.print (GDX.orderCode());
+  Serial.print(" ");
+  Serial.println (GDX.serialNumber());
   
   Serial.print("channelName; ");
   Serial.println (GDX.channelName());
@@ -65,14 +67,17 @@ void setup(){
       lcd.clear();
       lcd.print("Found: ");
       lcd.setCursor(0,1);// column, row
-      lcd.print(GDX.deviceName());
+      lcd.print (GDX.orderCode());
+      lcd.print(" ");
+      lcd.println (GDX.serialNumber());
       delay(2000);
       
       lcd.clear();
       lcd.print(GDX.channelName());
       lcd.setCursor(0,1);// column, row
-      ConvertUTF8ToASCII(GDX.channelUnits());
-      lcd.print(GDX.channelUnits());
+      strcpy(strUnits,GDX.channelUnits());
+      ConvertUTF8ToASCII(strUnits);//used to handle degree sign and superscripts
+      lcd.print(strUnits);
       delay(2000);
             
       lcd.clear();
@@ -99,13 +104,13 @@ void setup(){
      float channelReading =GDX.readSensor();
      Serial.print(channelReading);
      Serial.print(" ");
-     Serial.println(GDX.channelUnits());
+     Serial.println (GDX.channelUnits());
        // 2-LINE DISPLAY CODE
        lcd.clear(); //Clear 
        sprintf(strBuffer, "%.2f", channelReading);
-       lcd.print(strBuffer);
+       lcd.print(strBuffer);//note strBuffer was assigned above
        lcd.setCursor(0,1);// column, row
-       lcd.print(GDX.channelUnits());
+       lcd.print(strUnits);
        //2-LINE DISPLAY CODE */
    }//end of for
    GDX.stop();
@@ -124,10 +129,6 @@ void ConvertUTF8ToASCII(char* s)
   for (unsigned int i = 0; i < len; i++)
   {
     c = s[i];
-    Serial.print("i ");
-    Serial.print(i);
-    Serial.print("c ");
-    Serial.println(c);
     if (c == 0xC2)
     {
       i++; // skip to the next character

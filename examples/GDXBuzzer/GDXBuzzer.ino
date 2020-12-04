@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201112, using the 0.88 )
+ GDXLib Demo (v. 20201123, using the 0.90 )
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -50,12 +50,14 @@ void setup(){
       lcd.print("GDX Sensor");
       delay(1000);
       //2-LINE DISPLAY CODE*/
- GDX.open();  //use this line for proximity pairing
+ //GDX.open();  //use this line for proximity pairing
       //or
- //GDX.open("GDX*HD*********",1, 100);//or specify device, channel and period here 
+ GDX.open("GDX*HD*********",1, 100);//or specify device, channel and period here 
 
   Serial.print("Found: ");
-  Serial.println (GDX.deviceName());
+  Serial.print (GDX.orderCode());
+  Serial.print(" ");
+  Serial.println (GDX.serialNumber());
   
   Serial.print("channelName; ");
   Serial.println (GDX.channelName());
@@ -83,15 +85,18 @@ void setup(){
       lcd.clear();
       lcd.print("Found: ");
       lcd.setCursor(0,1);// column, row
-      lcd.print(GDX.deviceName());
+      lcd.print (GDX.orderCode());
+      lcd.print(" ");
+      lcd.println (GDX.serialNumber());
       delay(2000);
       
       lcd.clear();
       ConvertUTF8ToASCII(GDX.channelName());//this is to handle special characters on LCD display
       lcd.print(GDX.channelName());
       lcd.setCursor(0,1);// column, row
-      ConvertUTF8ToASCII(GDX.channelUnits());//this is to handle special characters on LCD display
-      lcd.print(GDX.channelUnits());
+      strcpy(strUnits,GDX.channelUnits());
+      ConvertUTF8ToASCII(strUnits);//used to handle degree sign and superscripts
+      lcd.print(strUnits);
       delay(2000);
             
       lcd.clear();
@@ -128,7 +133,7 @@ void loop(){
        sprintf(strBuffer, "%.2f", channelReading);
        lcd.print(strBuffer);
        lcd.setCursor(0,1);// column, row
-       lcd.print(GDX.channelUnits());
+       lcd.print(strUnits);
        //2-LINE DISPLAY CODE */
        // map the analog input range (in this case, 400 - 1000 from the photoresistor)
   // to the output pitch range (120 - 1500Hz)

@@ -260,8 +260,8 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)//useRssiThreshold is autoco
            Serial.print("x");//x means not a GDX device
            return D2PIO_SCAN_RESULT_NONE;
          }
-      Serial.print ("");//move to new line if sensor is GDX
-  if (deviceName[3]=='*'){ 
+      Serial.print ("GDX ");//move to new line if sensor is GDX
+  if (g_deviceName[3]=='*'){ 
        //the code below checks to see if we have the right type of GDX sensor
        //in the cases where the '*' was used in the open (only).
        Serial.println("*");//'' shows test for just the right order code
@@ -272,7 +272,7 @@ int D2PIO_Scan(bool useRssiThreshold, int threshold)//useRssiThreshold is autoco
        return D2PIO_SCAN_RESULT_NONE;
      }//end of if right order code
     }//end of '*' checking
-
+  Serial.println ("");//move to new line, when sensor is found
   // Create a relative strength reading from 0 to 16
   // 0  = Very weak
   // 16 = Strong enough to connect
@@ -873,7 +873,7 @@ bool GDXLib::D2PIO_Autoset()
   unsigned long defaultMask = 0;
   unsigned long testMask = 1;
   byte i;
-  boolean useDefaultChannel;//flag set on whether we want to use default channel
+  boolean useDefaultChannel=0;//flag set on whether we want to use default channel
   if (g_channelNumber==255) useDefaultChannel=1;//channelNumber is set this way to show we want default channel
   if (!D2PIO_GetAvailableChannels(availableMask)) return false;
   if (!D2PIO_GetDefaultChannels(defaultMask)) return false;
