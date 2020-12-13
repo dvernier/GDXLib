@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201123, using the 0.90 library code)
+ GDXLib Demo (v. 20201212, using the 0.90 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -104,10 +104,17 @@ void setup(){
      float channelReading =GDX.readSensor();
      Serial.print(channelReading);
      Serial.print(" ");
-     Serial.println (GDX.channelUnits());
+     Serial.println (strUnits);//note this was assigned above
        // 2-LINE DISPLAY CODE
        lcd.clear(); //Clear 
-       sprintf(strBuffer, "%.2f", channelReading);
+       // The probably imperfect and confusing code below is needed because the 
+       // Arduino IDE does not support sprintf used with floating point numbers.
+       if (channelReading>=0){
+         sprintf(strBuffer," %d.%02d", (int)channelReading, (int)(channelReading*100)%100); 
+       }   
+       else {
+          sprintf(strBuffer,"- %d.%02d", (int)channelReading*-1, (int)(channelReading*-1*100)%100); 
+       }
        lcd.print(strBuffer);//note strBuffer was assigned above
        lcd.setCursor(0,1);// column, row
        lcd.print(strUnits);
