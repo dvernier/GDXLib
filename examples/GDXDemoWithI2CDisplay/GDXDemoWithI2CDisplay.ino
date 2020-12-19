@@ -46,7 +46,7 @@ void setup(){
 
   Serial.print("channelUnits: ");
   Serial.println (GDX.channelUnits());
-
+  
   Serial.print("channelNumber: ");
   Serial.println (GDX.channelNumber());
   
@@ -104,7 +104,7 @@ void setup(){
      float channelReading =GDX.readSensor();
      Serial.print(channelReading);
      Serial.print(" ");
-     Serial.println (strUnits);//note this was assigned above
+     Serial.println (GDX.channelUnits());
        // 2-LINE DISPLAY CODE
        lcd.clear(); //Clear 
        // The probably imperfect and confusing code below is needed because the 
