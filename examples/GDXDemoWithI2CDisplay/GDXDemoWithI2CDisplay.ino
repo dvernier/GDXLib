@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201212, using the 0.90 library code)
+ GDXLib Demo (v. 20201220, using the 0.90 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
