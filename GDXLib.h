@@ -57,7 +57,7 @@ class GDXLib
     bool D2PIO_GetDefaultChannels(unsigned long& defaultMask);
     bool D2PIO_GetStatus();
     bool D2PIO_GetDeviceInfo();
-    bool D2PIO_GetChannelInfo(byte channelNumber, bool verbose);
+    bool D2PIO_GetChannelInfo(byte channelNumber);
     bool D2PIO_GetChannelInfoAll();
     bool D2PIO_Autoset();
     bool D2PIO_StartMeasurements(byte channelNumber);

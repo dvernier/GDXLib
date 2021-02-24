@@ -777,7 +777,7 @@ bool GDXLib::D2PIO_GetDeviceInfo()
 //=============================================================================
 // D2PIO_GetChannelInfo() Function
 //=============================================================================
-bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
+bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber)
 {
    #if defined DEBUG
       Serial.println ("***@@@ in D2PIO_GetChannelInfo() Function");
@@ -802,8 +802,6 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
   pResponse = (D2PIOGetSensorChannelInfoCmdResponse*)&g_ReadBuffer[6];
   memcpy(&g_channelInfo, pResponse, sizeof(D2PIOGetSensorChannelInfoCmdResponse));
   #if defined DEBUG   
-      if (verbose)
-      {
         Serial.print("***Channel[");
         Serial.println(channelNumber);
         Serial.println("***] info:");
@@ -833,7 +831,6 @@ bool GDXLib::D2PIO_GetChannelInfo(byte channelNumber, bool verbose)
         Serial.println(pResponse->measurementPeriodGranularity);
         Serial.print("***  Mutual exclusion mask: 0x");
         Serial.println(pResponse->mutualExclusionMask);
-      }
   #endif
   return true;
 }
@@ -855,7 +852,7 @@ bool GDXLib::D2PIO_GetChannelInfoAll()
    {
     if (testMask & availableMask)
     {
-      if (!D2PIO_GetChannelInfo(i, true)) return false;
+      if (!D2PIO_GetChannelInfo(i)) return false;
     }
     testMask = testMask << 1;
    }
@@ -903,7 +900,7 @@ bool GDXLib::D2PIO_Autoset()
          #endif
          }   
   // Get the channel info
-  if (!D2PIO_GetChannelInfo(g_channelNumber, false)) return false;
+  if (!D2PIO_GetChannelInfo(g_channelNumber)) return false;
   
   // Set the sample rate according to the typical value for this sensor.
   // However we limit it to about 200ms for the sake of Arduino.
@@ -1101,7 +1098,7 @@ void GDXLib::open(char* deviceName, byte channelNumber, unsigned long samplePeri
    if (!D2PIO_Autoset())//select default channel
       GoDirectBLE_Error();
  
-  if (!D2PIO_GetChannelInfo(g_channelNumber, false))
+  if (!D2PIO_GetChannelInfo(g_channelNumber))
         GoDirectBLE_Error();
 
   if (!D2PIO_SetMeasurementPeriod(g_samplePeriodInMilliseconds))

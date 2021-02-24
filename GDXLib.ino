@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201123, using the 0.90 library code)
+ GDXLib Demo (v. 210211, using the 0.9.2 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev 2.
@@ -24,10 +24,10 @@ void setup(){
   //GDX.open("GDX*ACC XXXXXXXX",7, 1000);//or specify device, channel and period here 
   Serial.print("Found: ");
   Serial.print (GDX.orderCode());
-  Serial.print(" ");
+  Serial.print (" ");
   Serial.println (GDX.serialNumber());
   
-  Serial.print("channelName; ");
+  Serial.print("channelName: ");
   Serial.println (GDX.channelName());
 
   Serial.print("channelUnits: ");
@@ -48,7 +48,8 @@ void setup(){
   Serial.println ("threshold = -44 ");//!!!NOTE SET IN .CPP CODE
   
   Serial.print("samplePeriod: ");
-  Serial.println (GDX.samplePeriodInMilliseconds());
+  Serial.print(GDX.samplePeriodInMilliseconds());
+  Serial.println(" milliseconds");
   
   GDX.start();
   delay(500);//let readings start
@@ -68,6 +69,6 @@ void loop(){
    if (readingNumber==numberOfReadings+1){
       GDX.stop();
       GDX.close();
-      Serial.println("series of readings taken; stopping GDX data collection");
+      Serial.println("Series of readings taken; stopping GDX data collection.");
   }//end of if
 }

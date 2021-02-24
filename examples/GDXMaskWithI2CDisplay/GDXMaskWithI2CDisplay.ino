@@ -1,6 +1,7 @@
 /*
- GDX Mask Demo (v. 20201123, using the 0.90 library code)
- // This version supports a I2C 2-line display
+ GDX Mask Demo (v. 210211, using the 0.9.2 library code)
+ This version supports a I2C 2-line display.
+ Use a GDX-ACC for control.
  */
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
@@ -27,7 +28,7 @@ char *phrase2[] = {"1234567890123456",
                    "students to do  ", 
                    "  ++++++++++    ",
                    "  very much!    ", 
-                   " Dave Vernier   ", 
+                   "(Your Name Here)", 
                    "doing today?    ",
                    "thank you       ",
                    "  your mask!    ",
@@ -52,37 +53,47 @@ void setup(){
       //2-LINE DISPLAY CODE*/
   #endif //DISPLAY
 
-  //GDX.open();  //use this line for proximity pairing
+  GDX.open("GDX*ACC XXXXXXXX",11, 800);//or specify device, type channel and period here 
     //or
-    // 2-LINE DISPLAY CODE
+  //GDX.open("GDX-ACC 0H101767",11, 800);//specify specific device, channel and period here
+
+  // 2-LINE DISPLAY CODE
       lcd.clear();
       lcd.print("Searching for: ");
       lcd.setCursor(0,1);// column, row
-      lcd.print("GDX-ACC 0H101767");
+      lcd.print("GDX-ACC SENSOR");
       delay(2000);
-  GDX.open("GDX*ACC XXXXXXXX",11, 800);//or specify device, channel and period here 
+  
   Serial.println("Found: ");
+  Serial.print("deviceName: ");
   Serial.print (GDX.orderCode());
-  Serial.print(" ");
+  Serial.print (" ");
   Serial.println (GDX.serialNumber());
-  Serial.print("channelName:: ");
-  Serial.println(GDX.channelName());
-  Serial.print("channelUnits:");
-  Serial.println(GDX.channelUnits());
-  Serial.println("---");  
-  Serial.print("GetBatteryStatus()");
-  Serial.println(GDX.batteryPercent());
-  Serial.println("---");
-// 2-LINE DISPLAY CODE
-      lcd.clear();
-      lcd.print("Found: ");
-      lcd.setCursor(0,1);// column, row
-      lcd.print (GDX.orderCode());
-      lcd.print(" ");
-      lcd.println (GDX.serialNumber());
-      delay(2000);
-      
-      //2-LINE DISPLAY CODE*/ 
+  
+  Serial.print("channelName:");
+  Serial.println (GDX.channelName());
+
+  Serial.print("channelUnits: ");
+  Serial.println (GDX.channelUnits());
+
+  Serial.print("channelNumber: ");
+  Serial.println (GDX.channelNumber());
+  
+  Serial.print("Battery status(%): ");
+  Serial.println (GDX.batteryPercent());
+  
+  Serial.print("ChargeState: ");
+  Serial.print (GDX.chargeState());
+  Serial.println(" (0=idle, 1=charging, 2=charging complete, 3=error)");
+  
+  Serial.print("Bluetooth signal strength (RSSI): "); 
+  Serial.println (GDX.RSSI());
+  Serial.println ("threshold = -44 ");//!!!NOTE SET IN .CPP CODE
+  
+  Serial.print("samplePeriod: ");
+  Serial.print(GDX.samplePeriodInMilliseconds());
+  Serial.println(" milliseconds");
+   
   GDX.start();
   
 }//end of setup

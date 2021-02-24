@@ -1,4 +1,4 @@
-//GDXLibDemoSimple (v. 20201123, using the 0.90 library code)
+//GDXLibDemoSimple (v.210211, using the 0.9.2 library code)
 #include "ArduinoBLE.h"
 #include "GDXLib.h"
 GDXLib GDX;

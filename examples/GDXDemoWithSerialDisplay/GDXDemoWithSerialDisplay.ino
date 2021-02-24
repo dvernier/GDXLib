@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201212, using the 0.90 library code)
+ GDXLib Demo (v. 210211, using the 0.9.2 library code)
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -24,7 +24,7 @@ void setup(){
   Serial.println("GDX Sensor");
   GDX.open();  //use this line for proximity pairing
       //or
-  //GDX.open("GDX-FOR 072001D0",1, 500);//or specify specific device, channel and period here 
+  //GDX.open("GDX-ACC 072001D0",1, 500);//or specify specific device, channel and period here 
      //or
   //GDX.open("GDX*ACC XXXXXXXX",1, 1000);//or specify device type, channel and period here 
   Serial.print("Found: ");
@@ -32,7 +32,7 @@ void setup(){
   Serial.print (" ");
   Serial.println (GDX.serialNumber());
   
-  Serial.print("channelName; ");
+  Serial.print("channelName: ");
   Serial.println (GDX.channelName());
 
   Serial.print("channelUnits: ");
@@ -53,7 +53,9 @@ void setup(){
   Serial.println ("threshold = -44 ");//!!!NOTE SET IN .CPP CODE
   
   Serial.print("samplePeriod: ");
-  Serial.println (GDX.samplePeriodInMilliseconds());
+  Serial.print(GDX.samplePeriodInMilliseconds());
+  Serial.println(" milliseconds");
+  
   // 2-LINE DISPLAY CODE
       CharDisplayPrintLine(1,"Found: ");
       delay(1000);
@@ -101,7 +103,7 @@ void setup(){
      //2-LINE DISPLAY CODE */
    }//end of for
    GDX.stop();
-   Serial.println("series of readings taken; stopping GDX data collection");
+   Serial.println("Series of readings taken; stopping GDX data collection.");
 }//end of setup
 
 void loop(){
@@ -116,7 +118,7 @@ void CharDisplayPrintLine(int line, const char* strText){
     // Force a field width of 16.
     // Left justified with space padding on the right.
     //char strBuffer[32];
-    sprintf(strBuffer, "%-16.15s",  strText);
+    sprintf(strBuffer, "%-16.16s",  strText);
   
     //For debug -- prints what goes to the display
     //Serial.print(" strBuffer" ");
@@ -127,7 +129,7 @@ void CharDisplayPrintLine(int line, const char* strText){
     ConvertUTF8ToASCII(strBuffer);// to handle degree sign, and superscripts
     Serial1.write((uint8_t)254); 
     Serial1.write(lineCode); 
-    Serial1.write(strBuffer, 15);
+    Serial1.write(strBuffer, 16);
 }
       
 void CharDisplayInit(){

@@ -1,5 +1,5 @@
 /*
- GDXLib Demo (v. 20201212, using the 0.90 )
+ GDXLib Demo (v. 210211, using the 0.9.2 )
  This is a simple demo program for using GDX sensors on any Arduino 
  which supports the Arduino BLE library. This includes the Nano33 BLE,
  Arduino Nano33 Sense, and MKR WiFi 1010, and Arduino Uno WiFi Rev2.
@@ -17,8 +17,6 @@ char strUnits[32]="strUnits";
    #include <SerLCD.h> //Click here to get the library: http://librarymanager/All#SparkFun_SerLCD
    SerLCD lcd; // Initialize the library with default I2C address 0x72
 /*
-from VernierFrequency (v 2017.07)
- 
 This sketch produces a tone on a speaker connected to pin D5 of
 the Arduino. It is based on the Tone 2 tutorial.
 (see http://arduino.cc/en/Tutorial/Tone2).
@@ -50,16 +48,18 @@ void setup(){
       lcd.print("GDX Sensor");
       delay(1000);
       //2-LINE DISPLAY CODE*/
- //GDX.open();  //use this line for proximity pairing
-      //or
- GDX.open("GDX*HD*********",1, 100);//or specify device, channel and period here 
+ GDX.open();  //use this line for proximity pairing
+ //or
+ //GDX.open("GDX-FOR 072001D0",1, 500);//or specify specific device, channel and period here 
+ //or
+ //GDX.open("GDX*HD*********",1, 100);//or specify device, channel and period here 
 
   Serial.print("Found: ");
   Serial.print (GDX.orderCode());
-  Serial.print(" ");
+  Serial.print (" ");
   Serial.println (GDX.serialNumber());
   
-  Serial.print("channelName; ");
+  Serial.print("channelName: ");
   Serial.println (GDX.channelName());
 
   Serial.print("channelUnits: ");
@@ -80,7 +80,9 @@ void setup(){
   Serial.println ("threshold = -44 ");//!!!NOTE SET IN .CPP CODE
   
   Serial.print("samplePeriod: ");
-  Serial.println (GDX.samplePeriodInMilliseconds());
+  Serial.print(GDX.samplePeriodInMilliseconds());
+  Serial.println(" milliseconds");
+  
   // 2-LINE DISPLAY CODE
       lcd.clear();
       lcd.print("Found: ");
